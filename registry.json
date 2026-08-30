@@ -80,6 +80,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "badge",
+      "type": "registry:ui",
+      "title": "Badge",
+      "description": "A small status label.",
+      "dependencies": ["radix-ui", "class-variance-authority"],
+      "registryDependencies": ["@drift-ui/utils"],
+      "files": [
+        {
+          "path": "registry/default/ui/badge.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
