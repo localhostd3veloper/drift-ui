@@ -66,6 +66,20 @@
           "ring": "oklch(0.556 0 0)"
         }
       }
+    },
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "A button with six variants and four sizes.",
+      "dependencies": ["radix-ui", "class-variance-authority"],
+      "registryDependencies": ["@drift-ui/utils"],
+      "files": [
+        {
+          "path": "registry/default/ui/button.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
