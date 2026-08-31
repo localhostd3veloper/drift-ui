@@ -94,6 +94,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "title": "Label",
+      "description": "An accessible label for form controls.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@drift-ui/utils"],
+      "files": [
+        {
+          "path": "registry/default/ui/label.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
