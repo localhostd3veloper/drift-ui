@@ -121,6 +121,19 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "A container with header, content, and footer slots.",
+      "registryDependencies": ["@drift-ui/utils"],
+      "files": [
+        {
+          "path": "registry/default/ui/card.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
