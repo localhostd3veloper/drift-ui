@@ -134,6 +134,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "A modal window built on Radix Dialog.",
+      "dependencies": ["radix-ui", "lucide-react"],
+      "registryDependencies": ["@drift-ui/utils"],
+      "files": [
+        {
+          "path": "registry/default/ui/dialog.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
