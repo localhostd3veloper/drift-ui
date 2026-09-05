@@ -148,6 +148,17 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "tags-input",
+      "type": "registry:ui",
+      "title": "Tags Input",
+      "description": "Type, paste or remove tags with full keyboard support.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@drift-ui/utils", "@drift-ui/badge"],
+      "files": [
+        { "path": "registry/default/ui/tags-input.tsx", "type": "registry:ui" }
+      ]
     }
   ]
 }
