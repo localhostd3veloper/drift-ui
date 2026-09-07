@@ -159,6 +159,17 @@
       "files": [
         { "path": "registry/default/ui/tags-input.tsx", "type": "registry:ui" }
       ]
+    },
+    {
+      "name": "tree-view",
+      "type": "registry:ui",
+      "title": "Tree View",
+      "description": "An ARIA tree with arrow keys, typeahead, selection and lazy children.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@drift-ui/utils"],
+      "files": [
+        { "path": "registry/default/ui/tree-view.tsx", "type": "registry:ui" }
+      ]
     }
   ]
 }
