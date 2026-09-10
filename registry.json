@@ -170,6 +170,17 @@
       "files": [
         { "path": "registry/default/ui/tree-view.tsx", "type": "registry:ui" }
       ]
+    },
+    {
+      "name": "stepper",
+      "type": "registry:ui",
+      "title": "Stepper",
+      "description": "Multi-step flows built on Radix Tabs, linear or free.",
+      "dependencies": ["radix-ui", "lucide-react"],
+      "registryDependencies": ["@drift-ui/utils"],
+      "files": [
+        { "path": "registry/default/ui/stepper.tsx", "type": "registry:ui" }
+      ]
     }
   ]
 }
