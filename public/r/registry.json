@@ -181,6 +181,17 @@
       "files": [
         { "path": "registry/default/ui/stepper.tsx", "type": "registry:ui" }
       ]
+    },
+    {
+      "name": "number-input",
+      "type": "registry:ui",
+      "title": "Number Input",
+      "description": "A spinbutton with min, max, step and locale formatting.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@drift-ui/utils"],
+      "files": [
+        { "path": "registry/default/ui/number-input.tsx", "type": "registry:ui" }
+      ]
     }
   ]
 }
