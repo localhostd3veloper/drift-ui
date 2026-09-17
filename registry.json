@@ -192,6 +192,17 @@
       "files": [
         { "path": "registry/default/ui/number-input.tsx", "type": "registry:ui" }
       ]
+    },
+    {
+      "name": "file-dropzone",
+      "type": "registry:ui",
+      "title": "File Dropzone",
+      "description": "Drag and drop upload with validation, progress and rejection states.",
+      "dependencies": ["radix-ui", "lucide-react"],
+      "registryDependencies": ["@drift-ui/utils"],
+      "files": [
+        { "path": "registry/default/ui/file-dropzone.tsx", "type": "registry:ui" }
+      ]
     }
   ]
 }
