@@ -203,6 +203,17 @@
       "files": [
         { "path": "registry/default/ui/file-dropzone.tsx", "type": "registry:ui" }
       ]
+    },
+    {
+      "name": "timeline",
+      "type": "registry:ui",
+      "title": "Timeline",
+      "description": "Activity feeds and changelogs with status indicators.",
+      "dependencies": ["class-variance-authority"],
+      "registryDependencies": ["@drift-ui/utils"],
+      "files": [
+        { "path": "registry/default/ui/timeline.tsx", "type": "registry:ui" }
+      ]
     }
   ]
 }
