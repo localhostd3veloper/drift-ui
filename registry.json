@@ -214,6 +214,17 @@
       "files": [
         { "path": "registry/default/ui/timeline.tsx", "type": "registry:ui" }
       ]
+    },
+    {
+      "name": "password-input",
+      "type": "registry:ui",
+      "title": "Password Input",
+      "description": "A password field with a reveal toggle and a strength meter.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@drift-ui/utils", "@drift-ui/input"],
+      "files": [
+        { "path": "registry/default/ui/password-input.tsx", "type": "registry:ui" }
+      ]
     }
   ]
 }
