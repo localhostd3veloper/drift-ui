@@ -225,6 +225,17 @@
       "files": [
         { "path": "registry/default/ui/password-input.tsx", "type": "registry:ui" }
       ]
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "title": "Popover",
+      "description": "Floating content anchored to a trigger, built on Radix Popover.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@drift-ui/utils"],
+      "files": [
+        { "path": "registry/default/ui/popover.tsx", "type": "registry:ui" }
+      ]
     }
   ]
 }
