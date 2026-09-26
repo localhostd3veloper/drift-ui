@@ -227,6 +227,24 @@
       ]
     },
     {
+      "name": "date-time-range",
+      "type": "registry:ui",
+      "title": "Date-Time Range",
+      "description": "A date range picker with start and end times.",
+      "dependencies": ["lucide-react", "react-day-picker"],
+      "registryDependencies": [
+        "@drift-ui/utils",
+        "@drift-ui/button",
+        "@drift-ui/input",
+        "@drift-ui/label",
+        "calendar",
+        "popover"
+      ],
+      "files": [
+        { "path": "registry/default/ui/date-time-range.tsx", "type": "registry:ui" }
+      ]
+    },
+    {
       "name": "popover",
       "type": "registry:ui",
       "title": "Popover",
