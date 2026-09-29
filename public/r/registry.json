@@ -245,6 +245,18 @@
       ]
     },
     {
+      "name": "use-controllable-state",
+      "type": "registry:hook",
+      "title": "useControllableState",
+      "description": "State that works controlled or uncontrolled, with a change callback.",
+      "files": [
+        {
+          "path": "registry/default/hooks/use-controllable-state.ts",
+          "type": "registry:hook"
+        }
+      ]
+    },
+    {
       "name": "popover",
       "type": "registry:ui",
       "title": "Popover",
