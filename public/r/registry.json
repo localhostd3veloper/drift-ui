@@ -286,6 +286,23 @@
         { "path": "registry/default/ui/filter-menu.tsx", "type": "registry:ui" },
         { "path": "registry/default/lib/filter.ts", "type": "registry:lib" }
       ]
+    },
+    {
+      "name": "tour",
+      "type": "registry:ui",
+      "title": "Tour",
+      "description": "A step-by-step product tour that spotlights real elements on the page.",
+      "dependencies": ["radix-ui", "lucide-react"],
+      "registryDependencies": [
+        "@drift-ui/utils",
+        "@drift-ui/button",
+        "@drift-ui/popover",
+        "@drift-ui/use-controllable-state"
+      ],
+      "files": [
+        { "path": "registry/default/ui/tour.tsx", "type": "registry:ui" },
+        { "path": "registry/default/ui/tour-spotlight.tsx", "type": "registry:ui" }
+      ]
     }
   ]
 }
