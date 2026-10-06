@@ -303,6 +303,17 @@
         { "path": "registry/default/ui/tour.tsx", "type": "registry:ui" },
         { "path": "registry/default/ui/tour-spotlight.tsx", "type": "registry:ui" }
       ]
+    },
+    {
+      "name": "bulk-action-bar",
+      "type": "registry:ui",
+      "title": "Bulk Action Bar",
+      "description": "A floating toolbar for acting on selected rows. Escape clears the selection.",
+      "dependencies": ["radix-ui", "lucide-react", "motion", "class-variance-authority"],
+      "registryDependencies": ["@drift-ui/utils", "@drift-ui/button"],
+      "files": [
+        { "path": "registry/default/ui/bulk-action-bar.tsx", "type": "registry:ui" }
+      ]
     }
   ]
 }
