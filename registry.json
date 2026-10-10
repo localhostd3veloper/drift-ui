@@ -333,6 +333,17 @@
         { "path": "registry/default/ui/color-picker-controls.tsx", "type": "registry:ui" },
         { "path": "registry/default/lib/color.ts", "type": "registry:lib" }
       ]
+    },
+    {
+      "name": "shortcut-recorder",
+      "type": "registry:ui",
+      "title": "Shortcut Recorder",
+      "description": "Records a key combination and renders it with platform symbols.",
+      "registryDependencies": ["@drift-ui/utils", "@drift-ui/use-controllable-state"],
+      "files": [
+        { "path": "registry/default/ui/shortcut-recorder.tsx", "type": "registry:ui" },
+        { "path": "registry/default/lib/shortcut.ts", "type": "registry:lib" }
+      ]
     }
   ]
 }
