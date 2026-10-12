@@ -344,6 +344,22 @@
         { "path": "registry/default/ui/shortcut-recorder.tsx", "type": "registry:ui" },
         { "path": "registry/default/lib/shortcut.ts", "type": "registry:lib" }
       ]
+    },
+    {
+      "name": "mention-textarea",
+      "type": "registry:ui",
+      "title": "Mention Textarea",
+      "description": "A textarea that suggests people, channels or anything else after a trigger character.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": [
+        "@drift-ui/utils",
+        "@drift-ui/popover",
+        "@drift-ui/use-controllable-state"
+      ],
+      "files": [
+        { "path": "registry/default/ui/mention-textarea.tsx", "type": "registry:ui" },
+        { "path": "registry/default/lib/mention.ts", "type": "registry:lib" }
+      ]
     }
   ]
 }
