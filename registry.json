@@ -371,6 +371,17 @@
         { "path": "registry/default/ui/time-field.tsx", "type": "registry:ui" },
         { "path": "registry/default/lib/time-segments.ts", "type": "registry:lib" }
       ]
+    },
+    {
+      "name": "inline-edit",
+      "type": "registry:ui",
+      "title": "Inline Edit",
+      "description": "Click to edit text in place. Enter saves, Escape cancels, async saves supported.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@drift-ui/utils"],
+      "files": [
+        { "path": "registry/default/ui/inline-edit.tsx", "type": "registry:ui" }
+      ]
     }
   ]
 }
