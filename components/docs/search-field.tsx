@@ -1,0 +1,79 @@
+"use client"
+
+import { useEffect, useRef } from "react"
+import { SearchIcon, XIcon } from "lucide-react"
+
+import { cn } from "@/registry/default/lib/utils"
+
+function isTypingTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return false
+
+  return (
+    target.isContentEditable ||
+    target.tagName === "INPUT" ||
+    target.tagName === "TEXTAREA" ||
+    target.tagName === "SELECT"
+  )
+}
+
+export function SearchField({
+  value,
+  onValueChange,
+  className,
+}: {
+  value: string
+  onValueChange: (value: string) => void
+  className?: string
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key !== "/" || event.defaultPrevented) return
+      if (isTypingTarget(event.target)) return
+
+      event.preventDefault()
+      inputRef.current?.focus()
+    }
+
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [])
+
+  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== "Escape") return
+
+    onValueChange("")
+    inputRef.current?.blur()
+  }
+
+  return (
+    <div className={cn("relative flex items-center", className)}>
+      <SearchIcon className="pointer-events-none absolute left-3 size-4 text-muted-foreground" />
+      <input
+        ref={inputRef}
+        type="search"
+        value={value}
+        onChange={(event) => onValueChange(event.target.value)}
+        onKeyDown={handleKeyDown}
+        aria-label="Search components"
+        placeholder="Search components"
+        className="h-10 w-full rounded-md border bg-card/60 pr-14 pl-9 text-sm shadow-xs transition-[border-color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [&::-webkit-search-cancel-button]:hidden"
+      />
+      {value ? (
+        <button
+          type="button"
+          onClick={() => onValueChange("")}
+          aria-label="Clear search"
+          className="absolute right-1.5 flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        >
+          <XIcon className="size-3.5" />
+        </button>
+      ) : (
+        <kbd className="pointer-events-none absolute right-2.5 hidden h-5 min-w-5 items-center justify-center rounded border bg-muted px-1 font-mono text-[11px] text-muted-foreground sm:flex">
+          /
+        </kbd>
+      )}
+    </div>
+  )
+}
