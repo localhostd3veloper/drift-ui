@@ -1,0 +1,129 @@
+import registry from "@/registry.json"
+import { COMPONENT_USAGE } from "@/lib/agent-docs/component-usage"
+import { siteConfig } from "@/lib/site-config"
+
+type RegistryItem = (typeof registry.items)[number] & {
+  dependencies?: string[]
+  registryDependencies?: string[]
+}
+
+const FOUNDATION_TYPES = new Set([
+  "registry:lib",
+  "registry:theme",
+  "registry:hook",
+])
+const SHADCN_BASE_ITEMS = new Set([
+  "button",
+  "badge",
+  "input",
+  "label",
+  "card",
+  "dialog",
+  "popover",
+])
+const MCP_CLIENTS = "claude, cursor, vscode, codex or opencode"
+
+const items = registry.items as RegistryItem[]
+
+export function registryUrl(siteUrl = siteConfig.url) {
+  return `${siteUrl}/r/{name}.json`
+}
+
+function itemUrl(siteUrl: string, name: string) {
+  return `${siteUrl}/r/${name}.json`
+}
+
+function isComponent(item: RegistryItem) {
+  return !FOUNDATION_TYPES.has(item.type) && !SHADCN_BASE_ITEMS.has(item.name)
+}
+
+function listLine(siteUrl: string, item: RegistryItem) {
+  return `- [${item.title}](${itemUrl(siteUrl, item.name)}): ${item.description}`
+}
+
+export function buildAgentPrompt(siteUrl = siteConfig.url) {
+  return `Install components from the drift-ui registry into this project.
+
+drift-ui is a shadcn-compatible component registry built on Radix and Tailwind v4. Read ${siteUrl}/llms.txt for the component list and ${siteUrl}/llms-full.txt for props and usage examples before writing code.
+
+1. Make sure the project uses shadcn. If there is no components.json, run \`npx shadcn@latest init\` and accept the defaults that match the project.
+2. Register the namespace: \`npx shadcn@latest registry add @drift-ui=${registryUrl(siteUrl)}\`
+3. Choose the components this task needs from llms.txt and install them, for example \`npx shadcn@latest add @drift-ui/tags-input @drift-ui/stepper\`. The CLI also installs their registry and npm dependencies.
+4. Import them from the project's ui alias, usually @/components/ui/<name>. Compose them in feature code rather than editing the installed files, and keep the project's existing theme tokens.
+5. Run the project's typecheck and lint, then list the components you installed and where you used them.
+
+Optional: \`npx shadcn@latest mcp init --client <client>\` (${MCP_CLIENTS}) lets you search and install from the registry over MCP.`
+}
+
+export function buildLlmsIndex(siteUrl = siteConfig.url) {
+  const components = items.filter(isComponent)
+  const foundations = items.filter((item) => !isComponent(item))
+
+  return `# ${siteConfig.name}
+
+> ${siteConfig.description}
+
+Register the namespace with \`npx shadcn@latest registry add @drift-ui=${registryUrl(siteUrl)}\`, then install any item with \`npx shadcn@latest add @drift-ui/<name>\`. Each link below is the item's registry JSON, which contains its full source.
+
+## Docs
+
+- [Full usage docs](${siteUrl}/llms-full.txt): setup steps, props and a usage example for every component
+- [Registry index](${siteUrl}/r/registry.json): machine readable list of every item
+
+## Components
+
+${components.map((item) => listLine(siteUrl, item)).join("\n")}
+
+## Foundations
+
+${foundations.map((item) => listLine(siteUrl, item)).join("\n")}
+
+## Optional
+
+- [Live previews](${siteUrl}/components): every component rendered with its install command
+`
+}
+
+function itemSection(siteUrl: string, item: RegistryItem) {
+  const usage = COMPONENT_USAGE[item.name]
+  const dependsOn = [
+    ...(item.registryDependencies ?? []),
+    ...(item.dependencies ?? []),
+  ]
+  const lines = [
+    `## ${item.title} (@drift-ui/${item.name})`,
+    "",
+    item.description,
+    "",
+    `Install: \`npx shadcn@latest add @drift-ui/${item.name}\``,
+    `Source: ${itemUrl(siteUrl, item.name)}`,
+  ]
+  if (dependsOn.length > 0) lines.push(`Depends on: ${dependsOn.join(", ")}`)
+  if (usage) lines.push("", usage.notes)
+  if (usage?.example) lines.push("", "```tsx", usage.example, "```")
+  return lines.join("\n")
+}
+
+export function buildLlmsFull(siteUrl = siteConfig.url) {
+  const ordered = [
+    ...items.filter(isComponent),
+    ...items.filter((item) => !isComponent(item)),
+  ]
+
+  return `# ${siteConfig.name}: full usage docs
+
+> ${siteConfig.description}
+
+## Setup
+
+${buildAgentPrompt(siteUrl)}
+
+## Conventions
+
+- Every component is a plain file in the project after install, with data-slot attributes on each part and className forwarded through cn().
+- Inputs follow one state pattern: value + onValueChange for controlled use, defaultValue for uncontrolled use.
+- Colors, radius and focus rings come from the shadcn CSS variables (--primary, --border, --ring and so on), so the project's theme applies automatically.
+
+${ordered.map((item) => itemSection(siteUrl, item)).join("\n\n")}
+`
+}
