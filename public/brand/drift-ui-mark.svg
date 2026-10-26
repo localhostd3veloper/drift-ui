@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
+  <style>
+    .cell { fill: #0a0a0a }
+    .ghost { stroke: #a1a1a1 }
+    .drift { fill: #2f6fd8 }
+    @media (prefers-color-scheme: dark) {
+      .cell { fill: #fafafa }
+      .ghost { stroke: #737373 }
+      .drift { fill: #8ab4ff }
+    }
+  </style>
+  <rect class="cell" x="3" y="10" width="12" height="12" rx="3"/>
+  <rect class="cell" x="3" y="25" width="12" height="12" rx="3"/>
+  <rect class="cell" x="18" y="25" width="12" height="12" rx="3"/>
+  <rect class="ghost" x="18.75" y="10.75" width="10.5" height="10.5" rx="2.25" stroke-width="1.5" stroke-dasharray="2 2"/>
+  <rect class="drift" x="25" y="3" width="12" height="12" rx="3" transform="rotate(10 31 9)"/>
+</svg>
