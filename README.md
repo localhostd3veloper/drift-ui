@@ -4,6 +4,8 @@
 
 A shadcn-compatible component registry built on React 19, Tailwind v4, and Radix. It covers the components shadcn/ui leaves out, like a tags input, stepper, tree view and file dropzone, and installs them with the shadcn CLI.
 
+Browse the live previews at [drift-ui-dev.vercel.app](https://drift-ui-dev.vercel.app).
+
 ## Components
 
 | Category   | Components                                                                                                                                           |
@@ -13,7 +15,7 @@ A shadcn-compatible component registry built on React 19, Tailwind v4, and Radix
 | Workflow   | filter-builder, bulk-action-bar, tour                                                                                                                |
 | Primitives | button, badge, input, label, card, dialog, popover                                                                                                   |
 
-The primitives have the same API as their shadcn/ui counterparts, so skip any you already have. Every component has a live preview, its source and install steps at `/components/<name>`.
+The primitives have the same API as their shadcn/ui counterparts, so skip any you already have. Every component has a live preview, its source and install steps at [`/components/<name>`](https://drift-ui-dev.vercel.app/components).
 
 ## Usage
 
@@ -22,7 +24,7 @@ In a project that already ran `npx shadcn init`, register the namespace in `comp
 ```json
 {
   "registries": {
-    "@drift-ui": "http://localhost:3000/r/{name}.json"
+    "@drift-ui": "https://drift-ui-dev.vercel.app/r/{name}.json"
   }
 }
 ```
@@ -33,11 +35,11 @@ Then install the theme and any component:
 npx shadcn add @drift-ui/theme @drift-ui/tags-input @drift-ui/tree-view
 ```
 
-Registry dependencies such as `utils`, `button` and `use-controllable-state` are installed automatically. Swap the localhost URL for your deployed domain once the site is hosted.
+Registry dependencies such as `utils`, `button` and `use-controllable-state` are installed automatically.
 
 ### For AI agents
 
-The site serves `/llms.txt` with an index of the registry and `/llms-full.txt` with install commands, usage notes and examples for every component.
+The site serves [`/llms.txt`](https://drift-ui-dev.vercel.app/llms.txt) with an index of the registry and [`/llms-full.txt`](https://drift-ui-dev.vercel.app/llms-full.txt) with install commands, usage notes and examples for every component.
 
 ## Develop
 
