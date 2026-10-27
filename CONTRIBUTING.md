@@ -4,9 +4,11 @@ Thanks for taking the time to help. This guide covers local setup, how a compone
 
 ## Setup
 
-You need [Bun](https://bun.sh) 1.2 or newer.
+You need [Bun](https://bun.sh) 1.2 or newer. [Fork the repo](https://github.com/localhostd3veloper/drift-ui/fork), then clone your fork:
 
 ```bash
+git clone https://github.com/<your-username>/drift-ui.git
+cd drift-ui
 bun install
 bun run registry:build
 bun dev
@@ -64,13 +66,13 @@ Use the component name as the scope when the change is limited to one component.
 
 ## Pull requests
 
-1. Fork the repo and branch from `main`, for example `feature/color-picker-eyedropper` or `fix/stepper-focus-ring`.
+1. Branch from `main` in your fork, for example `feature/color-picker-eyedropper` or `fix/stepper-focus-ring`.
 2. Make sure `bun run typecheck`, `bun run lint` and `bun run test` pass.
 3. Open the pull request and fill in the template. Add a screenshot or a short recording for visual changes.
 
 ## Reporting bugs and requesting components
 
-Use the issue templates. For a bug, include the component, the browser, and the smallest steps that reproduce it. For a new component, describe the job it does on a real screen and link any prior art.
+Use the [issue templates](https://github.com/localhostd3veloper/drift-ui/issues/new/choose). For a bug, include the component, the browser, and the smallest steps that reproduce it. For a new component, describe the job it does on a real screen and link any prior art.
 
 ## License
 

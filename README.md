@@ -40,6 +40,8 @@ The site serves `/llms.txt` with an index of the registry and `/llms-full.txt` w
 ## Develop
 
 ```bash
+git clone https://github.com/localhostd3veloper/drift-ui.git
+cd drift-ui
 bun install
 bun run registry:build
 bun dev
@@ -75,7 +77,7 @@ public/r/*.json                build output, served as static files
 
 ## Contributing
 
-Bug reports, component requests and pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup, the steps to add a component, and the commit conventions.
+Bug reports, component requests and pull requests are welcome. Open an [issue](https://github.com/localhostd3veloper/drift-ui/issues/new/choose) to report a bug or request a component. Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup, the steps to add a component, and the commit conventions.
 
 ## License
 
