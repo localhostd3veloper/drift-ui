@@ -7,27 +7,21 @@ export function SectionHeading({
   className,
 }: {
   eyebrow?: string
-  title: [string, string]
+  title: string
   lead: string
   className?: string
 }) {
   return (
-    <div
-      className={cn("grid reveal gap-8 lg:grid-cols-2 lg:gap-16", className)}
-    >
-      <div className="flex flex-col gap-5">
-        {eyebrow && (
-          <span className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
-            {eyebrow}
-          </span>
-        )}
-        <h2 className="text-4xl leading-none font-medium tracking-tight md:text-5xl">
-          {title[0]}
-          <br />
-          {title[1]}
-        </h2>
-      </div>
-      <p className="max-w-[40ch] self-end text-xl leading-snug text-muted-foreground md:text-2xl">
+    <div className={cn("flex reveal flex-col gap-5", className)}>
+      {eyebrow && (
+        <span className="font-mono text-xs tracking-widest text-brand uppercase">
+          {eyebrow}
+        </span>
+      )}
+      <h2 className="max-w-3xl text-4xl leading-[1.05] font-medium tracking-tighter text-balance md:text-5xl">
+        {title}
+      </h2>
+      <p className="max-w-[60ch] text-base leading-relaxed text-muted-foreground md:text-lg">
         {lead}
       </p>
     </div>

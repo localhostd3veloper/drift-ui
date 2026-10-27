@@ -24,12 +24,15 @@ function formatClock(totalMinutes: number) {
   return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`
 }
 
-export function LiveTimeline() {
-  const frame = useDemoFrame({
+export function LiveTimeline({
+  frame: frameOverride,
+}: { frame?: number } = {}) {
+  const clockFrame = useDemoFrame({
     frameMs: 2000,
     frameCount: EVENT_POOL.length,
     reducedMotionFrame: 2,
   })
+  const frame = frameOverride ?? clockFrame
   const events = Array.from({ length: VISIBLE_EVENTS }, (_, offset) => {
     const sequence = frame + VISIBLE_EVENTS - 1 - offset
     return {

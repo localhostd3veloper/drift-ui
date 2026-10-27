@@ -1,33 +1,30 @@
+"use client"
+
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "motion/react"
+
 import { cn } from "@/registry/default/lib/utils"
-import { Badge } from "@/registry/default/ui/badge"
-import { Button } from "@/registry/default/ui/button"
-import { Label } from "@/registry/default/ui/label"
-import { DateRangeSpecimen } from "@/components/landing/specimens/date-range-specimen"
-import { FileDropzoneSpecimen } from "@/components/landing/specimens/file-dropzone-specimen"
-import { NumberInputSpecimen } from "@/components/landing/specimens/number-input-specimen"
-import { StepperSpecimen } from "@/components/landing/specimens/stepper-specimen"
-import { TagsInputSpecimen } from "@/components/landing/specimens/tags-input-specimen"
-import { TimelineSpecimen } from "@/components/landing/specimens/timeline-specimen"
+import { DeployCard } from "@/components/landing/hero-deploy-card"
+import {
+  SCENE_DONE_FRAME,
+  SCENE_FRAME_COUNT,
+  SCENE_FRAME_MS,
+  sceneAt,
+} from "@/components/landing/hero-scene"
+import { LiveTimeline } from "@/components/landing/live/live-timeline"
 import { TreeViewSpecimen } from "@/components/landing/specimens/tree-view-specimen"
+import { useDemoFrame } from "@/components/landing/use-demo-frame"
 
-function PanelField({
-  label,
-  children,
-}: {
-  label: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="grid content-start gap-2">
-      <Label>{label}</Label>
-      {children}
-    </div>
-  )
-}
+const TILT_SPRING = { stiffness: 120, damping: 20, mass: 0.6 }
 
-function ExplorerCard() {
+function ExplorerCard({ timelineFrame }: { timelineFrame: number }) {
   return (
-    <div className="hidden flex-col gap-4 self-start rounded-2xl border bg-card/90 p-4 shadow-[0_32px_64px_-32px] shadow-black/15 lg:mt-16 lg:flex dark:shadow-black/80">
+    <div className="flex w-60 flex-col gap-4 rounded-2xl border bg-card p-4 shadow-[0_32px_64px_-32px] shadow-black/20 dark:shadow-black/80">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">ledgerline-web</span>
         <span className="font-mono text-[11px] text-muted-foreground">
@@ -39,68 +36,73 @@ function ExplorerCard() {
         <p className="mb-3 text-xs font-medium text-muted-foreground">
           Activity
         </p>
-        <TimelineSpecimen />
-      </div>
-    </div>
-  )
-}
-
-function DeployCard() {
-  return (
-    <div className="flex flex-col rounded-2xl border bg-card shadow-[0_40px_80px_-40px] shadow-black/20 dark:shadow-black">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-4 md:px-6">
-        <div className="flex flex-col gap-0.5">
-          <span className="text-sm font-medium">New deployment</span>
-          <span className="text-xs text-muted-foreground">
-            ledgerline-web, production
-          </span>
-        </div>
-        <Badge variant="outline" className="gap-1.5">
-          <span className="size-1.5 rounded-full bg-emerald-400" />
-          Ready
-        </Badge>
-      </div>
-      <div className="border-b px-5 py-4 md:px-6">
-        <StepperSpecimen />
-      </div>
-      <div className="grid gap-6 px-5 py-6 md:grid-cols-2 md:px-6">
-        <div className="flex flex-col gap-5">
-          <PanelField label="Environments">
-            <TagsInputSpecimen />
-          </PanelField>
-          <PanelField label="Replicas">
-            <NumberInputSpecimen />
-          </PanelField>
-          <PanelField label="Maintenance window">
-            <DateRangeSpecimen />
-          </PanelField>
-        </div>
-        <PanelField label="Build artifacts">
-          <FileDropzoneSpecimen />
-        </PanelField>
-      </div>
-      <div className="flex justify-end gap-2 border-t px-5 py-4 md:px-6">
-        <Button variant="ghost">Cancel</Button>
-        <Button>Deploy 3 replicas</Button>
+        <LiveTimeline frame={timelineFrame} />
       </div>
     </div>
   )
 }
 
 export function HeroPanel({ className }: { className?: string }) {
+  const prefersReducedMotion = useReducedMotion()
+  const frame = useDemoFrame({
+    frameMs: SCENE_FRAME_MS,
+    frameCount: SCENE_FRAME_COUNT,
+    reducedMotionFrame: SCENE_DONE_FRAME,
+  })
+  const scene = sceneAt(frame)
+
+  const pointerX = useMotionValue(0)
+  const pointerY = useMotionValue(0)
+  const springX = useSpring(pointerX, TILT_SPRING)
+  const springY = useSpring(pointerY, TILT_SPRING)
+  const rotateY = useTransform(springX, [-0.5, 0.5], [-5, 5])
+  const rotateX = useTransform(springY, [-0.5, 0.5], [4, -4])
+  const explorerX = useTransform(springX, [-0.5, 0.5], [18, -18])
+  const explorerY = useTransform(springY, [-0.5, 0.5], [14, -14])
+
+  function trackPointer(event: React.PointerEvent<HTMLDivElement>) {
+    if (prefersReducedMotion || event.pointerType !== "mouse") return
+    const bounds = event.currentTarget.getBoundingClientRect()
+    pointerX.set((event.clientX - bounds.left) / bounds.width - 0.5)
+    pointerY.set((event.clientY - bounds.top) / bounds.height - 0.5)
+  }
+
+  function resetPointer() {
+    pointerX.set(0)
+    pointerY.set(0)
+  }
+
   return (
     <div
-      aria-hidden
-      inert
-      className={cn(
-        "relative rounded-[2rem] border bg-background bg-[radial-gradient(70%_60%_at_50%_0%,color-mix(in_oklab,var(--foreground)_9%,transparent),transparent)] p-3 md:p-10",
-        className
-      )}
+      onPointerMove={trackPointer}
+      onPointerLeave={resetPointer}
+      className={cn("relative [perspective:1600px]", className)}
     >
-      <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[17rem_1fr]">
-        <ExplorerCard />
-        <DeployCard />
-      </div>
+      <motion.div
+        aria-hidden
+        inert
+        style={{ rotateX, rotateY }}
+        className="relative transform-3d"
+      >
+        <motion.div
+          initial={{ opacity: 0, x: 48 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{
+            type: "spring",
+            bounce: 0.15,
+            visualDuration: 0.8,
+            delay: 0.7,
+          }}
+          className="absolute top-0 right-0 hidden xl:block"
+        >
+          <motion.div style={{ x: explorerX, y: explorerY }}>
+            <ExplorerCard timelineFrame={scene.timelineFrame} />
+          </motion.div>
+        </motion.div>
+        <div className="relative xl:mt-14 xl:mr-28">
+          <DeployCard scene={scene} />
+        </div>
+      </motion.div>
     </div>
   )
 }

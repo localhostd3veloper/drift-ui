@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 import { cn } from "@/registry/default/lib/utils"
 import { DemoCard } from "@/components/landing/demo-card"
 import { SectionHeading } from "@/components/landing/section-heading"
@@ -6,12 +8,22 @@ import {
   type WorkflowDemoKind,
 } from "@/components/landing/more/workflow-demo"
 
+type Surface = "brand" | "dots" | "muted"
+
+const SURFACE: Record<Surface, string> = {
+  brand:
+    "bg-[radial-gradient(90%_80%_at_0%_0%,color-mix(in_oklab,var(--brand)_16%,transparent),transparent)] bg-brand/[0.03]",
+  dots: "bg-[radial-gradient(var(--border)_1px,transparent_1px)] bg-[size:16px_16px]",
+  muted: "bg-muted/50",
+}
+
 const ENTRIES: {
   name: string
   slug: string
   kind: WorkflowDemoKind
   description: string
   className: string
+  surface?: Surface
 }[] = [
   {
     name: "Filter builder",
@@ -20,6 +32,7 @@ const ENTRIES: {
     description:
       "Field, operator and value as chips, plus a matchesFilter helper for your rows.",
     className: "md:col-span-4",
+    surface: "brand",
   },
   {
     name: "Shortcut recorder",
@@ -43,6 +56,7 @@ const ENTRIES: {
     description:
       "Area, hue, alpha and eyedropper, with the oklch value your theme uses.",
     className: "md:col-span-3",
+    surface: "dots",
   },
   {
     name: "Mention textarea",
@@ -58,6 +72,7 @@ const ENTRIES: {
     kind: "time",
     description: "Segmented spinbuttons with typeahead, in 12 or 24 hour time.",
     className: "md:col-span-2",
+    surface: "muted",
   },
   {
     name: "Inline edit",
@@ -73,6 +88,7 @@ const ENTRIES: {
     kind: "tour",
     description: "Spotlights real elements and follows them as the page moves.",
     className: "md:col-span-3",
+    surface: "brand",
   },
 ]
 
@@ -80,37 +96,37 @@ export function MoreComponentsSection() {
   return (
     <section
       id="workflow"
-      className="mx-auto max-w-7xl scroll-mt-24 px-4 py-28 md:px-10 md:py-40"
+      className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:py-28 md:px-10 md:py-36"
     >
       <SectionHeading
-        eyebrow="New"
-        title={["Eight more,", "and these ones work"]}
+        title="Eight more, and these ones work"
         lead="Filters, tours, bulk actions and the inputs settings screens keep asking for. Every demo below is the real component, so go ahead and use it."
       />
-      <div className="mt-16 grid gap-x-4 gap-y-12 md:mt-24 md:grid-cols-6">
-        {ENTRIES.map((entry, index) => (
+      <div className="mt-14 grid gap-4 md:mt-20 md:grid-cols-6">
+        {ENTRIES.map((entry) => (
           <figure
             key={entry.slug}
-            className={cn("flex reveal flex-col gap-5", entry.className)}
+            className={cn(
+              "flex reveal flex-col overflow-hidden rounded-2xl border",
+              entry.surface && SURFACE[entry.surface],
+              entry.className
+            )}
           >
-            <div className="flex flex-1 items-center justify-center rounded-[1.75rem] border bg-[radial-gradient(80%_70%_at_50%_0%,color-mix(in_oklab,var(--foreground)_6%,transparent),transparent)] p-6 md:min-h-64 md:p-10">
+            <div className="flex flex-1 items-center justify-center p-5 md:min-h-64 md:p-8">
               <DemoCard className="w-full max-w-md">
                 <WorkflowDemo kind={entry.kind} />
               </DemoCard>
             </div>
-            <figcaption className="flex flex-col gap-1.5 px-1">
-              <div className="flex items-baseline justify-between gap-4">
-                <span className="font-medium">{entry.name}</span>
-                <span className="font-mono text-[11px] text-muted-foreground">
-                  FIG 2.{index + 1}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground">
+            <figcaption className="flex flex-col gap-1 px-5 pb-5 md:px-8 md:pb-7">
+              <Link
+                href={`/components/${entry.slug}`}
+                className="w-fit font-medium transition-colors hover:text-brand"
+              >
+                {entry.name}
+              </Link>
+              <p className="max-w-[48ch] text-sm text-muted-foreground">
                 {entry.description}
               </p>
-              <code className="font-mono text-xs text-muted-foreground/70">
-                @drift-ui/{entry.slug}
-              </code>
             </figcaption>
           </figure>
         ))}

@@ -37,7 +37,7 @@ export function MobileNav({
       <ul
         id="mobile-nav"
         className={cn(
-          "absolute inset-x-0 top-full flex flex-col border-b border-border/60 bg-background px-4 py-2",
+          "absolute inset-x-0 top-full mt-2 flex flex-col rounded-2xl border border-border/60 bg-background px-4 py-2 shadow-[0_12px_32px_-16px] shadow-black/20 dark:shadow-black/70",
           !isOpen && "hidden"
         )}
       >

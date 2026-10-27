@@ -9,12 +9,13 @@ import { useDemoFrame } from "@/components/landing/use-demo-frame"
 
 const STEPS = ["Source", "Configure", "Review", "Deploy"]
 
-export function LiveStepper() {
-  const activeStepIndex = useDemoFrame({
+export function LiveStepper({ frame: frameOverride }: { frame?: number } = {}) {
+  const clockFrame = useDemoFrame({
     frameMs: 1300,
     frameCount: STEPS.length + 1,
     reducedMotionFrame: 1,
   })
+  const activeStepIndex = frameOverride ?? clockFrame
 
   return (
     <div className="@container w-full">

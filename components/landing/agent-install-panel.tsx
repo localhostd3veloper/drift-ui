@@ -43,7 +43,7 @@ export function AgentInstallPanel() {
         />
       </div>
       <div className="relative">
-        <pre className="max-h-72 overflow-auto p-5 font-mono text-xs leading-relaxed whitespace-pre-wrap text-muted-foreground sm:text-[13px]">
+        <pre className="max-h-[26rem] overflow-auto p-5 font-mono text-xs leading-relaxed whitespace-pre-wrap text-muted-foreground sm:text-[13px]">
           <code>{prompt}</code>
         </pre>
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-card to-transparent" />

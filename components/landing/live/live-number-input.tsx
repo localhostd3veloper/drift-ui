@@ -36,12 +36,15 @@ function StepButton({
   )
 }
 
-export function LiveNumberInput() {
-  const frame = useDemoFrame({
+export function LiveNumberInput({
+  frame: frameOverride,
+}: { frame?: number } = {}) {
+  const clockFrame = useDemoFrame({
     frameMs: 620,
     frameCount: VALUES.length,
     reducedMotionFrame: 0,
   })
+  const frame = frameOverride ?? clockFrame
   const value = VALUES[frame]
   const previousValue = VALUES[(frame - 1 + VALUES.length) % VALUES.length]
   const direction = Math.sign(value - previousValue)
@@ -50,11 +53,11 @@ export function LiveNumberInput() {
     <div className="flex items-center justify-between gap-4">
       <div className="flex flex-col gap-1.5">
         <Label>Replicas</Label>
-        <span className="font-mono text-[11px] text-muted-foreground">
+        <span className="font-mono text-[11px] whitespace-nowrap text-muted-foreground">
           min {MIN_REPLICAS}, max {MAX_REPLICAS}
         </span>
       </div>
-      <div className="flex h-9 w-40 items-center overflow-hidden rounded-md border border-input bg-input/30">
+      <div className="flex h-9 w-36 shrink-0 items-center overflow-hidden rounded-md border border-input bg-input/30">
         <StepButton
           isPressed={direction < 0}
           isDisabled={value === MIN_REPLICAS}

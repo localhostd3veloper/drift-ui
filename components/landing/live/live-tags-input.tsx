@@ -30,12 +30,15 @@ function tagsAtFrame(frame: number) {
   return { tags: BASE_TAGS, draft: "", isLastSelected: false }
 }
 
-export function LiveTagsInput() {
-  const frame = useDemoFrame({
+export function LiveTagsInput({
+  frame: frameOverride,
+}: { frame?: number } = {}) {
+  const clockFrame = useDemoFrame({
     frameMs: 230,
     frameCount: FRAME_COUNT,
     reducedMotionFrame: COMMITTED_AT,
   })
+  const frame = frameOverride ?? clockFrame
   const { tags, draft, isLastSelected } = tagsAtFrame(frame)
 
   return (

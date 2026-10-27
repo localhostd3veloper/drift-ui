@@ -1,5 +1,7 @@
 # drift-ui
 
+![drift-ui, the components shadcn left out](public/brand/exports/drift-ui-github-social-1280x640.png)
+
 A shadcn-compatible component registry built on React 19, Tailwind v4, and Radix. It covers the components shadcn/ui leaves out, like a tags input, stepper, tree view and file dropzone, and installs them with the shadcn CLI.
 
 ## Components

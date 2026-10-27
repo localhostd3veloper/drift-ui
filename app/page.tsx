@@ -7,6 +7,8 @@ import { InstallSection } from "@/components/landing/install-section"
 import { MoreComponentsSection } from "@/components/landing/more-components-section"
 import { SiteFooter } from "@/components/landing/site-footer"
 import { SiteNav } from "@/components/landing/site-nav"
+import { SmoothScroll } from "@/components/landing/smooth-scroll"
+import { StackStrip } from "@/components/landing/stack-strip"
 import { Statement } from "@/components/landing/statement"
 import { JsonLd } from "@/components/seo/json-ld"
 import { siteConfig } from "@/lib/site-config"
@@ -36,17 +38,20 @@ export default function LandingPage() {
     <div className="min-h-dvh bg-background text-foreground">
       <JsonLd schema={WEBSITE_SCHEMA} />
       <MotionProvider>
-        <SiteNav />
-        <main>
-          <Hero />
-          <Statement />
-          <ComponentIndex />
-          <MoreComponentsSection />
-          <BlocksSection />
-          <InstallSection />
-          <ClosingCta />
-        </main>
-        <SiteFooter />
+        <SmoothScroll>
+          <SiteNav />
+          <main>
+            <Hero />
+            <StackStrip />
+            <Statement />
+            <ComponentIndex />
+            <MoreComponentsSection />
+            <BlocksSection />
+            <InstallSection />
+            <ClosingCta />
+          </main>
+          <SiteFooter />
+        </SmoothScroll>
       </MotionProvider>
     </div>
   )

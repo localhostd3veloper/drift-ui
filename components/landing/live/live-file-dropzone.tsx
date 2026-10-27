@@ -32,12 +32,15 @@ function uploadAtFrame(frame: number) {
   return { file, isDragging: false, progress: 1, isDone: true }
 }
 
-export function LiveFileDropzone() {
-  const frame = useDemoFrame({
+export function LiveFileDropzone({
+  frame: frameOverride,
+}: { frame?: number } = {}) {
+  const clockFrame = useDemoFrame({
     frameMs: 110,
     frameCount: FRAMES_PER_FILE * FILES.length,
     reducedMotionFrame: FRAMES_PER_FILE - 1,
   })
+  const frame = frameOverride ?? clockFrame
   const { file, isDragging, progress, isDone } = uploadAtFrame(frame)
 
   return (
