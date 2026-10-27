@@ -63,7 +63,7 @@ export function ComponentNavList({
       </NavLink>
       {groups.map((group) => (
         <div key={group.id} className="flex flex-col gap-1">
-          <p className="px-3 pb-1 text-xs font-medium text-muted-foreground/80">
+          <p className="px-3 pb-1 text-xs font-medium text-muted-foreground">
             {group.label}
           </p>
           <ul className="flex flex-col gap-0.5">

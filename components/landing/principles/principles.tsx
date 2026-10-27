@@ -41,7 +41,7 @@ export function Principles() {
               "flex flex-col gap-2 border-l-2 pl-6 transition-colors duration-500",
               index === activeIndex
                 ? "border-brand"
-                : "border-border text-muted-foreground/60"
+                : "border-border text-muted-foreground"
             )}
           >
             <h3 className="text-2xl font-medium tracking-tight">

@@ -24,6 +24,7 @@ const COLUMNS = [
     title: "Project",
     links: [
       { href: siteConfig.repo, label: "GitHub" },
+      { href: "/contributors", label: "Contributors" },
       {
         href: `${siteConfig.repo}/issues/new/choose`,
         label: "Report an issue",

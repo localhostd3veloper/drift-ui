@@ -66,9 +66,17 @@ Use the component name as the scope when the change is limited to one component.
 
 ## Pull requests
 
-1. Branch from `main` in your fork, for example `feature/color-picker-eyedropper` or `fix/stepper-focus-ring`.
+1. Branch from `main` in your fork as `<type>/<issue>-<slug>`, for example `feat/14-avatar-group` or `fix/31-stepper-focus-ring`.
 2. Make sure `bun run typecheck`, `bun run lint` and `bun run test` pass.
 3. Open the pull request and fill in the template. Add a screenshot or a short recording for visual changes.
+
+## Working with coding agents
+
+[AGENTS.md](AGENTS.md) holds the issue-to-pull-request workflow for coding agents such as Claude Code, Codex, Cursor and Copilot. In Claude Code, run `/work-on-issue <number>`. Review agent output the same way you would review your own code before opening the pull request.
+
+## Contributors hall of fame
+
+When your pull request merges into `main`, the `Record contributor` workflow adds you to [`contributors.json`](contributors.json) with the components you touched, and you appear on [/contributors](https://drift-ui-dev.vercel.app/contributors). To show your name and website instead of your GitHub handle, open a pull request that sets `name` and `website` on your own entry. Leave the other fields to the workflow.
 
 ## Reporting bugs and requesting components
 
