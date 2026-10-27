@@ -10,14 +10,7 @@ import { StepperSpecimen } from "@/components/landing/specimens/stepper-specimen
 import { TagsInputSpecimen } from "@/components/landing/specimens/tags-input-specimen"
 import { TimelineSpecimen } from "@/components/landing/specimens/timeline-specimen"
 import { TreeViewSpecimen } from "@/components/landing/specimens/tree-view-specimen"
-
-export type BlockKind =
-  | "onboarding"
-  | "team-invite"
-  | "security"
-  | "file-manager"
-  | "release"
-  | "audit-log"
+import type { BlockKind } from "@/lib/blocks"
 
 const SESSIONS = [
   { device: "MacBook Pro, Lisbon", meta: "This device", Icon: LaptopIcon },

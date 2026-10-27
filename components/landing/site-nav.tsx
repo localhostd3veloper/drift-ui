@@ -7,7 +7,7 @@ import { ThemeToggle } from "@/components/landing/theme-toggle"
 
 const NAV_LINKS = [
   { href: "/components", label: "Components" },
-  { href: "/#blocks", label: "Blocks" },
+  { href: "/blocks", label: "Blocks" },
   { href: "/#install", label: "Install" },
   { href: "/r/registry.json", label: "Registry" },
 ]

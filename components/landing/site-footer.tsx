@@ -8,7 +8,7 @@ const COLUMNS = [
     title: "Registry",
     links: [
       { href: "/components", label: "Components" },
-      { href: "/#blocks", label: "Blocks" },
+      { href: "/blocks", label: "Blocks" },
       { href: "/#install", label: "Install" },
     ],
   },

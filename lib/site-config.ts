@@ -27,5 +27,5 @@ export const siteConfig = {
     "tree view",
     "file dropzone",
   ],
-  routes: ["/", "/components", "/contributors"],
+  routes: ["/", "/components", "/blocks", "/contributors"],
 } as const
