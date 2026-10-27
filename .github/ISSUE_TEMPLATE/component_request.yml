@@ -1,0 +1,30 @@
+name: Component request
+description: Propose a new component or a feature for an existing one.
+labels: ["enhancement"]
+body:
+  - type: input
+    id: component
+    attributes:
+      label: Component
+      description: The new component's name, or the existing one you want to extend.
+      placeholder: combobox
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: The screen or workflow where you need it, and why the current components do not cover it.
+    validations:
+      required: true
+  - type: textarea
+    id: api
+    attributes:
+      label: Proposed API
+      description: Props and a short usage example, if you have one in mind.
+      render: tsx
+  - type: textarea
+    id: prior-art
+    attributes:
+      label: Prior art
+      description: Links to similar components in other libraries or to the relevant WAI-ARIA pattern.

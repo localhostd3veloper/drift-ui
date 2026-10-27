@@ -1,0 +1,44 @@
+name: Bug report
+description: Something in a drift-ui component or the docs site does not work as expected.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting. Please check the open issues first in case this is already tracked.
+  - type: input
+    id: component
+    attributes:
+      label: Component
+      description: The registry item name, for example `tags-input`, or "docs site".
+      placeholder: tags-input
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected to see.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: The smallest set of steps or code that shows the problem. A CodeSandbox or StackBlitz link helps.
+      placeholder: |
+        1. Install with `npx shadcn add @drift-ui/tags-input`
+        2. Render `<TagsInput max={3} />`
+        3. Paste "a,b,c,d"
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      placeholder: Chrome 131, macOS 15
+  - type: textarea
+    id: versions
+    attributes:
+      label: Versions
+      description: React, Next.js, Tailwind and shadcn CLI versions, if relevant.
+      render: text
