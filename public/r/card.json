@@ -4,7 +4,7 @@
   "title": "Card",
   "description": "A container with header, content, and footer slots.",
   "registryDependencies": [
-    "@drift-ui/utils"
+    "utils"
   ],
   "files": [
     {

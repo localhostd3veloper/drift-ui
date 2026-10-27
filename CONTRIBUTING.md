@@ -33,7 +33,7 @@ The site runs at <http://localhost:3000>. Every registry item is served from <ht
 
 1. Write the source in `registry/default/ui/<name>.tsx`. Pure logic (parsing, math, state machines) goes in `registry/default/lib/<name>.ts` so it can be tested without rendering.
 2. Import helpers through `@/registry/default/...`. The docs site rewrites these paths to `@/components/ui/...` and `@/lib/...` when it shows the source to users.
-3. Add an item to `registry.json` with its npm `dependencies` and its `registryDependencies`. Use the `@drift-ui/` prefix for items from this registry.
+3. Add an item to `registry.json` with its npm `dependencies` and its `registryDependencies`. Depend on shadcn's built-in items by bare name (`utils`, `button`, `badge`, `input`, `label`, `popover`) so installing never overwrites a user's existing primitives. Use the `@drift-ui/` prefix only for items that exist nowhere else, such as `@drift-ui/use-controllable-state`.
 4. Add `components/preview/<name>-preview.tsx`. It is the live demo and the usage example on the docs page, so keep it short and realistic.
 5. Register the preview in `components/docs/preview-registry.tsx` and give it a category in `lib/catalog.ts`. The `/components/<name>` page is generated from those two entries.
 6. Add usage notes to `lib/agent-docs/component-usage.ts`. They feed `/llms.txt` and `/llms-full.txt`.

@@ -84,6 +84,6 @@ function toBuildsOn(dependency: string): BuildsOn {
 
 export function resolveBuildsOn(entry: CatalogEntry) {
   return entry.registryDependencies
-    .filter((dependency) => dependency !== `${NAMESPACE}utils`)
+    .filter((dependency) => dependency !== "utils")
     .map(toBuildsOn)
 }

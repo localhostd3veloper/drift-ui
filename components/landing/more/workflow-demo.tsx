@@ -94,7 +94,12 @@ export function WorkflowDemo({ kind }: { kind: WorkflowDemoKind }) {
     case "time":
       return (
         <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-          <TimeField aria-label="Start" defaultValue="09:30" minuteStep={15} />
+          <TimeField
+            aria-label="Start"
+            defaultValue="09:30"
+            minuteStep={15}
+            hourCycle={12}
+          />
           to
           <TimeField aria-label="End" defaultValue="17:45" hourCycle={12} />
         </div>

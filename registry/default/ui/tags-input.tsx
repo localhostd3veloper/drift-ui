@@ -61,9 +61,22 @@ function TagsInput({
     }
     if (accepted.length === 0) return false
 
-    updateTags([...tags, ...accepted])
-    setAnnouncement(`Added ${accepted.join(", ")}`)
+    const next = [...tags, ...accepted]
+    updateTags(next)
+    const limitNote =
+      max !== undefined && next.length >= max
+        ? `. Limit of ${max} reached, remove a tag to add more`
+        : ""
+    setAnnouncement(`Added ${accepted.join(", ")}${limitNote}`)
     return true
+  }
+
+  function selectTag(index: number | null) {
+    setActiveIndex(index)
+    if (index === null) return
+    setAnnouncement(
+      `${tags[index]} selected, ${index + 1} of ${tags.length}. Press Backspace to remove`
+    )
   }
 
   function removeTag(index: number) {
@@ -82,8 +95,8 @@ function TagsInput({
     onKeyDown?.(event)
     if (event.defaultPrevented) return
 
-    const isCaretAtStart =
-      event.currentTarget.selectionStart === 0 && draft === ""
+    const { selectionStart, selectionEnd } = event.currentTarget
+    const isCaretAtStart = selectionStart === 0 && selectionEnd === 0
     const lastIndex = tags.length - 1
 
     switch (event.key) {
@@ -95,7 +108,7 @@ function TagsInput({
       case "Backspace":
         if (!isCaretAtStart || tags.length === 0) return
         event.preventDefault()
-        if (activeIndex === null) setActiveIndex(lastIndex)
+        if (activeIndex === null) selectTag(lastIndex)
         else removeTag(activeIndex)
         return
       case "Delete":
@@ -106,14 +119,14 @@ function TagsInput({
       case "ArrowLeft":
         if (!isCaretAtStart || tags.length === 0) return
         event.preventDefault()
-        setActiveIndex(
+        selectTag(
           activeIndex === null ? lastIndex : Math.max(0, activeIndex - 1)
         )
         return
       case "ArrowRight":
         if (activeIndex === null) return
         event.preventDefault()
-        setActiveIndex(activeIndex >= lastIndex ? null : activeIndex + 1)
+        selectTag(activeIndex >= lastIndex ? null : activeIndex + 1)
         return
       case "Escape":
         setActiveIndex(null)
@@ -138,7 +151,7 @@ function TagsInput({
     >
       {tags.map((tag, index) => (
         <Badge
-          key={`${tag}-${index}`}
+          key={`${tag}-${tags.slice(0, index).filter((t) => t === tag).length}`}
           data-slot="tags-input-tag"
           data-active={activeIndex === index ? "" : undefined}
           variant="secondary"
@@ -165,7 +178,8 @@ function TagsInput({
         type="text"
         data-slot="tags-input-field"
         value={draft}
-        disabled={disabled || isFull}
+        disabled={disabled}
+        readOnly={isFull}
         placeholder={isFull ? undefined : placeholder}
         onChange={(event) => setDraft(event.target.value)}
         onKeyDown={handleKeyDown}

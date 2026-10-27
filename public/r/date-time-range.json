@@ -8,10 +8,10 @@
     "react-day-picker"
   ],
   "registryDependencies": [
-    "@drift-ui/utils",
-    "@drift-ui/button",
-    "@drift-ui/input",
-    "@drift-ui/label",
+    "utils",
+    "button",
+    "input",
+    "label",
     "calendar",
     "popover"
   ],

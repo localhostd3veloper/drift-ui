@@ -7,8 +7,8 @@
     "radix-ui"
   ],
   "registryDependencies": [
-    "@drift-ui/utils",
-    "@drift-ui/popover",
+    "utils",
+    "popover",
     "@drift-ui/use-controllable-state"
   ],
   "files": [

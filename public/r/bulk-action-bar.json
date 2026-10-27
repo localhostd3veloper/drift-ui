@@ -10,8 +10,8 @@
     "class-variance-authority"
   ],
   "registryDependencies": [
-    "@drift-ui/utils",
-    "@drift-ui/button"
+    "utils",
+    "button"
   ],
   "files": [
     {

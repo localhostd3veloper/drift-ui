@@ -8,9 +8,9 @@
     "lucide-react"
   ],
   "registryDependencies": [
-    "@drift-ui/utils",
-    "@drift-ui/button",
-    "@drift-ui/popover",
+    "utils",
+    "button",
+    "popover",
     "@drift-ui/use-controllable-state"
   ],
   "files": [

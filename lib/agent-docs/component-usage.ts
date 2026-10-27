@@ -28,7 +28,7 @@ export const COMPONENT_USAGE: Record<string, ComponentUsage> = {
   },
   "tags-input": {
     notes:
-      "Controlled with value/onValueChange or uncontrolled with defaultValue. Enter or comma adds a tag, Backspace on an empty field selects then removes the last tag, pasting splits on commas, tabs and newlines. Props: max, validate(tag) => boolean, allowDuplicates, addOnBlur. Spreads remaining props onto the inner input, so id, placeholder and aria-invalid work.",
+      "Controlled with value/onValueChange or uncontrolled with defaultValue. Enter or comma adds a tag, Backspace or ArrowLeft with the caret at the start selects a tag (announced to screen readers), a second Backspace removes it, pasting splits on commas, tabs and newlines. Props: max (the field turns read-only when full, so tags stay removable by keyboard), validate(tag) => boolean, allowDuplicates, addOnBlur. Spreads remaining props onto the inner input, so id, placeholder and aria-invalid work.",
     example: `import { Label } from "@/components/ui/label"
 import { TagsInput } from "@/components/ui/tags-input"
 

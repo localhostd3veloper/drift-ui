@@ -4,7 +4,7 @@
   "title": "Shortcut Recorder",
   "description": "Records a key combination and renders it with platform symbols.",
   "registryDependencies": [
-    "@drift-ui/utils",
+    "utils",
     "@drift-ui/use-controllable-state"
   ],
   "files": [

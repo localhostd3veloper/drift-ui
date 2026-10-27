@@ -99,7 +99,7 @@ export function MoreComponentsSection() {
       className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:py-28 md:px-10 md:py-36"
     >
       <SectionHeading
-        title="Eight more, and these ones work"
+        title="Eight more. Every demo is live."
         lead="Filters, tours, bulk actions and the inputs settings screens keep asking for. Every demo below is the real component, so go ahead and use it."
       />
       <div className="mt-14 grid gap-4 md:mt-20 md:grid-cols-6">

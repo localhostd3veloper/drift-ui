@@ -7,7 +7,7 @@
     "class-variance-authority"
   ],
   "registryDependencies": [
-    "@drift-ui/utils"
+    "utils"
   ],
   "files": [
     {

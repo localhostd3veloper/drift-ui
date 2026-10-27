@@ -4,7 +4,7 @@
   "title": "Input",
   "description": "A text input with focus and invalid states.",
   "registryDependencies": [
-    "@drift-ui/utils"
+    "utils"
   ],
   "files": [
     {

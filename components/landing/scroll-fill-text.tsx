@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { Fragment, useRef } from "react"
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react"
 
 const DIM_OPACITY = 0.22
@@ -16,14 +16,7 @@ function FillWord({
 }) {
   const opacity = useTransform(progress, range, [DIM_OPACITY, 1])
 
-  return (
-    <span className="relative inline-block">
-      <span className="opacity-0">{word}</span>
-      <motion.span style={{ opacity }} className="absolute inset-0">
-        {word}
-      </motion.span>
-    </span>
-  )
+  return <motion.span style={{ opacity }}>{word}</motion.span>
 }
 
 export function ScrollFillText({
@@ -42,17 +35,16 @@ export function ScrollFillText({
 
   return (
     <p ref={containerRef} className={className}>
-      <span className="sr-only">{text}</span>
-      <span aria-hidden className="flex flex-wrap gap-x-[0.25em]">
-        {words.map((word, index) => (
+      {words.map((word, index) => (
+        <Fragment key={`${word}-${index}`}>
+          {index > 0 && " "}
           <FillWord
-            key={`${word}-${index}`}
             word={word}
             progress={scrollYProgress}
             range={[index / words.length, (index + 1) / words.length]}
           />
-        ))}
-      </span>
+        </Fragment>
+      ))}
     </p>
   )
 }

@@ -4,7 +4,7 @@
   "title": "Time Field",
   "description": "Segmented hour, minute and AM/PM spinbuttons with typeahead.",
   "registryDependencies": [
-    "@drift-ui/utils",
+    "utils",
     "@drift-ui/use-controllable-state"
   ],
   "files": [

@@ -86,7 +86,7 @@ describe("TagsInput", () => {
     expect(input).toHaveValue("nope")
   })
 
-  it("disables the field once max tags are reached", async () => {
+  it("blocks adding once max tags are reached but keeps keyboard removal", async () => {
     const user = userEvent.setup()
     render(<TagsInput aria-label="Tags" max={2} />)
     const input = screen.getByLabelText("Tags")
@@ -94,7 +94,41 @@ describe("TagsInput", () => {
     await user.type(input, "a{Enter}b{Enter}")
 
     expect(tagTexts()).toEqual(["a", "b"])
-    expect(input).toBeDisabled()
+    expect(input).toBeEnabled()
+    expect(input).toHaveAttribute("readonly")
+    expect(input).toHaveFocus()
+    expect(screen.getByRole("status")).toHaveTextContent("Limit of 2 reached")
+
+    await user.keyboard("c{Enter}")
+    expect(tagTexts()).toEqual(["a", "b"])
+
+    await user.keyboard("{Backspace}{Backspace}")
+    expect(tagTexts()).toEqual(["a"])
+    expect(input).not.toHaveAttribute("readonly")
+  })
+
+  it("announces the selected tag", async () => {
+    const user = userEvent.setup()
+    render(<TagsInput aria-label="Tags" defaultValue={["design", "billing"]} />)
+
+    await user.click(screen.getByLabelText("Tags"))
+    await user.keyboard("{ArrowLeft}{ArrowLeft}")
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "design selected, 1 of 2. Press Backspace to remove"
+    )
+  })
+
+  it("moves into the tags with ArrowLeft when the caret is at the start of a draft", async () => {
+    const user = userEvent.setup()
+    render(<TagsInput aria-label="Tags" defaultValue={["a", "b"]} />)
+    const input = screen.getByLabelText("Tags")
+
+    await user.type(input, "draft{Home}")
+    await user.keyboard("{ArrowLeft}")
+
+    expect(document.querySelector("[data-active]")).toHaveTextContent("b")
+    expect(input).toHaveValue("draft")
   })
 
   it("reports changes and removes tags with the remove button", async () => {
