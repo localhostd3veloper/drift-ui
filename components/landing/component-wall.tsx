@@ -82,11 +82,11 @@ export function ComponentWall({ className }: { className?: string }) {
       inert
       className={cn(
         "pointer-events-none overflow-hidden select-none",
-        "[mask-image:radial-gradient(ellipse_60%_70%_at_76%_40%,black_30%,transparent_80%)]",
+        "[mask-image:radial-gradient(ellipse_55%_75%_at_72%_45%,black_20%,transparent_75%)]",
         className
       )}
     >
-      <div className="absolute top-[-30%] left-[46%] flex h-[180%] [transform:perspective(1800px)_rotateX(28deg)_rotateZ(-14deg)_skewX(8deg)] gap-6 opacity-55">
+      <div className="absolute top-[-30%] left-[46%] flex h-[180%] [transform:perspective(1800px)_rotateX(28deg)_rotateZ(-14deg)_skewX(8deg)] gap-6 opacity-30">
         {COLUMNS.map((column) => (
           <WallColumn
             key={column.kinds.join("-") + column.durationS}

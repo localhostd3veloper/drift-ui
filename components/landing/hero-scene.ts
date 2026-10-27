@@ -9,7 +9,6 @@ export type SceneState = {
   replicasFrame: number
   replicas: number
   dropFrame: number
-  timelineFrame: number
   deploy: DeployState
 }
 
@@ -18,8 +17,6 @@ const TAGS_COMMITTED_FRAME = 6
 const DROP_IDLE_FRAME = 63
 const DROP_DONE_FRAME = 24
 const DROP_UPLOAD_START = 4
-const TIMELINE_BEFORE = 5
-const TIMELINE_AFTER = 6
 const BASE_REPLICAS = 3
 
 export const SCENE_FRAME_MS = 300
@@ -33,7 +30,6 @@ const IDLE: SceneState = {
   replicasFrame: 0,
   replicas: BASE_REPLICAS,
   dropFrame: DROP_IDLE_FRAME,
-  timelineFrame: TIMELINE_BEFORE,
   deploy: "draft",
 }
 
@@ -70,6 +66,5 @@ export function sceneAt(frame: number): SceneState {
     focus: null,
     stepFrame: 4,
     deploy: "live",
-    timelineFrame: TIMELINE_AFTER,
   }
 }
