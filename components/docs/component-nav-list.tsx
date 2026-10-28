@@ -69,7 +69,7 @@ export function ComponentNavList({
   className?: string
 }) {
   return (
-    <div className={cn("flex flex-col gap-7", className)}>
+    <div className={cn("flex flex-col gap-8", className)}>
       <NavLink
         href="/components"
         isActive={activeSlug === null}
@@ -78,27 +78,40 @@ export function ComponentNavList({
       >
         All components
       </NavLink>
-      {groups.map((group) => (
-        <div key={group.id} className="flex flex-col gap-1">
-          <p className="px-3 pb-1 text-xs font-medium text-muted-foreground">
-            {group.label}
-          </p>
-          <ul className="flex flex-col gap-0.5">
-            {group.entries.map((entry) => (
-              <li key={entry.slug}>
-                <NavLink
-                  href={componentPath(entry.slug, library)}
-                  isActive={activeSlug === entry.slug}
-                  pillId={pillId}
-                  onNavigate={onNavigate}
-                >
-                  {entry.name}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+      {groups.map((group) => {
+        const labelId = `${pillId}-${group.id}`
+
+        return (
+          <div key={group.id} className="flex flex-col gap-2.5">
+            <p
+              id={labelId}
+              className="flex items-baseline justify-between px-3 font-mono text-[11px] tracking-widest text-foreground uppercase"
+            >
+              {group.label}
+              <span aria-hidden className="text-muted-foreground tabular-nums">
+                {group.entries.length}
+              </span>
+            </p>
+            <ul
+              aria-labelledby={labelId}
+              className="ml-3 flex flex-col gap-0.5 border-l border-border pl-2"
+            >
+              {group.entries.map((entry) => (
+                <li key={entry.slug}>
+                  <NavLink
+                    href={componentPath(entry.slug, library)}
+                    isActive={activeSlug === entry.slug}
+                    pillId={pillId}
+                    onNavigate={onNavigate}
+                  >
+                    {entry.name}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      })}
     </div>
   )
 }
