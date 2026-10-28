@@ -9,6 +9,7 @@
       "date-time-range",
       "file-dropzone",
       "filter-chip",
+      "multi-select",
       "tour-spotlight"
     ],
     "pullRequests": [
@@ -16,6 +17,11 @@
         "number": 23,
         "title": "feat(registry): support Base UI as an alternative to Radix primitives",
         "mergedAt": "2026-10-28T03:43:00Z"
+      },
+      {
+        "number": 24,
+        "title": "feat(multi-select): add multi-select component",
+        "mergedAt": "2026-10-28T15:27:57Z"
       }
     ]
   },
