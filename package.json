@@ -9,12 +9,13 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit",
-    "registry:build": "shadcn build",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.base-ui.json",
+    "registry:build": "shadcn build && bun scripts/build-base-ui-registry.ts && shadcn build registry.base.json --output public/r/base",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@base-ui/react": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lenis": "^1.3.27",

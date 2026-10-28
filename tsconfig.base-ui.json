@@ -1,0 +1,26 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/registry/default/ui/*": [
+        "./registry/base/ui/*",
+        "./registry/default/ui/*"
+      ],
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["registry/**/*.ts", "registry/**/*.tsx"],
+  "exclude": [
+    "registry/default/ui/badge.tsx",
+    "registry/default/ui/bulk-action-bar.tsx",
+    "registry/default/ui/button.tsx",
+    "registry/default/ui/color-picker-controls.tsx",
+    "registry/default/ui/dialog.tsx",
+    "registry/default/ui/filter-menu.tsx",
+    "registry/default/ui/label.tsx",
+    "registry/default/ui/mention-textarea.tsx",
+    "registry/default/ui/popover.tsx",
+    "registry/default/ui/stepper.tsx",
+    "registry/default/ui/tour.tsx"
+  ]
+}

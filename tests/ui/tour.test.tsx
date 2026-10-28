@@ -51,7 +51,9 @@ describe("Tour", () => {
 
     const dialog = screen.getByRole("dialog", { name: "Search everything" })
     expect(dialog).toHaveTextContent("1 of 2")
-    expect(screen.getByRole("button", { name: "Next" })).toHaveFocus()
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Next" })).toHaveFocus()
+    )
 
     await user.click(screen.getByRole("button", { name: "Next" }))
     expect(
@@ -76,6 +78,9 @@ describe("Tour", () => {
       />
     )
 
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Next" })).toHaveFocus()
+    )
     await user.keyboard("{ArrowRight}")
     expect(onStepChange).toHaveBeenLastCalledWith(1)
     await user.keyboard("{ArrowLeft}")
@@ -103,7 +108,9 @@ describe("Tour", () => {
     const startButton = screen.getByRole("button", { name: "Start tour" })
 
     await user.click(startButton)
-    expect(screen.getByRole("button", { name: "Next" })).toHaveFocus()
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Next" })).toHaveFocus()
+    )
 
     await user.keyboard("{Escape}")
     expect(screen.queryByRole("dialog")).toBeNull()
