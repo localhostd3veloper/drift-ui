@@ -289,6 +289,42 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       rest: "<div>",
     },
   ],
+  "recurrence-editor": [
+    {
+      name: "RecurrenceEditor",
+      description:
+        "Edits an RFC 5545 RRULE: interval and frequency, weekdays for weekly rules, day of the month or ordinal weekday for monthly rules, and an end that is never, a date or a count. Shows a plain-language summary and, optionally, the next occurrences.",
+      props: [
+        STATE_PROPS.value("string", 'RRULE, such as "FREQ=WEEKLY;BYDAY=TU"'),
+        STATE_PROPS.defaultValue("string", '"FREQ=WEEKLY"'),
+        STATE_PROPS.onValueChange(
+          "(rule: string) => void",
+          "with the new RRULE"
+        ),
+        {
+          name: "start",
+          type: "Date",
+          default: "today",
+          description:
+            "First occurrence. Sets the default weekday, month day and time, and where the preview starts.",
+        },
+        {
+          name: "showPreview",
+          type: "number",
+          default: "0",
+          description: "How many upcoming occurrences to list.",
+        },
+      ],
+      rest: "<fieldset>",
+    },
+    {
+      name: "parseRRule, formatRRule, describeRecurrence, occurrences",
+      signature:
+        "parseRRule(rule: string): Recurrence; formatRRule(recurrence: Recurrence): string; describeRecurrence(recurrence: Recurrence, start: Date): string; occurrences(recurrence: Recurrence, start: Date, limit: number): Date[]",
+      description:
+        "Import from @/lib/recurrence to read, write, summarize or expand a rule outside the editor.",
+    },
+  ],
   "color-picker": [
     {
       name: "ColorPicker",
