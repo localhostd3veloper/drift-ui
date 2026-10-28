@@ -19,6 +19,7 @@
     "registry/default/ui/filter-menu.tsx",
     "registry/default/ui/label.tsx",
     "registry/default/ui/mention-textarea.tsx",
+    "registry/default/ui/multi-select.tsx",
     "registry/default/ui/popover.tsx",
     "registry/default/ui/stepper.tsx",
     "registry/default/ui/tour.tsx"

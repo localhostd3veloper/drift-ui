@@ -74,6 +74,62 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       rest: "<input>",
     },
   ],
+  "multi-select": [
+    {
+      name: "MultiSelect",
+      description:
+        "A combobox whose listbox allows several selections. Typing filters, ArrowUp and ArrowDown move through the list, Enter toggles the highlighted option and Escape closes it. Backspace at the start of the field selects the last chip and a second Backspace removes it. A Select all option toggles every matching option when there is no maxSelected.",
+      props: [
+        {
+          name: "options",
+          type: "MultiSelectOption[]",
+          required: true,
+          description: "The values to choose from.",
+        },
+        STATE_PROPS.value("string[]", "list of selected values"),
+        STATE_PROPS.defaultValue("string[]", "[]"),
+        STATE_PROPS.onValueChange(
+          "(value: string[]) => void",
+          "after an option is selected or removed"
+        ),
+        {
+          name: "maxSelected",
+          type: "number",
+          description:
+            "Most values allowed. Unselected options are disabled once it is reached.",
+        },
+        {
+          name: "maxVisibleChips",
+          type: "number",
+          description: "Chips shown before the rest collapse into a +N count.",
+        },
+      ],
+      rest: "<input>",
+    },
+    {
+      name: "MultiSelectOption",
+      description: "One choice.",
+      props: [
+        {
+          name: "value",
+          type: "string",
+          required: true,
+          description: "Stored in the value array.",
+        },
+        {
+          name: "label",
+          type: "string",
+          required: true,
+          description: "Text shown in the list and on the chip.",
+        },
+        {
+          name: "group",
+          type: "string",
+          description: "Heading the option is listed under.",
+        },
+      ],
+    },
+  ],
   "number-input": [
     {
       name: "NumberInput",
