@@ -14,10 +14,10 @@ export type HighlightedFile = { title: string; code: string; html: string }
 export type BuildsOn = { label: string; href?: string }
 
 const IMPORT_REWRITES: [RegExp, string][] = [
-  [/@\/registry\/default\/lib\/utils/g, "@/lib/utils"],
-  [/@\/registry\/default\/ui\//g, "@/components/ui/"],
-  [/@\/registry\/default\/lib\//g, "@/lib/"],
-  [/@\/registry\/default\/hooks\//g, "@/hooks/"],
+  [/@\/registry\/[^/]+\/lib\/utils/g, "@/lib/utils"],
+  [/@\/registry\/[^/]+\/ui\//g, "@/components/ui/"],
+  [/@\/registry\/[^/]+\/lib\//g, "@/lib/"],
+  [/@\/registry\/[^/]+\/hooks\//g, "@/hooks/"],
 ]
 
 const NAMESPACE = "@drift-ui/"

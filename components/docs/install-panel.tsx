@@ -5,12 +5,14 @@ import Link from "next/link"
 import { Tabs as TabsPrimitive } from "radix-ui"
 
 import { CopyCommand } from "@/components/landing/copy-command"
+import { LibrarySwitch } from "@/components/docs/library-switch"
 import { ManualSteps } from "@/components/docs/manual-steps"
 import { SegmentedControl } from "@/components/docs/segmented-control"
 import { TabsRail } from "@/components/docs/tabs-rail"
 import { usePackageManager } from "@/hooks/use-package-manager"
 import type { BuildsOn } from "@/lib/component-docs"
 import { PACKAGE_MANAGERS, shadcnAddCommand } from "@/lib/package-manager"
+import type { PrimitiveLibrary } from "@/lib/primitive-library"
 
 const METHODS = [
   { value: "cli", label: "CLI" },
@@ -24,11 +26,15 @@ const PACKAGE_MANAGER_ITEMS = PACKAGE_MANAGERS.map((value) => ({
 
 export function InstallPanel({
   slug,
+  library,
+  registryUrl,
   dependencies,
   buildsOn,
   installPaths,
 }: {
   slug: string
+  library: PrimitiveLibrary
+  registryUrl: string
   dependencies: string[]
   buildsOn: BuildsOn[]
   installPaths: string[]
@@ -44,13 +50,16 @@ export function InstallPanel({
     >
       <div className="flex flex-wrap items-center justify-between gap-2 border-b p-1.5">
         <TabsRail items={METHODS} value={method} label="Install method" />
-        <SegmentedControl
-          items={PACKAGE_MANAGER_ITEMS}
-          value={packageManager}
-          onValueChange={setPackageManager}
-          label="Package manager"
-          className="overflow-x-auto font-mono [&>*]:text-xs"
-        />
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <LibrarySwitch library={library} />
+          <SegmentedControl
+            items={PACKAGE_MANAGER_ITEMS}
+            value={packageManager}
+            onValueChange={setPackageManager}
+            label="Package manager"
+            className="overflow-x-auto font-mono [&>*]:text-xs"
+          />
+        </div>
       </div>
       <TabsPrimitive.Content value="cli" className="p-5 outline-none">
         <CopyCommand
@@ -59,7 +68,11 @@ export function InstallPanel({
         />
         <p className="mt-4 text-sm text-muted-foreground">
           The CLI also installs the npm packages and registry items it builds
-          on. Register the namespace once first, as shown in{" "}
+          on. Register the namespace once first with{" "}
+          <code className="font-mono text-xs break-all text-foreground">
+            {registryUrl}
+          </code>
+          , as shown in{" "}
           <Link
             href="/#install"
             className="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
