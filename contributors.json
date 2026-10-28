@@ -10,6 +10,7 @@
       "file-dropzone",
       "filter-chip",
       "multi-select",
+      "recurrence-editor",
       "tour-spotlight"
     ],
     "pullRequests": [
@@ -22,6 +23,11 @@
         "number": 24,
         "title": "feat(multi-select): add multi-select component",
         "mergedAt": "2026-10-28T15:27:57Z"
+      },
+      {
+        "number": 25,
+        "title": "feat(recurrence-editor): add recurrence editor component",
+        "mergedAt": "2026-10-28T15:29:22Z"
       }
     ]
   },
