@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs"
 import { readFile } from "node:fs/promises"
 import path from "node:path"
 
@@ -8,6 +9,7 @@ import {
   type RegistryFile,
 } from "@/lib/catalog"
 import { highlight } from "@/lib/highlight"
+import { componentPath, type PrimitiveLibrary } from "@/lib/primitive-library"
 
 export type HighlightedFile = { title: string; code: string; html: string }
 
@@ -45,14 +47,21 @@ function installPath(file: RegistryFile) {
   }
 }
 
+function previewPath(slug: string, library: PrimitiveLibrary) {
+  const basePreviewPath = `components/preview/base/${slug}-preview.tsx`
+  if (library === "base" && existsSync(basePreviewPath)) return basePreviewPath
+  return `components/preview/${slug}-preview.tsx`
+}
+
 async function toHighlightedFile(title: string, code: string) {
   return { title, code, html: await highlight(code) }
 }
 
-export async function loadUsage(entry: CatalogEntry) {
-  const source = await readProjectFile(
-    `components/preview/${entry.slug}-preview.tsx`
-  )
+export async function loadUsage(
+  entry: CatalogEntry,
+  library: PrimitiveLibrary
+) {
+  const source = await readProjectFile(previewPath(entry.slug, library))
   const code = source.replace(/(\w+)Preview\b/g, "$1Demo")
 
   return toHighlightedFile(`${entry.slug}-demo.tsx`, code)
@@ -70,20 +79,24 @@ export function listInstallPaths(entry: CatalogEntry) {
   return entry.files.map(installPath)
 }
 
-function toBuildsOn(dependency: string): BuildsOn {
+function toBuildsOn(dependency: string, library: PrimitiveLibrary): BuildsOn {
   if (!dependency.startsWith(NAMESPACE)) {
     return { label: `shadcn/ui ${dependency}` }
   }
 
   const name = dependency.slice(NAMESPACE.length)
   const entry = findEntry(name)
-  if (entry) return { label: entry.name, href: `/components/${entry.slug}` }
+  if (entry)
+    return { label: entry.name, href: componentPath(entry.slug, library) }
 
   return { label: findRegistryTitle(name) ?? name }
 }
 
-export function resolveBuildsOn(entry: CatalogEntry) {
+export function resolveBuildsOn(
+  entry: CatalogEntry,
+  library: PrimitiveLibrary
+) {
   return entry.registryDependencies
     .filter((dependency) => dependency !== "utils")
-    .map(toBuildsOn)
+    .map((dependency) => toBuildsOn(dependency, library))
 }

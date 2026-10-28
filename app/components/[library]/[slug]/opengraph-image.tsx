@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og"
 
 import { OG_COLORS, OgLogoMark } from "@/components/seo/og-logo-mark"
 import { CATALOG, findCategory, findEntry } from "@/lib/catalog"
+import { PRIMITIVE_LIBRARIES } from "@/lib/primitive-library"
 import { siteConfig } from "@/lib/site-config"
 
 export const alt = `A ${siteConfig.name} component`
@@ -9,7 +10,9 @@ export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
 export function generateStaticParams() {
-  return CATALOG.map((entry) => ({ slug: entry.slug }))
+  return PRIMITIVE_LIBRARIES.flatMap(({ value }) =>
+    CATALOG.map((entry) => ({ library: value, slug: entry.slug }))
+  )
 }
 
 export default async function ComponentOpenGraphImage({

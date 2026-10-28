@@ -1,12 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { useSelectedLayoutSegment } from "next/navigation"
 import { ChevronDownIcon } from "lucide-react"
 
 import { cn } from "@/registry/default/lib/utils"
 import {
   ComponentNavList,
+  useActiveComponent,
   type NavGroup,
 } from "@/components/docs/component-nav-list"
 
@@ -18,7 +18,7 @@ export function DocsMobileNav({
   className?: string
 }) {
   const [isOpen, setIsOpen] = useState(false)
-  const activeSlug = useSelectedLayoutSegment()
+  const { library, activeSlug } = useActiveComponent()
   const activeName = groups
     .flatMap((group) => group.entries)
     .find((entry) => entry.slug === activeSlug)?.name
@@ -65,6 +65,7 @@ export function DocsMobileNav({
         <ComponentNavList
           groups={groups}
           activeSlug={activeSlug}
+          library={library}
           pillId="mobile-active"
           onNavigate={() => setIsOpen(false)}
         />

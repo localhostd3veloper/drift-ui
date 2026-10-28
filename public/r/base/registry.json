@@ -160,7 +160,7 @@
       "name": "dialog",
       "type": "registry:ui",
       "title": "Dialog",
-      "description": "A modal window built on Radix Dialog.",
+      "description": "A modal window that traps focus and closes on Escape.",
       "dependencies": [
         "@base-ui/react",
         "lucide-react"
@@ -216,7 +216,7 @@
       "name": "stepper",
       "type": "registry:ui",
       "title": "Stepper",
-      "description": "Multi-step flows built on Radix Tabs, linear or free.",
+      "description": "Multi-step flows with linear or free navigation.",
       "dependencies": [
         "@base-ui/react",
         "lucide-react"
@@ -345,7 +345,7 @@
       "name": "popover",
       "type": "registry:ui",
       "title": "Popover",
-      "description": "Floating content anchored to a trigger, built on Radix Popover.",
+      "description": "Floating content anchored to a trigger.",
       "dependencies": [
         "@base-ui/react"
       ],

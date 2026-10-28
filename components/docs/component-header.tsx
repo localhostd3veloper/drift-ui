@@ -1,9 +1,20 @@
 import Link from "next/link"
 import { ArrowUpRightIcon, ChevronRightIcon } from "lucide-react"
 
+import { LibraryTabs } from "@/components/docs/library-tabs"
 import { findCategory, type CatalogEntry } from "@/lib/catalog"
+import {
+  registryItemPath,
+  type PrimitiveLibrary,
+} from "@/lib/primitive-library"
 
-export function ComponentHeader({ entry }: { entry: CatalogEntry }) {
+export function ComponentHeader({
+  entry,
+  library,
+}: {
+  entry: CatalogEntry
+  library: PrimitiveLibrary
+}) {
   const category = findCategory(entry.category)
 
   return (
@@ -31,13 +42,14 @@ export function ComponentHeader({ entry }: { entry: CatalogEntry }) {
         <code className="text-foreground">@drift-ui/{entry.slug}</code>
         {entry.category === "primitives" && <span>Same API as shadcn/ui</span>}
         <a
-          href={`/r/${entry.slug}.json`}
+          href={registryItemPath(entry.slug, library)}
           className="flex items-center gap-1 transition-colors hover:text-foreground"
         >
           Registry JSON
           <ArrowUpRightIcon className="size-3" />
         </a>
       </div>
+      <LibraryTabs slug={entry.slug} library={library} />
     </header>
   )
 }

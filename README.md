@@ -24,20 +24,12 @@ In a project that already ran `npx shadcn init`, register the namespace in `comp
 ```json
 {
   "registries": {
-    "@drift-ui": "https://drift-ui-dev.vercel.app/r/{name}.json"
+    "@drift-ui": "https://drift-ui-dev.vercel.app/r/{style}/{name}.json"
   }
 }
 ```
 
-If your project uses one of shadcn's Base UI styles (the `style` in `components.json` starts with `base-`), point the namespace at the Base UI build instead. The install commands stay the same, and nothing pulls in `radix-ui`.
-
-```json
-{
-  "registries": {
-    "@drift-ui": "https://drift-ui-dev.vercel.app/r/base/{name}.json"
-  }
-}
-```
+The shadcn CLI fills in `{style}` from your `components.json`. A `base-` style such as `base-nova` gets the Base UI build, which never installs `radix-ui`, and any other style gets Radix. Namespaces registered with the older `/r/{name}.json` URL keep getting Radix.
 
 Then install the theme and any component:
 

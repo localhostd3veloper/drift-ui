@@ -1,17 +1,17 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { useSelectedLayoutSegment } from "next/navigation"
 
 import {
   ComponentNavList,
+  useActiveComponent,
   type NavGroup,
 } from "@/components/docs/component-nav-list"
 
 const EDGE_FADE_PX = 64
 
 export function DocsSidebar({ groups }: { groups: NavGroup[] }) {
-  const activeSlug = useSelectedLayoutSegment()
+  const { library, activeSlug } = useActiveComponent()
   const navRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -39,6 +39,7 @@ export function DocsSidebar({ groups }: { groups: NavGroup[] }) {
       <ComponentNavList
         groups={groups}
         activeSlug={activeSlug}
+        library={library}
         pillId="sidebar-active"
       />
     </nav>

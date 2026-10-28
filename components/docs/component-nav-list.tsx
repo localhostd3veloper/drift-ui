@@ -1,12 +1,27 @@
 import Link from "next/link"
+import { useSelectedLayoutSegments } from "next/navigation"
 
 import { cn } from "@/registry/default/lib/utils"
 import { ActivePill } from "@/components/docs/active-pill"
+import {
+  componentPath,
+  isPrimitiveLibrary,
+  type PrimitiveLibrary,
+} from "@/lib/primitive-library"
 
 export type NavGroup = {
   id: string
   label: string
   entries: { slug: string; name: string }[]
+}
+
+export function useActiveComponent() {
+  const [library, slug] = useSelectedLayoutSegments()
+
+  return {
+    library: isPrimitiveLibrary(library) ? library : undefined,
+    activeSlug: slug ?? null,
+  }
 }
 
 function NavLink({
@@ -41,12 +56,14 @@ function NavLink({
 export function ComponentNavList({
   groups,
   activeSlug,
+  library,
   pillId,
   onNavigate,
   className,
 }: {
   groups: NavGroup[]
   activeSlug: string | null
+  library?: PrimitiveLibrary
   pillId: string
   onNavigate?: () => void
   className?: string
@@ -70,7 +87,7 @@ export function ComponentNavList({
             {group.entries.map((entry) => (
               <li key={entry.slug}>
                 <NavLink
-                  href={`/components/${entry.slug}`}
+                  href={componentPath(entry.slug, library)}
                   isActive={activeSlug === entry.slug}
                   pillId={pillId}
                   onNavigate={onNavigate}

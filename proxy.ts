@@ -1,25 +1,28 @@
 import { NextResponse, type NextRequest } from "next/server"
 
-import { PRIMITIVE_LIBRARY_COOKIE } from "@/lib/primitive-library"
-
-const BASE_UI_SUFFIX = "/base"
+import {
+  componentPath,
+  DEFAULT_PRIMITIVE_LIBRARY,
+  isPrimitiveLibrary,
+  PRIMITIVE_LIBRARY_COOKIE,
+} from "@/lib/primitive-library"
 
 export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl
-
-  if (pathname.endsWith(BASE_UI_SUFFIX)) {
-    return NextResponse.redirect(
-      new URL(pathname.slice(0, -BASE_UI_SUFFIX.length), request.url)
-    )
+  const slug = request.nextUrl.pathname.split("/")[2]
+  if (isPrimitiveLibrary(slug)) {
+    return NextResponse.redirect(new URL("/components", request.url))
   }
 
-  if (request.cookies.get(PRIMITIVE_LIBRARY_COOKIE)?.value === "base") {
-    return NextResponse.rewrite(
-      new URL(`${pathname}${BASE_UI_SUFFIX}`, request.url)
-    )
-  }
+  const preferred = request.cookies.get(PRIMITIVE_LIBRARY_COOKIE)?.value
+  const library = isPrimitiveLibrary(preferred)
+    ? preferred
+    : DEFAULT_PRIMITIVE_LIBRARY
+
+  return NextResponse.redirect(
+    new URL(componentPath(slug, library), request.url)
+  )
 }
 
 export const config = {
-  matcher: ["/components/:slug", "/components/:slug/base"],
+  matcher: "/components/:slug",
 }

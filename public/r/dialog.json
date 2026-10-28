@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "dialog",
   "title": "Dialog",
-  "description": "A modal window built on Radix Dialog.",
+  "description": "A modal window that traps focus and closes on Escape.",
   "dependencies": [
     "radix-ui",
     "lucide-react"

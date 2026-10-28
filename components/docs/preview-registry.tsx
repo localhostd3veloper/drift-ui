@@ -1,5 +1,7 @@
 import type { ComponentType } from "react"
 
+import { DialogPreview as BaseUiDialogPreview } from "@/components/preview/base/dialog-preview"
+import { PopoverPreview as BaseUiPopoverPreview } from "@/components/preview/base/popover-preview"
 import { BadgePreview } from "@/components/preview/badge-preview"
 import { BulkActionBarPreview } from "@/components/preview/bulk-action-bar-preview"
 import { ButtonPreview } from "@/components/preview/button-preview"
@@ -48,4 +50,9 @@ export const PREVIEWS: Record<string, ComponentType> = {
   timeline: TimelinePreview,
   tour: TourPreview,
   "tree-view": TreeViewPreview,
+}
+
+export const BASE_UI_PREVIEWS: Record<string, ComponentType> = {
+  dialog: BaseUiDialogPreview,
+  popover: BaseUiPopoverPreview,
 }
