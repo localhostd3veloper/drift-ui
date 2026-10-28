@@ -40,7 +40,14 @@ export function CopyCommand({
       )}
     >
       <span className="text-muted-foreground/60">$</span>
-      <span className="min-w-0 break-words text-foreground">{command}</span>
+      <span className="min-w-0 text-foreground">
+        {command.split(" ").map((word, index) => (
+          <React.Fragment key={index}>
+            {index > 0 && " "}
+            <span className="whitespace-nowrap">{word}</span>
+          </React.Fragment>
+        ))}
+      </span>
       <span className="ml-auto flex size-4 items-center justify-center">
         {hasCopied ? (
           <CheckIcon className="size-3.5 text-emerald-400" />

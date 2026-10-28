@@ -4,7 +4,10 @@ import { notFound } from "next/navigation"
 import { ComponentHeader } from "@/components/docs/component-header"
 import { DocSection } from "@/components/docs/doc-section"
 import { InstallPanel } from "@/components/docs/install-panel"
-import { OnThisPage } from "@/components/docs/on-this-page"
+import {
+  OnThisPage,
+  OnThisPageDisclosure,
+} from "@/components/docs/on-this-page"
 import { Pager } from "@/components/docs/pager"
 import { PreviewStage } from "@/components/docs/preview-stage"
 import { PreviewTabs } from "@/components/docs/preview-tabs"
@@ -141,6 +144,7 @@ export default async function ComponentPage({ params }: ComponentPageProps) {
             usage={usage}
           />
         </div>
+        <OnThisPageDisclosure sections={sections} className="-mt-8 xl:hidden" />
         <DocSection id="installation" title="Installation">
           <InstallPanel
             slug={entry.slug}

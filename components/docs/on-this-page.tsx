@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ArrowUpRightIcon } from "lucide-react"
+import { ArrowUpRightIcon, ChevronDownIcon } from "lucide-react"
 import { motion } from "motion/react"
 
 import { cn } from "@/registry/default/lib/utils"
@@ -87,5 +87,34 @@ export function OnThisPage({
         <ArrowUpRightIcon className="size-3" />
       </a>
     </div>
+  )
+}
+
+export function OnThisPageDisclosure({
+  sections,
+  className,
+}: {
+  sections: PageSection[]
+  className?: string
+}) {
+  return (
+    <details className={cn("group rounded-xl border", className)}>
+      <summary className="flex h-11 cursor-pointer list-none items-center justify-between px-4 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 [&::-webkit-details-marker]:hidden">
+        On this page
+        <ChevronDownIcon className="size-4 text-muted-foreground transition-transform duration-300 group-open:rotate-180" />
+      </summary>
+      <ul className="flex flex-col border-t px-4 py-2">
+        {sections.map((section) => (
+          <li key={section.id}>
+            <a
+              href={`#${section.id}`}
+              className="block py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {section.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </details>
   )
 }
