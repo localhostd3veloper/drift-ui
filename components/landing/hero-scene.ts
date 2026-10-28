@@ -41,7 +41,10 @@ function configured(frame: number): SceneState {
   const typed = { ...IDLE, tagsFrame: TAGS_COMMITTED_FRAME }
   if (frame < 11) return typed
   if (frame < 15)
-    return withReplicas({ ...typed, focus: "replicas" }, Math.min(frame - 11, 2))
+    return withReplicas(
+      { ...typed, focus: "replicas" },
+      Math.min(frame - 11, 2)
+    )
   const uploading = withReplicas({ ...typed, focus: "artifacts" }, 2)
   if (frame < 17) return { ...uploading, dropFrame: (frame - 15) * 2 }
   if (frame < 25)
