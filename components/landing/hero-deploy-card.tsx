@@ -15,6 +15,8 @@ import { LiveStepper } from "@/components/landing/live/live-stepper"
 import { LiveTagsInput } from "@/components/landing/live/live-tags-input"
 import { DateRangeSpecimen } from "@/components/landing/specimens/date-range-specimen"
 
+const HERO_TAGS = ["eu-west-1"]
+
 function FocusField({
   label,
   isFocused,
@@ -119,7 +121,7 @@ export function DeployCard({ scene }: { scene: SceneState }) {
       <div className="grid gap-6 px-5 py-6 md:grid-cols-2 md:px-6">
         <div className="flex flex-col gap-6">
           <FocusField label="Environments" isFocused={isFocused("tags")}>
-            <LiveTagsInput frame={scene.tagsFrame} />
+            <LiveTagsInput frame={scene.tagsFrame} baseTags={HERO_TAGS} />
           </FocusField>
           <FocusField isFocused={isFocused("replicas")}>
             <LiveNumberInput frame={scene.replicasFrame} />

@@ -114,6 +114,7 @@
   --animate-wall-down: wall-down 70s linear infinite;
   --animate-drift: drift 22s ease-in-out infinite alternate;
   --animate-marquee: marquee 40s linear infinite;
+  --animate-type-caret: type-caret 1.1s step-end infinite;
 }
 
 @keyframes drift {
@@ -143,6 +144,12 @@
 @keyframes marquee {
   to {
     transform: translate3d(calc(-100% / var(--marquee-copies, 2)), 0, 0);
+  }
+}
+
+@keyframes type-caret {
+  50% {
+    opacity: 0;
   }
 }
 
