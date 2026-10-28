@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
@@ -27,6 +27,11 @@ function chipTexts() {
 async function openAddMenu(user: ReturnType<typeof userEvent.setup>) {
   screen.getByRole("button", { name: "Add filter" }).focus()
   await user.keyboard("{Enter}")
+  await waitFor(() =>
+    expect(screen.getByRole("menu")).toContainElement(
+      document.activeElement as HTMLElement
+    )
+  )
 }
 
 describe("FilterBuilder", () => {
@@ -38,6 +43,7 @@ describe("FilterBuilder", () => {
     await openAddMenu(user)
     await user.keyboard("{Enter}")
     expect(screen.getByRole("menuitem", { name: "Open" })).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByRole("menu")).toHaveFocus())
     await user.keyboard("{ArrowDown}{Enter}")
 
     expect(chipTexts()).toEqual(["StatusisOpen"])

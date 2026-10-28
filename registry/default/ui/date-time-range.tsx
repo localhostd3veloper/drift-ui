@@ -5,7 +5,7 @@ import { CalendarIcon } from "lucide-react"
 import type { DateRange } from "react-day-picker"
 
 import { cn } from "@/registry/default/lib/utils"
-import { Button } from "@/registry/default/ui/button"
+import { Button, buttonVariants } from "@/registry/default/ui/button"
 import { Calendar } from "@/registry/default/ui/calendar"
 import { Input } from "@/registry/default/ui/input"
 import { Label } from "@/registry/default/ui/label"
@@ -89,21 +89,19 @@ function DateTimeRangePicker({
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          id={id}
-          variant="outline"
-          disabled={disabled}
-          data-slot="date-time-range"
-          data-empty={label ? undefined : ""}
-          className={cn(
-            "w-full max-w-sm justify-start font-normal data-[empty]:text-muted-foreground",
-            className
-          )}
-        >
-          <CalendarIcon />
-          <span className="truncate">{label ?? placeholder}</span>
-        </Button>
+      <PopoverTrigger
+        id={id}
+        disabled={disabled}
+        data-slot="date-time-range"
+        data-empty={label ? undefined : ""}
+        className={cn(
+          buttonVariants({ variant: "outline" }),
+          "w-full max-w-sm justify-start font-normal data-[empty]:text-muted-foreground",
+          className
+        )}
+      >
+        <CalendarIcon />
+        <span className="truncate">{label ?? placeholder}</span>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-auto p-0">
         <Calendar

@@ -2,7 +2,7 @@
 
 ![drift-ui, the components shadcn left out](public/brand/exports/drift-ui-github-social-1280x640.png)
 
-A shadcn-compatible component registry built on React 19, Tailwind v4, and Radix. It covers the components shadcn/ui leaves out, like a tags input, stepper, tree view and file dropzone, and installs them with the shadcn CLI.
+A shadcn-compatible component registry built on React 19, Tailwind v4, and Radix or Base UI. It covers the components shadcn/ui leaves out, like a tags input, stepper, tree view and file dropzone, and installs them with the shadcn CLI.
 
 Browse the live previews at [drift-ui-dev.vercel.app](https://drift-ui-dev.vercel.app).
 
@@ -25,6 +25,16 @@ In a project that already ran `npx shadcn init`, register the namespace in `comp
 {
   "registries": {
     "@drift-ui": "https://drift-ui-dev.vercel.app/r/{name}.json"
+  }
+}
+```
+
+If your project uses one of shadcn's Base UI styles (the `style` in `components.json` starts with `base-`), point the namespace at the Base UI build instead. The install commands stay the same, and nothing pulls in `radix-ui`.
+
+```json
+{
+  "registries": {
+    "@drift-ui": "https://drift-ui-dev.vercel.app/r/base/{name}.json"
   }
 }
 ```

@@ -19,7 +19,7 @@ import {
 } from "@/registry/default/ui/popover"
 
 const segmentClassName =
-  "flex items-center gap-1.5 px-2 outline-none hover:bg-accent focus-visible:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-inset data-[state=open]:bg-accent [&_svg]:size-3.5"
+  "flex items-center gap-1.5 px-2 outline-none hover:bg-accent focus-visible:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-inset data-popup-open:bg-accent data-[state=open]:bg-accent [&_svg]:size-3.5"
 
 function ValueLabel({ text }: { text: string }) {
   if (!text) return <span className="text-muted-foreground">Any</span>
@@ -90,14 +90,11 @@ function TypedValueEditor({
 
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          aria-label={`${field.label} value`}
-          className={segmentClassName}
-        >
-          <ValueLabel text={filter.value} />
-        </button>
+      <PopoverTrigger
+        aria-label={`${field.label} value`}
+        className={segmentClassName}
+      >
+        <ValueLabel text={filter.value} />
       </PopoverTrigger>
       <PopoverContent align="start" className="w-56 p-2">
         <Input

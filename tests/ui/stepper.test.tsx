@@ -81,14 +81,15 @@ describe("Stepper", () => {
     const user = userEvent.setup()
     render(<TestStepper linear />)
 
-    expect(trigger("Workspace")).toBeDisabled()
+    await user.click(trigger("Workspace"))
+    expect(screen.getByRole("tabpanel")).toHaveTextContent("Account panel")
     await user.click(screen.getByRole("button", { name: "Continue" }))
     await user.click(screen.getByRole("button", { name: "Continue" }))
     await user.click(screen.getByRole("button", { name: "Back" }))
     await user.click(screen.getByRole("button", { name: "Back" }))
 
-    expect(trigger("Workspace")).toBeEnabled()
-    expect(trigger("Invite")).toBeEnabled()
+    await user.click(trigger("Invite"))
+    expect(screen.getByRole("tabpanel")).toHaveTextContent("Invite panel")
   })
 
   it("lets free mode jump to any step from the list", async () => {

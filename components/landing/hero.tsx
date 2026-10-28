@@ -23,8 +23,8 @@ export function Hero() {
             <span className="block sm:whitespace-nowrap">shadcn left out</span>
           </h1>
           <p className="mt-6 max-w-[40ch] rise text-base leading-relaxed text-muted-foreground [--rise-delay:160ms] md:text-lg">
-            Tags input, stepper, tree view and 13 more. Built on Radix, styled
-            by your tokens, installed with the shadcn CLI.
+            Tags input, stepper, tree view and 13 more. Built on Radix or Base
+            UI, styled by your tokens, installed with the shadcn CLI.
           </p>
           <div className="mt-10 flex rise flex-col gap-3 [--rise-delay:240ms] sm:flex-row sm:flex-wrap sm:items-center">
             <Button asChild size="lg" className="active:scale-[0.98]">

@@ -28,8 +28,8 @@ import {
 } from "@/registry/default/ui/popover"
 
 describe("Button", () => {
-  it("applies variant and size classes and renders as a child element", () => {
-    const { rerender } = render(
+  it("applies variant and size classes", () => {
+    render(
       <Button variant="destructive" size="sm">
         Delete
       </Button>
@@ -38,17 +38,22 @@ describe("Button", () => {
       "bg-destructive",
       "h-8"
     )
-
-    rerender(
-      <Button asChild>
-        <a href="https://ui.shadcn.com">Browse</a>
-      </Button>
-    )
-    expect(screen.getByRole("link", { name: "Browse" })).toHaveAttribute(
-      "data-slot",
-      "button"
-    )
   })
+
+  it.skipIf(process.env.UI_PRIMITIVES === "base")(
+    "renders as a child element",
+    () => {
+      render(
+        <Button asChild>
+          <a href="https://ui.shadcn.com">Browse</a>
+        </Button>
+      )
+      expect(screen.getByRole("link", { name: "Browse" })).toHaveAttribute(
+        "data-slot",
+        "button"
+      )
+    }
+  )
 })
 
 describe("Badge", () => {

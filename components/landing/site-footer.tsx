@@ -48,8 +48,8 @@ export function SiteFooter() {
             drift-ui
           </Link>
           <p className="max-w-[36ch] text-sm text-muted-foreground">
-            The components shadcn left out, built on Radix, Tailwind v4 and
-            React 19.
+            The components shadcn left out, built on Radix or Base UI, Tailwind
+            v4 and React 19.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-3">

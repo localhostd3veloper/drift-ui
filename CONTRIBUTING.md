@@ -33,12 +33,13 @@ The site runs at <http://localhost:3000>. Every registry item is served from <ht
 
 1. Write the source in `registry/default/ui/<name>.tsx`. Pure logic (parsing, math, state machines) goes in `registry/default/lib/<name>.ts` so it can be tested without rendering.
 2. Import helpers through `@/registry/default/...`. The docs site rewrites these paths to `@/components/ui/...` and `@/lib/...` when it shows the source to users.
-3. Add an item to `registry.json` with its npm `dependencies` and its `registryDependencies`. Depend on shadcn's built-in items by bare name (`utils`, `button`, `badge`, `input`, `label`, `popover`) so installing never overwrites a user's existing primitives. Use the `@drift-ui/` prefix only for items that exist nowhere else, such as `@drift-ui/use-controllable-state`.
-4. Add `components/preview/<name>-preview.tsx`. It is the live demo and the usage example on the docs page, so keep it short and realistic.
-5. Register the preview in `components/docs/preview-registry.tsx` and give it a category in `lib/catalog.ts`. The `/components/<name>` page is generated from those two entries.
-6. Add usage notes to `lib/agent-docs/component-usage.ts`. They feed `/llms.txt` and `/llms-full.txt`.
-7. Add tests in `tests/ui/<name>.test.tsx`, plus `tests/lib/<name>.test.ts` if you added a lib file.
-8. Run `bun run registry:build` and commit the regenerated `public/r` files.
+3. If the component imports `radix-ui`, or passes `asChild` or `PopoverAnchor` to a shadcn primitive, write a Base UI version with the same props at `registry/base/ui/<name>.tsx`. The Base UI build at `/r/base` uses a file from `registry/base` wherever one exists and the `registry/default` file everywhere else. When the primitive is a few lines of React, such as a `role="progressbar"` div or `createPortal`, write that instead so the file stays shared.
+4. Add an item to `registry.json` with its npm `dependencies` and its `registryDependencies`. Depend on shadcn's built-in items by bare name (`utils`, `button`, `badge`, `input`, `label`, `popover`) so installing never overwrites a user's existing primitives. Use the `@drift-ui/` prefix only for items that exist nowhere else, such as `@drift-ui/use-controllable-state`.
+5. Add `components/preview/<name>-preview.tsx`. It is the live demo and the usage example on the docs page, so keep it short and realistic.
+6. Register the preview in `components/docs/preview-registry.tsx` and give it a category in `lib/catalog.ts`. The `/components/<name>` page is generated from those two entries.
+7. Add usage notes to `lib/agent-docs/component-usage.ts`. They feed `/llms.txt` and `/llms-full.txt`.
+8. Add tests in `tests/ui/<name>.test.tsx`, plus `tests/lib/<name>.test.ts` if you added a lib file. `bun run test` runs `tests/ui` once against Radix and once against Base UI.
+9. Run `bun run registry:build` and commit the regenerated `public/r` files.
 
 ### Component guidelines
 
