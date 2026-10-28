@@ -4,8 +4,20 @@
     "name": "Gautam Anand",
     "website": "https://localhostdeveloper.com",
     "role": "maintainer",
-    "components": [],
-    "pullRequests": []
+    "components": [
+      "color-picker",
+      "date-time-range",
+      "file-dropzone",
+      "filter-chip",
+      "tour-spotlight"
+    ],
+    "pullRequests": [
+      {
+        "number": 23,
+        "title": "feat(registry): support Base UI as an alternative to Radix primitives",
+        "mergedAt": "2026-10-28T03:43:00Z"
+      }
+    ]
   },
   {
     "login": "syedfahadjunaid",
