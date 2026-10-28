@@ -1,7 +1,14 @@
 import type { ComponentType } from "react"
 
+import { BadgePreview as BaseUiBadgePreview } from "@/components/preview/base/badge-preview"
+import { BulkActionBarPreview as BaseUiBulkActionBarPreview } from "@/components/preview/base/bulk-action-bar-preview"
+import { ButtonPreview as BaseUiButtonPreview } from "@/components/preview/base/button-preview"
 import { DialogPreview as BaseUiDialogPreview } from "@/components/preview/base/dialog-preview"
+import { LabelPreview as BaseUiLabelPreview } from "@/components/preview/base/label-preview"
+import { MentionTextareaPreview as BaseUiMentionTextareaPreview } from "@/components/preview/base/mention-textarea-preview"
 import { PopoverPreview as BaseUiPopoverPreview } from "@/components/preview/base/popover-preview"
+import { StepperPreview as BaseUiStepperPreview } from "@/components/preview/base/stepper-preview"
+import { TourPreview as BaseUiTourPreview } from "@/components/preview/base/tour-preview"
 import { BadgePreview } from "@/components/preview/badge-preview"
 import { BulkActionBarPreview } from "@/components/preview/bulk-action-bar-preview"
 import { ButtonPreview } from "@/components/preview/button-preview"
@@ -53,6 +60,13 @@ export const PREVIEWS: Record<string, ComponentType> = {
 }
 
 export const BASE_UI_PREVIEWS: Record<string, ComponentType> = {
+  badge: BaseUiBadgePreview,
+  "bulk-action-bar": BaseUiBulkActionBarPreview,
+  button: BaseUiButtonPreview,
   dialog: BaseUiDialogPreview,
+  label: BaseUiLabelPreview,
+  "mention-textarea": BaseUiMentionTextareaPreview,
   popover: BaseUiPopoverPreview,
+  stepper: BaseUiStepperPreview,
+  tour: BaseUiTourPreview,
 }
