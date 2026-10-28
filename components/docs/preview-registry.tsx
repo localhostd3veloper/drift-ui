@@ -6,6 +6,7 @@ import { ButtonPreview as BaseUiButtonPreview } from "@/components/preview/base/
 import { DialogPreview as BaseUiDialogPreview } from "@/components/preview/base/dialog-preview"
 import { LabelPreview as BaseUiLabelPreview } from "@/components/preview/base/label-preview"
 import { MentionTextareaPreview as BaseUiMentionTextareaPreview } from "@/components/preview/base/mention-textarea-preview"
+import { MultiSelectPreview as BaseUiMultiSelectPreview } from "@/components/preview/base/multi-select-preview"
 import { PopoverPreview as BaseUiPopoverPreview } from "@/components/preview/base/popover-preview"
 import { StepperPreview as BaseUiStepperPreview } from "@/components/preview/base/stepper-preview"
 import { TourPreview as BaseUiTourPreview } from "@/components/preview/base/tour-preview"
@@ -22,6 +23,7 @@ import { InlineEditPreview } from "@/components/preview/inline-edit-preview"
 import { InputPreview } from "@/components/preview/input-preview"
 import { LabelPreview } from "@/components/preview/label-preview"
 import { MentionTextareaPreview } from "@/components/preview/mention-textarea-preview"
+import { MultiSelectPreview } from "@/components/preview/multi-select-preview"
 import { NumberInputPreview } from "@/components/preview/number-input-preview"
 import { PasswordInputPreview } from "@/components/preview/password-input-preview"
 import { PopoverPreview } from "@/components/preview/popover-preview"
@@ -47,6 +49,7 @@ export const PREVIEWS: Record<string, ComponentType> = {
   input: InputPreview,
   label: LabelPreview,
   "mention-textarea": MentionTextareaPreview,
+  "multi-select": MultiSelectPreview,
   "number-input": NumberInputPreview,
   "password-input": PasswordInputPreview,
   popover: PopoverPreview,
@@ -66,6 +69,7 @@ export const BASE_UI_PREVIEWS: Record<string, ComponentType> = {
   dialog: BaseUiDialogPreview,
   label: BaseUiLabelPreview,
   "mention-textarea": BaseUiMentionTextareaPreview,
+  "multi-select": BaseUiMultiSelectPreview,
   popover: BaseUiPopoverPreview,
   stepper: BaseUiStepperPreview,
   tour: BaseUiTourPreview,

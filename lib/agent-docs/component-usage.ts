@@ -41,6 +41,26 @@ export function EnvironmentsField() {
   )
 }`,
   },
+  "multi-select": {
+    notes:
+      "Pick several values from a known list. options: { value, label, group? }[]. Controlled with value/onValueChange or uncontrolled with defaultValue, both string[]. Typing filters, Enter toggles the highlighted option, Backspace on an empty field selects then removes the last chip, and a clear button empties the selection. Props: maxSelected (disables unselected options when reached and hides Select all), maxVisibleChips (collapses the rest into +N). Spreads remaining props onto the inner input, so id, placeholder and aria-label work. For free text use tags-input instead.",
+    example: `import { Label } from "@/components/ui/label"
+import { MultiSelect } from "@/components/ui/multi-select"
+
+const regions = [
+  { value: "eu-west-1", label: "Ireland", group: "Europe" },
+  { value: "us-east-1", label: "Virginia", group: "Americas" },
+]
+
+export function RegionsField() {
+  return (
+    <div className="grid gap-2">
+      <Label htmlFor="regions">Regions</Label>
+      <MultiSelect id="regions" options={regions} placeholder="Pick regions" maxVisibleChips={3} />
+    </div>
+  )
+}`,
+  },
   "tree-view": {
     notes:
       "WAI-ARIA tree driven by an items array of TreeNode { id, label, icon?, children?, isBranch?, disabled?, textValue? }. expanded/onExpandedChange and selected/onSelectedChange are optional controlled props. A node with isBranch: true and children undefined renders a loading row while expanded, so load children in onExpandedChange and update items. Always pass aria-label.",

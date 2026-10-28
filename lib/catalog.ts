@@ -55,6 +55,7 @@ const ENTRY_LAYOUT: {
   stageClassName?: string
 }[] = [
   { slug: "tags-input", category: "inputs" },
+  { slug: "multi-select", category: "inputs" },
   { slug: "number-input", category: "inputs" },
   { slug: "password-input", category: "inputs" },
   { slug: "date-time-range", category: "inputs" },

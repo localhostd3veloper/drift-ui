@@ -195,6 +195,32 @@
       ]
     },
     {
+      "name": "multi-select",
+      "type": "registry:ui",
+      "title": "Multi Select",
+      "description": "Pick several values from a fixed list, with search, groups, chips and a selection limit.",
+      "dependencies": [
+        "@base-ui/react",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "utils",
+        "badge",
+        "popover",
+        "@drift-ui/use-controllable-state"
+      ],
+      "files": [
+        {
+          "path": "registry/base/ui/multi-select.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/default/lib/multi-select.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "tree-view",
       "type": "registry:ui",
       "title": "Tree View",
