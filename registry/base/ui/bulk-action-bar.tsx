@@ -4,13 +4,14 @@ import * as React from "react"
 import { createPortal } from "react-dom"
 import { cva, type VariantProps } from "class-variance-authority"
 import { XIcon } from "lucide-react"
-import { AnimatePresence, motion, useReducedMotion } from "motion/react"
+import { AnimatePresence, motion, MotionConfig } from "motion/react"
 import { Toolbar as ToolbarPrimitive } from "@base-ui/react/toolbar"
 
 import { cn } from "@/registry/default/lib/utils"
 import { Button } from "@/registry/base/ui/button"
 
 const BAR_SPRING = { type: "spring", bounce: 0.2, visualDuration: 0.3 } as const
+const BAR_HIDDEN = { opacity: 0, y: 16 }
 
 const bulkActionBarVariants = cva(
   "pointer-events-none inset-x-0 z-50 flex justify-center px-4",
@@ -77,57 +78,57 @@ function BulkActionBar({
     selectedCount: number
     onClear: () => void
   }) {
-  const shouldReduceMotion = useReducedMotion()
   const isClient = React.useSyncExternalStore(
     subscribeToNothing,
     () => true,
     () => false
   )
   const isVisible = selectedCount > 0
-  const hiddenOffset = shouldReduceMotion ? 0 : 16
   useClearOnEscape(isVisible, onClear)
 
   const bar = (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          key="bulk-action-bar"
-          initial={{ opacity: 0, y: hiddenOffset }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: hiddenOffset }}
-          transition={BAR_SPRING}
-          className={bulkActionBarVariants({ placement })}
-        >
-          <ToolbarPrimitive.Root
-            data-slot="bulk-action-bar"
-            aria-label={ariaLabel}
-            className={cn(
-              "pointer-events-auto flex max-w-full items-center gap-1 overflow-x-auto rounded-xl border bg-popover p-1.5 text-popover-foreground shadow-lg",
-              className
-            )}
-            {...props}
+    <MotionConfig reducedMotion="user">
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            key="bulk-action-bar"
+            initial={BAR_HIDDEN}
+            animate={{ opacity: 1, y: 0 }}
+            exit={BAR_HIDDEN}
+            transition={BAR_SPRING}
+            className={bulkActionBarVariants({ placement })}
           >
-            <SelectedCount count={selectedCount} />
-            <ToolbarPrimitive.Separator className="mx-1 h-5 w-px shrink-0 bg-border" />
-            {children}
-            <ToolbarPrimitive.Separator className="mx-1 h-5 w-px shrink-0 bg-border" />
-            <ToolbarPrimitive.Button
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Clear selection"
-                  onClick={onClear}
-                  className="size-8"
-                />
-              }
+            <ToolbarPrimitive.Root
+              data-slot="bulk-action-bar"
+              aria-label={ariaLabel}
+              className={cn(
+                "pointer-events-auto flex max-w-full items-center gap-1 overflow-x-auto rounded-xl border bg-popover p-1.5 text-popover-foreground shadow-lg",
+                className
+              )}
+              {...props}
             >
-              <XIcon />
-            </ToolbarPrimitive.Button>
-          </ToolbarPrimitive.Root>
-        </motion.div>
-      )}
-    </AnimatePresence>
+              <SelectedCount count={selectedCount} />
+              <ToolbarPrimitive.Separator className="mx-1 h-5 w-px shrink-0 bg-border" />
+              {children}
+              <ToolbarPrimitive.Separator className="mx-1 h-5 w-px shrink-0 bg-border" />
+              <ToolbarPrimitive.Button
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Clear selection"
+                    onClick={onClear}
+                    className="size-8"
+                  />
+                }
+              >
+                <XIcon />
+              </ToolbarPrimitive.Button>
+            </ToolbarPrimitive.Root>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </MotionConfig>
   )
 
   if (placement === "container") return bar
