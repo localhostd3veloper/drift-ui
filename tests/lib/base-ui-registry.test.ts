@@ -1,7 +1,44 @@
 import { readdirSync, readFileSync } from "node:fs"
 import { describe, expect, it } from "vitest"
 
+import { toBaseUiItem } from "@/lib/base-ui-registry"
+
 const BASE_UI_REGISTRY_DIR = "public/r/base"
+
+describe("toBaseUiItem", () => {
+  it("swaps in the Base UI file and dependency", () => {
+    const item = toBaseUiItem({
+      files: [{ path: "registry/default/ui/stepper.tsx", type: "registry:ui" }],
+      dependencies: ["radix-ui", "lucide-react"],
+    })
+
+    expect(item.files).toEqual([
+      { path: "registry/base/ui/stepper.tsx", type: "registry:ui" },
+    ])
+    expect(item.dependencies).toEqual(["@base-ui/react", "lucide-react"])
+  })
+
+  it("drops radix-ui when the Base UI file needs no primitive", () => {
+    const item = toBaseUiItem({
+      files: [{ path: "registry/default/ui/label.tsx", type: "registry:ui" }],
+      dependencies: ["radix-ui"],
+    })
+
+    expect(item.files[0].path).toBe("registry/base/ui/label.tsx")
+    expect(item.dependencies).toEqual([])
+  })
+
+  it("keeps shared files as they are", () => {
+    const tagsInput = {
+      files: [
+        { path: "registry/default/ui/tags-input.tsx", type: "registry:ui" },
+      ],
+      dependencies: ["lucide-react"],
+    }
+
+    expect(toBaseUiItem(tagsInput)).toEqual(tagsInput)
+  })
+})
 
 describe("Base UI registry build", () => {
   it.each(readdirSync(BASE_UI_REGISTRY_DIR))(
