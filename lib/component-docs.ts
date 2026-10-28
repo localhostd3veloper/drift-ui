@@ -24,8 +24,26 @@ const IMPORT_REWRITES: [RegExp, string][] = [
 
 const NAMESPACE = "@drift-ui/"
 
+const PREVIEW_DIR = "components/preview/"
+const REGISTRY_DIR = "registry/"
+
+function absoluteProjectPath(relativePath: string) {
+  if (relativePath.startsWith(PREVIEW_DIR)) {
+    return path.join(
+      process.cwd(),
+      "components/preview",
+      relativePath.slice(PREVIEW_DIR.length)
+    )
+  }
+  return path.join(
+    process.cwd(),
+    "registry",
+    relativePath.slice(REGISTRY_DIR.length)
+  )
+}
+
 async function readProjectFile(relativePath: string) {
-  const code = await readFile(path.join(process.cwd(), relativePath), "utf8")
+  const code = await readFile(absoluteProjectPath(relativePath), "utf8")
 
   return IMPORT_REWRITES.reduce(
     (rewritten, [pattern, replacement]) =>
