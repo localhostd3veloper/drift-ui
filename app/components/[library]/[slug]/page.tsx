@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
+import { ApiReference } from "@/components/docs/api-reference"
 import { ComponentHeader } from "@/components/docs/component-header"
 import { DocSection } from "@/components/docs/doc-section"
 import { InstallPanel } from "@/components/docs/install-panel"
@@ -14,6 +15,7 @@ import { PreviewTabs } from "@/components/docs/preview-tabs"
 import { SourceFiles } from "@/components/docs/source-files"
 import { JsonLd } from "@/components/seo/json-ld"
 import { registryUrl } from "@/lib/agent-docs/build-docs"
+import { COMPONENT_API } from "@/lib/agent-docs/component-api"
 import { COMPONENT_USAGE } from "@/lib/agent-docs/component-usage"
 import { toBaseUiItem } from "@/lib/base-ui-registry"
 import {
@@ -125,10 +127,12 @@ export default async function ComponentPage({ params }: ComponentPageProps) {
     loadUsage(entry, library),
     loadSources(source),
   ])
-  const notes = COMPONENT_USAGE[entry.slug]?.notes
+  const api = COMPONENT_API[entry.slug]
+  const notes = api ? undefined : COMPONENT_USAGE[entry.slug]?.notes
   const { previous, next } = findNeighbors(entry.slug)
   const sections = [
     { id: "installation", label: "Installation" },
+    ...(api ? [{ id: "api", label: "API reference" }] : []),
     ...(notes ? [{ id: "notes", label: "Notes" }] : []),
     { id: "source", label: "Source" },
   ]
@@ -154,6 +158,11 @@ export default async function ComponentPage({ params }: ComponentPageProps) {
             installPaths={listInstallPaths(source)}
           />
         </DocSection>
+        {api && (
+          <DocSection id="api" title="API reference">
+            <ApiReference parts={api} />
+          </DocSection>
+        )}
         {notes && (
           <DocSection id="notes" title="Notes">
             <p className="max-w-[68ch] leading-relaxed text-muted-foreground">

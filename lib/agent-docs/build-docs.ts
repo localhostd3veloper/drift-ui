@@ -1,4 +1,5 @@
 import registry from "@/registry.json"
+import { COMPONENT_API, type ApiPart } from "@/lib/agent-docs/component-api"
 import { COMPONENT_USAGE } from "@/lib/agent-docs/component-usage"
 import { siteConfig } from "@/lib/site-config"
 
@@ -84,6 +85,30 @@ ${foundations.map((item) => listLine(siteUrl, item)).join("\n")}
 `
 }
 
+function apiLines(part: ApiPart) {
+  const props = (part.props ?? []).map((prop) => {
+    const details = [
+      `\`${prop.type}\``,
+      prop.required && "required",
+      prop.default && `default \`${prop.default}\``,
+    ].filter(Boolean)
+    return `- \`${prop.name}\` (${details.join(", ")}): ${prop.description}`
+  })
+  const rest = part.rest ? [`Other props go to the ${part.rest}.`] : []
+
+  const signature = part.signature ? [`\`${part.signature}\``, ""] : []
+
+  return [
+    "",
+    `### ${part.name}`,
+    "",
+    ...signature,
+    part.description,
+    ...(props.length > 0 ? ["", ...props] : []),
+    ...rest,
+  ]
+}
+
 function itemSection(siteUrl: string, item: RegistryItem) {
   const usage = COMPONENT_USAGE[item.name]
   const dependsOn = [
@@ -101,6 +126,8 @@ function itemSection(siteUrl: string, item: RegistryItem) {
   if (dependsOn.length > 0) lines.push(`Depends on: ${dependsOn.join(", ")}`)
   if (usage) lines.push("", usage.notes)
   if (usage?.example) lines.push("", "```tsx", usage.example, "```")
+  for (const part of COMPONENT_API[item.name] ?? [])
+    lines.push(...apiLines(part))
   return lines.join("\n")
 }
 
