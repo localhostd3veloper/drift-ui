@@ -8,12 +8,12 @@ Browse the live previews at [drift-ui-dev.vercel.app](https://drift-ui-dev.verce
 
 ## Components
 
-| Category   | Components                                                                                                                                                         |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Inputs     | tags-input, multi-select, number-input, password-input, date-time-range, time-field, color-picker, mention-textarea, shortcut-recorder, file-dropzone, inline-edit |
-| Structure  | tree-view, stepper, timeline                                                                                                                                       |
-| Workflow   | filter-builder, bulk-action-bar, tour                                                                                                                              |
-| Primitives | button, badge, input, label, card, dialog, popover                                                                                                                 |
+| Category   | Components                                                                                                                                                                            |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inputs     | tags-input, multi-select, number-input, password-input, date-time-range, time-field, recurrence-editor, color-picker, mention-textarea, shortcut-recorder, file-dropzone, inline-edit |
+| Structure  | tree-view, stepper, timeline                                                                                                                                                          |
+| Workflow   | filter-builder, bulk-action-bar, tour                                                                                                                                                 |
+| Primitives | button, badge, input, label, card, dialog, popover                                                                                                                                    |
 
 The primitives have the same API as their shadcn/ui counterparts, so skip any you already have. Every component has a live preview, its source and install steps at [`/components/<name>`](https://drift-ui-dev.vercel.app/components).
 

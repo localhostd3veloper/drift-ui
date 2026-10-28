@@ -205,6 +205,20 @@ export function MaintenanceWindowField() {
   return <DateTimeRangePicker id="maintenance-window" placeholder="Pick a maintenance window" />
 }`,
   },
+  "recurrence-editor": {
+    notes:
+      "RecurrenceEditor edits an RFC 5545 RRULE string (without the RRULE: prefix) through value/defaultValue and onValueChange. Supports DAILY, WEEKLY with BYDAY, MONTHLY with BYMONTHDAY or an ordinal BYDAY such as 2TU or -1FR, YEARLY, INTERVAL, COUNT and UNTIL. Pass start (a Date) so weekday, month day and preview line up with the event; showPreview={n} lists the next n occurrences. Pure helpers live in @/lib/recurrence: parseRRule, formatRRule, describeRecurrence and occurrences. Installs number-input.",
+    example: `"use client"
+
+import { useState } from "react"
+import { RecurrenceEditor } from "@/components/ui/recurrence-editor"
+
+export function StandupRepeat({ start }: { start: Date }) {
+  const [rule, setRule] = useState("FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR")
+
+  return <RecurrenceEditor aria-label="Repeat" value={rule} onValueChange={setRule} start={start} showPreview={3} />
+}`,
+  },
   "filter-builder": {
     notes:
       "Chip based filters. fields: FilterField[] with { id, label, type: 'text' | 'number' | 'select', options? }. Value is Filter[] ({ id, fieldId, operator, value }). Use matchesFilter(fieldValue, filter) from @/lib/filter to apply filters to your rows.",

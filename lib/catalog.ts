@@ -60,6 +60,7 @@ const ENTRY_LAYOUT: {
   { slug: "password-input", category: "inputs" },
   { slug: "date-time-range", category: "inputs" },
   { slug: "time-field", category: "inputs", stageClassName: "gap-8" },
+  { slug: "recurrence-editor", category: "inputs" },
   { slug: "color-picker", category: "inputs" },
   { slug: "mention-textarea", category: "inputs" },
   { slug: "shortcut-recorder", category: "inputs", stageClassName: "gap-8" },

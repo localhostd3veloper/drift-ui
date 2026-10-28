@@ -355,6 +355,30 @@
       ]
     },
     {
+      "name": "recurrence-editor",
+      "type": "registry:ui",
+      "title": "Recurrence Editor",
+      "description": "Edit an RRULE repeat rule with a plain-language summary and the next occurrences.",
+      "registryDependencies": [
+        "utils",
+        "input",
+        "label",
+        "@drift-ui/number-input",
+        "@drift-ui/use-controllable-state"
+      ],
+      "files": [
+        {
+          "path": "registry/default/ui/recurrence-editor.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/default/lib/recurrence.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "dependencies": []
+    },
+    {
       "name": "use-controllable-state",
       "type": "registry:hook",
       "title": "useControllableState",
