@@ -16,7 +16,7 @@ const PRINCIPLES = [
     Demo: TokensDemo,
   },
   {
-    title: "Radix underneath",
+    title: "Radix or Base UI underneath",
     description:
       "Focus, roving tabindex and screen reader labels are handled before styling starts. Click the tree and use your arrow keys.",
     Demo: KeyboardDemo,
