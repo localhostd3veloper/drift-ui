@@ -57,7 +57,7 @@ export function ProjectTree() {
   },
   stepper: {
     notes:
-      "Built on Radix Tabs. Steps are zero-based numbers: value/defaultValue/onValueChange. linear disables steps beyond the furthest one reached. Compose StepperList > StepperItem(step) > StepperTrigger > StepperIndicator + StepperTitle, plus StepperSeparator and StepperContent(step). StepperNext and StepperPrevious support asChild; pass stepCount so Next disables on the last step. useStepper() exposes activeStep and setActiveStep.",
+      "Built on Radix Tabs, or Base UI Tabs from the Base UI registry. Steps are zero-based numbers: value/defaultValue/onValueChange. linear disables steps beyond the furthest one reached. Compose StepperList > StepperItem(step) > StepperTrigger > StepperIndicator + StepperTitle, plus StepperSeparator and StepperContent(step). StepperNext and StepperPrevious support asChild; pass stepCount so Next disables on the last step. useStepper() exposes activeStep and setActiveStep.",
     example: `import { Button } from "@/components/ui/button"
 import {
   Stepper, StepperContent, StepperIndicator, StepperItem, StepperList,
@@ -235,7 +235,7 @@ export function DashboardTour() {
   },
   "bulk-action-bar": {
     notes:
-      "Floating Radix Toolbar that animates in when selectedCount > 0. Props: selectedCount, onClear (also bound to Escape), placement: 'viewport' (portaled, default) or 'container' (absolute inside a relative parent). Put BulkActionBarButton children inside. Requires the motion package.",
+      "Floating toolbar (Radix or Base UI) that animates in when selectedCount > 0. Props: selectedCount, onClear (also bound to Escape), placement: 'viewport' (portaled, default) or 'container' (absolute inside a relative parent). Put BulkActionBarButton children inside. Requires the motion package.",
     example: `import { BulkActionBar, BulkActionBarButton } from "@/components/ui/bulk-action-bar"
 
 export function FileActions({ selected, onClear }: { selected: string[]; onClear: () => void }) {

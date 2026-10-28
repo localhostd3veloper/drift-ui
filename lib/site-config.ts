@@ -11,7 +11,7 @@ export const siteConfig = {
   name: "drift-ui",
   title: "drift-ui, the components shadcn left out",
   description:
-    "A shadcn-compatible component registry. Tags input, stepper, tree view, file dropzone and more, built on Radix and Tailwind v4 and installed with the shadcn CLI.",
+    "A shadcn-compatible component registry. Tags input, stepper, tree view, file dropzone and more, built on Radix or Base UI with Tailwind v4 and installed with the shadcn CLI.",
   url: resolveSiteUrl(),
   repo: "https://github.com/localhostd3veloper/drift-ui",
   keywords: [
@@ -20,6 +20,7 @@ export const siteConfig = {
     "shadcn components",
     "React components",
     "Radix UI",
+    "Base UI",
     "Tailwind CSS v4",
     "Next.js",
     "tags input",

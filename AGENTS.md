@@ -26,13 +26,14 @@ bun run format
 | --------------------------------------- | ------------------------------------------------------- |
 | `registry/default/ui/<name>.tsx`        | Component source, the thing users install               |
 | `registry/default/lib/<name>.ts`        | Pure logic behind a component, tested without rendering |
+| `registry/base/ui/<name>.tsx`           | Base UI version of a file that depends on Radix         |
 | `registry.json`                         | Registry manifest read by `shadcn build`                |
 | `components/preview/<name>-preview.tsx` | Live demo and usage example on the docs page            |
 | `components/docs/preview-registry.tsx`  | Maps slugs to previews                                  |
 | `lib/catalog.ts`                        | Categories and ordering                                 |
 | `lib/agent-docs/component-usage.ts`     | Usage notes served at `/llms.txt` and `/llms-full.txt`  |
 | `tests/ui`, `tests/lib`                 | Vitest suites                                           |
-| `public/r/*.json`                       | Build output. Never edit by hand, regenerate it         |
+| `public/r/**/*.json`                    | Build output. Never edit by hand, regenerate it         |
 | `contributors.json`                     | Hall of fame data behind `/contributors`                |
 
 ## Working on a GitHub issue
