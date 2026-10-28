@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { FileIcon, UploadIcon, XIcon } from "lucide-react"
-import { Progress as ProgressPrimitive } from "radix-ui"
 
 import { cn } from "@/registry/default/lib/utils"
 
@@ -204,16 +203,19 @@ function FileDropzoneItem({
           </span>
         </div>
         {isUploading && (
-          <ProgressPrimitive.Root
-            value={progress}
+          <div
+            role="progressbar"
             aria-label={`Uploading ${name}`}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={progress}
             className="h-1 overflow-hidden rounded-full bg-muted"
           >
-            <ProgressPrimitive.Indicator
+            <div
               className="h-full bg-primary transition-transform duration-300"
               style={{ transform: `translateX(-${100 - progress}%)` }}
             />
-          </ProgressPrimitive.Root>
+          </div>
         )}
         {error && <span className="text-xs text-destructive">{error}</span>}
       </div>

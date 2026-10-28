@@ -198,7 +198,7 @@
       "type": "registry:ui",
       "title": "File Dropzone",
       "description": "Drag and drop upload with validation, progress and rejection states.",
-      "dependencies": ["radix-ui", "lucide-react"],
+      "dependencies": ["lucide-react"],
       "registryDependencies": ["utils"],
       "files": [
         { "path": "registry/default/ui/file-dropzone.tsx", "type": "registry:ui" }

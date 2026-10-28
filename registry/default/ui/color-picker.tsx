@@ -11,7 +11,7 @@ import {
   type Hsva,
 } from "@/registry/default/lib/color"
 import { useControllableState } from "@/registry/default/hooks/use-controllable-state"
-import { Button } from "@/registry/default/ui/button"
+import { Button, buttonVariants } from "@/registry/default/ui/button"
 import {
   AlphaSlider,
   ColorArea,
@@ -78,18 +78,18 @@ function ColorPicker({
   onValueChange,
   showAlpha = true,
   swatches,
+  variant = "outline",
+  size,
   className,
   ...props
-}: Omit<
-  React.ComponentProps<typeof Button>,
-  "value" | "defaultValue" | "onChange"
-> & {
-  value?: string
-  defaultValue?: string
-  onValueChange?: (hex: string) => void
-  showAlpha?: boolean
-  swatches?: string[]
-}) {
+}: Omit<React.ComponentProps<"button">, "value" | "defaultValue" | "onChange"> &
+  Pick<React.ComponentProps<typeof Button>, "variant" | "size"> & {
+    value?: string
+    defaultValue?: string
+    onValueChange?: (hex: string) => void
+    showAlpha?: boolean
+    swatches?: string[]
+  }) {
   const EyeDropper = useEyeDropper()
   const { value: hex, setValue: setHex } = useControllableState({
     value,
@@ -130,16 +130,17 @@ function ColorPicker({
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          data-slot="color-picker-trigger"
-          className={cn("justify-start gap-2 font-mono text-xs", className)}
-          {...props}
-        >
-          <ColorSwatch color={hex} />
-          {hex}
-        </Button>
+      <PopoverTrigger
+        data-slot="color-picker-trigger"
+        className={cn(
+          buttonVariants({ variant, size }),
+          "justify-start gap-2 font-mono text-xs",
+          className
+        )}
+        {...props}
+      >
+        <ColorSwatch color={hex} />
+        {hex}
       </PopoverTrigger>
       <PopoverContent
         data-slot="color-picker-content"

@@ -1,9 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { Portal } from "radix-ui"
+import { createPortal } from "react-dom"
 
 const SPOTLIGHT_PADDING_PX = 6
+
+function subscribeToNothing() {
+  return () => {}
+}
 
 function findTourTarget(name: string) {
   return document.querySelector<HTMLElement>(
@@ -50,10 +54,17 @@ function useFollowTarget(
 
 function TourSpotlight({ target }: { target: string }) {
   const spotlightRef = React.useRef<HTMLDivElement>(null)
+  const isClient = React.useSyncExternalStore(
+    subscribeToNothing,
+    () => true,
+    () => false
+  )
   useFollowTarget(target, spotlightRef)
 
-  return (
-    <Portal.Root>
+  if (!isClient) return null
+
+  return createPortal(
+    <>
       <div
         aria-hidden
         data-slot="tour-overlay"
@@ -65,7 +76,8 @@ function TourSpotlight({ target }: { target: string }) {
         data-slot="tour-spotlight"
         className="pointer-events-none fixed z-50 rounded-lg opacity-0 shadow-[0_0_0_9999px_rgb(0_0_0/0.55)] ring-2 ring-ring transition-opacity duration-200"
       />
-    </Portal.Root>
+    </>,
+    document.body
   )
 }
 
