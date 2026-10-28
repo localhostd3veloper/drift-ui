@@ -37,12 +37,12 @@ const COLUMNS = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t">
+    <footer className="overflow-hidden">
       <div className="mx-auto grid max-w-7xl gap-12 px-4 py-14 md:grid-cols-[minmax(0,1fr)_auto] md:px-10">
         <div className="flex flex-col gap-3">
           <Link
             href="/"
-            className="flex w-fit items-center gap-2.5 font-medium tracking-tight"
+            className="flex w-fit items-center gap-2.5 font-display text-lg font-semibold tracking-tight"
           >
             <LogoMark />
             drift-ui
@@ -72,6 +72,12 @@ export function SiteFooter() {
           ))}
         </div>
       </div>
+      <p
+        aria-hidden
+        className="-mb-[0.22em] text-center font-display text-[clamp(5rem,23vw,22rem)] leading-none font-semibold tracking-[-0.05em] text-[color-mix(in_oklab,var(--foreground)_7%,var(--background))] select-none"
+      >
+        drift-ui
+      </p>
     </footer>
   )
 }

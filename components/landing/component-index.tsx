@@ -62,7 +62,7 @@ export function ComponentIndex() {
   return (
     <section
       id="components"
-      className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:py-28 md:px-10 md:py-36"
+      className="mx-auto max-w-7xl scroll-mt-24 px-4 py-24 md:px-10 md:py-36"
     >
       <SectionHeading
         title="Eight gaps in your ui folder"

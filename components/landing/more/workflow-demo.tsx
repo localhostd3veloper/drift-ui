@@ -78,7 +78,7 @@ export function WorkflowDemo({ kind }: { kind: WorkflowDemoKind }) {
       return (
         <ColorPicker
           aria-label="Accent color"
-          defaultValue="#7c6cf2"
+          defaultValue="#2f6fd8"
           className="w-full"
         />
       )

@@ -11,7 +11,7 @@ export function BlocksSection() {
   return (
     <section
       id="blocks"
-      className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:py-28 md:px-10 md:py-36"
+      className="mx-auto max-w-7xl scroll-mt-24 px-4 py-24 md:px-10 md:py-36"
     >
       <SectionHeading
         title="Whole screens, not just parts"
@@ -33,7 +33,9 @@ export function BlocksSection() {
             >
               <BlockStage kind={block.kind} />
               <figcaption className="flex flex-wrap items-baseline justify-between gap-3 px-1">
-                <span className="font-medium">{block.name}</span>
+                <span className="font-display text-lg font-semibold tracking-tight">
+                  {block.name}
+                </span>
                 <BlockUses uses={block.uses} />
               </figcaption>
             </figure>

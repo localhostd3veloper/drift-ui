@@ -8,12 +8,14 @@ import {
   type WorkflowDemoKind,
 } from "@/components/landing/more/workflow-demo"
 
-type Surface = "brand" | "dots" | "muted"
+type Surface = "brand" | "dots" | "stripes" | "muted"
 
 const SURFACE: Record<Surface, string> = {
   brand:
-    "bg-[radial-gradient(90%_80%_at_0%_0%,color-mix(in_oklab,var(--brand)_16%,transparent),transparent)] bg-brand/[0.03]",
+    "bg-[radial-gradient(90%_80%_at_0%_0%,color-mix(in_oklab,var(--brand-solid)_22%,transparent),transparent)] bg-brand-solid/[0.04]",
   dots: "bg-[radial-gradient(var(--border)_1px,transparent_1px)] bg-[size:16px_16px]",
+  stripes:
+    "bg-[repeating-linear-gradient(135deg,var(--border)_0_1px,transparent_1px_10px)]",
   muted: "bg-muted/50",
 }
 
@@ -81,6 +83,7 @@ const ENTRIES: {
     description:
       "Click to edit. Enter saves, Escape cancels, async saves wait.",
     className: "md:col-span-3",
+    surface: "stripes",
   },
   {
     name: "Tour",
@@ -96,7 +99,7 @@ export function MoreComponentsSection() {
   return (
     <section
       id="workflow"
-      className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:py-28 md:px-10 md:py-36"
+      className="mx-auto max-w-7xl scroll-mt-24 px-4 py-24 md:px-10 md:py-36"
     >
       <SectionHeading
         title="Eight more. Every demo is live."
@@ -106,8 +109,9 @@ export function MoreComponentsSection() {
         {ENTRIES.map((entry) => (
           <figure
             key={entry.slug}
+            data-theme-scope
             className={cn(
-              "flex reveal flex-col overflow-hidden rounded-2xl border",
+              "group flex reveal flex-col overflow-hidden rounded-3xl border transition-colors hover:border-foreground/25",
               entry.surface && SURFACE[entry.surface],
               entry.className
             )}
@@ -120,7 +124,7 @@ export function MoreComponentsSection() {
             <figcaption className="flex flex-col gap-1 px-5 pb-5 md:px-8 md:pb-7">
               <Link
                 href={`/components/${entry.slug}`}
-                className="w-fit font-medium transition-colors hover:text-brand"
+                className="w-fit font-display text-lg font-semibold tracking-tight transition-colors hover:text-brand"
               >
                 {entry.name}
               </Link>

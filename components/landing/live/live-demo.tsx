@@ -18,7 +18,7 @@ export type LiveDemoKind =
   | "password"
   | "date-range"
 
-function LiveDemoBody({ kind }: { kind: LiveDemoKind }) {
+export function LiveDemoBody({ kind }: { kind: LiveDemoKind }) {
   switch (kind) {
     case "tags":
       return <LiveTagsInput />

@@ -37,7 +37,8 @@ export function ThemeCssDialog({
           <DialogTitle>Theme CSS</DialogTitle>
           <DialogDescription>
             Paste your globals.css or open the file. Only the tokens inside
-            :root and .dark are read, everything else is ignored.
+            :root and .dark are read, everything else is ignored. Previews
+            across drift-ui use them until you reset.
           </DialogDescription>
         </DialogHeader>
         <ThemeCssEditor

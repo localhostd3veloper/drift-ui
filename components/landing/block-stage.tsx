@@ -7,6 +7,7 @@ export function BlockStage({ kind }: { kind: BlockKind }) {
       <div
         aria-hidden
         inert
+        data-theme-scope
         className="@container w-full max-w-lg rounded-t-xl border border-b-0 bg-card p-5 shadow-[0_-24px_48px_-32px] shadow-black/15 dark:shadow-black"
       >
         <BlockPreview kind={kind} />

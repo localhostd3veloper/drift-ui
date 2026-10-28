@@ -2,20 +2,12 @@
 
 import { ThemePanel } from "@/components/showcase/theme-panel"
 import { useShowcaseTheme } from "@/hooks/use-showcase-theme"
-import { scopeThemeCss } from "@/lib/theme-css"
-
-const THEME_SCOPE = [
-  "[data-showcase-canvas]",
-  '[data-radix-popper-content-wrapper]:not(:has([role="tooltip"]))',
-  '[data-slot="dialog-content"]:not([data-theme-editor])',
-]
 
 export function ShowcaseWorkbench({ children }: { children: React.ReactNode }) {
   const { theme, setTheme, resetTheme } = useShowcaseTheme()
 
   return (
     <div className="grid gap-4 lg:grid-cols-[18rem_minmax(0,1fr)] lg:items-start">
-      <style>{scopeThemeCss(theme, THEME_SCOPE)}</style>
       <ThemePanel
         theme={theme}
         onThemeChange={setTheme}

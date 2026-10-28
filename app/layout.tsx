@@ -1,14 +1,25 @@
 import type { Metadata, Viewport } from "next"
-import { Geist_Mono, Plus_Jakarta_Sans } from "next/font/google"
+import {
+  Bricolage_Grotesque,
+  Geist_Mono,
+  Plus_Jakarta_Sans,
+} from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeScopeStyle } from "@/components/theme-scope-style"
 import { siteConfig } from "@/lib/site-config"
 import { cn } from "@/registry/default/lib/utils"
 
 const fontSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
+})
+
+const fontDisplay = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-display",
+  axes: ["opsz"],
 })
 
 const fontMono = Geist_Mono({
@@ -64,12 +75,16 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn(
         fontSans.variable,
+        fontDisplay.variable,
         fontMono.variable,
         "font-sans antialiased"
       )}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <ThemeScopeStyle />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

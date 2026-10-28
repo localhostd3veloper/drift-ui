@@ -18,7 +18,7 @@ export function InstallSection() {
   return (
     <section
       id="install"
-      className="mx-auto max-w-7xl scroll-mt-24 px-4 py-20 sm:py-28 md:px-10 md:py-36"
+      className="mx-auto max-w-7xl scroll-mt-24 px-4 py-24 md:px-10 md:py-36"
     >
       <div className="grid gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <div className="flex min-w-0 flex-col gap-10">
@@ -29,7 +29,7 @@ export function InstallSection() {
           />
           <div className="flex reveal flex-col gap-4">
             <p className="text-sm font-medium">Or install it yourself</p>
-            <div className="overflow-hidden rounded-xl border">
+            <div className="overflow-hidden rounded-2xl border">
               <div className="flex h-10 items-center border-b px-4 font-mono text-xs text-muted-foreground">
                 components.json
               </div>

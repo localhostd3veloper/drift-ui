@@ -21,10 +21,10 @@ export function AgentInstallPanel() {
   const prompt = buildAgentPrompt()
 
   return (
-    <div className="reveal overflow-hidden rounded-2xl border bg-card/40">
+    <div className="reveal overflow-hidden rounded-3xl border bg-card/40 shadow-[0_40px_80px_-48px] shadow-brand-solid/40">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-3">
         <div className="flex items-center gap-2.5">
-          <span className="flex size-7 items-center justify-center rounded-md border bg-background [&_svg]:size-3.5">
+          <span className="flex size-7 items-center justify-center rounded-md bg-brand-solid text-brand-solid-foreground [&_svg]:size-3.5">
             <BotIcon />
           </span>
           <div className="flex flex-col">

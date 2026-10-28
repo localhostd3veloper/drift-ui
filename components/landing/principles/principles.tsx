@@ -1,27 +1,30 @@
 "use client"
 
-import { useState } from "react"
 import { motion } from "motion/react"
+import { Tabs } from "radix-ui"
 
-import { cn } from "@/registry/default/lib/utils"
+import { SectionHeading } from "@/components/landing/section-heading"
 import { KeyboardDemo } from "@/components/landing/principles/keyboard-demo"
 import { SlotDemo } from "@/components/landing/principles/slot-demo"
 import { TokensDemo } from "@/components/landing/principles/tokens-demo"
 
 const PRINCIPLES = [
   {
+    id: "tokens",
     title: "Reads the tokens you have",
     description:
       "Every color, radius and ring comes from the CSS variables shadcn init wrote. Retheme once, everything follows.",
     Demo: TokensDemo,
   },
   {
+    id: "keyboard",
     title: "Radix or Base UI underneath",
     description:
       "Focus, roving tabindex and screen reader labels are handled before styling starts. Click the tree and use your arrow keys.",
     Demo: KeyboardDemo,
   },
   {
+    id: "slots",
     title: "A data-slot on every part",
     description: "Target any piece from your own CSS without forking the file.",
     Demo: SlotDemo,
@@ -29,53 +32,56 @@ const PRINCIPLES = [
 ]
 
 export function Principles() {
-  const [activeIndex, setActiveIndex] = useState(0)
-
   return (
-    <div className="grid gap-16 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-20">
-      <ol className="hidden flex-col gap-10 self-start lg:sticky lg:top-32 lg:flex">
-        {PRINCIPLES.map((principle, index) => (
-          <li
-            key={principle.title}
-            className={cn(
-              "flex flex-col gap-2 border-l-2 pl-6 transition-colors duration-500",
-              index === activeIndex
-                ? "border-brand"
-                : "border-border text-muted-foreground"
-            )}
-          >
-            <h3 className="text-2xl font-medium tracking-tight">
-              {principle.title}
-            </h3>
-            <p
-              className={cn(
-                "max-w-[40ch] leading-relaxed transition-colors duration-500",
-                index === activeIndex && "text-muted-foreground"
-              )}
+    <section className="mx-auto max-w-7xl px-4 py-24 md:px-10 md:py-36">
+      <SectionHeading
+        title="No new design system to learn"
+        lead="Each file reads like the rest of your ui folder: your variables, your primitives, your class names."
+      />
+      <Tabs.Root
+        defaultValue={PRINCIPLES[0].id}
+        className="mt-14 flex reveal flex-col md:mt-20"
+      >
+        <Tabs.List
+          aria-label="Principles"
+          className="grid border-t md:grid-cols-3"
+        >
+          {PRINCIPLES.map((principle) => (
+            <Tabs.Trigger
+              key={principle.id}
+              value={principle.id}
+              className="group relative -mt-px flex flex-col gap-2 border-t-2 border-transparent py-5 pr-6 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=active]:border-brand-solid md:py-7"
             >
-              {principle.description}
-            </p>
-          </li>
-        ))}
-      </ol>
-      <div className="flex min-w-0 flex-col gap-20 lg:gap-32">
-        {PRINCIPLES.map(({ title, description, Demo }, index) => (
-          <motion.article
-            key={title}
-            onViewportEnter={() => setActiveIndex(index)}
-            viewport={{ amount: 0.6 }}
-            className="flex min-w-0 flex-col gap-6 lg:min-h-[28rem] lg:justify-center"
+              <span className="font-display text-xl font-semibold tracking-tight text-foreground/40 transition-colors group-hover:text-foreground/70 group-data-[state=active]:text-foreground md:text-2xl">
+                {principle.title}
+              </span>
+              <span className="max-w-[40ch] text-sm leading-relaxed text-muted-foreground">
+                {principle.description}
+              </span>
+            </Tabs.Trigger>
+          ))}
+        </Tabs.List>
+        {PRINCIPLES.map(({ id, Demo }) => (
+          <Tabs.Content
+            key={id}
+            value={id}
+            className="mt-4 flex min-h-[32rem] items-center justify-center rounded-3xl border bg-[radial-gradient(var(--border)_1px,transparent_1px)] bg-[size:20px_20px] p-5 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 md:p-14"
           >
-            <div className="flex flex-col gap-2 lg:hidden">
-              <h3 className="text-2xl font-medium tracking-tight">{title}</h3>
-              <p className="leading-relaxed text-muted-foreground">
-                {description}
-              </p>
-            </div>
-            <Demo />
-          </motion.article>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                type: "spring",
+                bounce: 0.15,
+                visualDuration: 0.45,
+              }}
+              className="w-full max-w-2xl min-w-0"
+            >
+              <Demo />
+            </motion.div>
+          </Tabs.Content>
         ))}
-      </div>
-    </div>
+      </Tabs.Root>
+    </section>
   )
 }

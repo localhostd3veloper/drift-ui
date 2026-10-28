@@ -2,41 +2,41 @@ import Link from "next/link"
 import { ArrowRightIcon } from "lucide-react"
 
 import { Button } from "@/registry/default/ui/button"
-import { ComponentWall } from "@/components/landing/component-wall"
 import { CopyCommand } from "@/components/landing/copy-command"
-import { HeroPanel } from "@/components/landing/hero-panel"
+import { DriftStage } from "@/components/landing/drift-desk"
+import { DriftWord } from "@/components/landing/drift-word"
+import { SlotPattern } from "@/components/landing/slot-pattern"
 
 export function Hero() {
   return (
     <section className="relative isolate overflow-hidden">
-      <ComponentWall className="absolute inset-0 -z-10 hidden lg:block" />
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,var(--background)_28%,color-mix(in_oklab,var(--background)_70%,transparent)_48%,transparent_72%),linear-gradient(to_top,var(--background),transparent_28%)]" />
-      <div className="absolute top-[-20%] right-[-10%] -z-10 aspect-square w-280 max-w-[140vw] bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--brand)_14%,transparent),transparent)]" />
-      <div className="mx-auto grid max-w-7xl gap-14 px-4 pt-14 pb-20 md:px-10 md:pt-20 lg:min-h-[calc(100dvh-4rem)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-12 lg:pt-12 lg:pb-16">
-        <div className="flex flex-col">
-          <p className="mb-6 rise font-mono text-xs text-muted-foreground">
-            shadcn registry, namespace{" "}
-            <span className="text-brand">@drift-ui</span>
-          </p>
-          <h1 className="rise text-5xl leading-[1.02] font-medium tracking-tighter [--rise-delay:80ms] md:text-6xl lg:text-5xl xl:text-6xl">
-            <span className="block sm:whitespace-nowrap">The components</span>
-            <span className="block sm:whitespace-nowrap">shadcn left out</span>
+      <SlotPattern className="absolute inset-0 -z-10 hidden size-full [mask-image:radial-gradient(ellipse_44%_52%_at_50%_48%,transparent_45%,black_100%)] text-foreground/[0.05] lg:block" />
+      <div className="absolute top-1/2 left-1/2 -z-10 aspect-square w-[56rem] max-w-[140vw] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--brand-solid)_13%,transparent),transparent)]" />
+      <DriftStage className="mx-auto max-w-[96rem] px-4 pt-14 pb-20 md:px-10 lg:flex lg:min-h-[max(40rem,calc(100dvh-4rem))] lg:items-center lg:justify-center lg:py-16">
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <h1 className="rise font-display text-[clamp(3rem,6.6vw,7.25rem)] leading-[0.9] font-semibold tracking-[-0.05em]">
+            <span className="block whitespace-nowrap">The components</span>
+            <span className="block whitespace-nowrap">
+              shadcn left <DriftWord>out</DriftWord>
+            </span>
           </h1>
-          <p className="mt-6 max-w-[40ch] rise text-base leading-relaxed text-muted-foreground [--rise-delay:160ms] md:text-lg">
-            Tags input, stepper, tree view and 13 more. Built on Radix or Base
-            UI, styled by your tokens, installed with the shadcn CLI.
+          <p className="mt-8 max-w-[38ch] rise text-lg leading-relaxed text-muted-foreground [--rise-delay:120ms] md:text-xl">
+            Tags input, tree view, stepper and 13 more. Built on Radix or Base
+            UI, styled by the tokens you already have.
           </p>
-          <div className="mt-10 flex rise flex-col gap-3 [--rise-delay:240ms] sm:flex-row sm:flex-wrap sm:items-center">
-            <Button asChild size="lg" className="active:scale-[0.98]">
+          <div className="mt-10 flex rise flex-col items-center gap-3 [--rise-delay:200ms] sm:flex-row">
+            <Button asChild size="lg" className="h-11 px-5 active:scale-[0.98]">
               <Link href="/components">
                 Browse components <ArrowRightIcon />
               </Link>
             </Button>
-            <CopyCommand command="npx shadcn add @drift-ui/tags-input" />
+            <CopyCommand
+              command="npx shadcn add @drift-ui/tags-input"
+              className="min-h-11"
+            />
           </div>
         </div>
-        <HeroPanel className="rise [--rise-delay:360ms]" />
-      </div>
+      </DriftStage>
     </section>
   )
 }
