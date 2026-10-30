@@ -5,11 +5,16 @@
     "website": "https://localhostdeveloper.com",
     "role": "maintainer",
     "components": [
+      "avatar",
+      "avatar-group",
       "color-picker",
       "date-time-range",
+      "description-list",
       "file-dropzone",
       "filter-chip",
+      "json-viewer",
       "multi-select",
+      "rating",
       "recurrence-editor",
       "tour-spotlight"
     ],
@@ -28,6 +33,11 @@
         "number": 25,
         "title": "feat(recurrence-editor): add recurrence editor component",
         "mergedAt": "2026-10-28T15:29:22Z"
+      },
+      {
+        "number": 26,
+        "title": "feat: add rating, avatar-group, description-list and json-viewer",
+        "mergedAt": "2026-10-30T16:36:08Z"
       }
     ]
   },
