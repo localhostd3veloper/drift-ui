@@ -634,6 +634,25 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "rating",
+      "type": "registry:ui",
+      "title": "Rating",
+      "description": "Pick a score with stars or any icon, in whole or half steps, from the keyboard or pointer.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@drift-ui/use-controllable-state"
+      ],
+      "files": [
+        {
+          "path": "registry/default/ui/rating.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

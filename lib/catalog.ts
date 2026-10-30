@@ -58,6 +58,7 @@ const ENTRY_LAYOUT: {
   { slug: "multi-select", category: "inputs" },
   { slug: "number-input", category: "inputs" },
   { slug: "password-input", category: "inputs" },
+  { slug: "rating", category: "inputs" },
   { slug: "date-time-range", category: "inputs" },
   { slug: "time-field", category: "inputs", stageClassName: "gap-8" },
   { slug: "recurrence-editor", category: "inputs" },

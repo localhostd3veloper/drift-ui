@@ -922,4 +922,50 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       ],
     },
   ],
+  rating: [
+    {
+      name: "Rating",
+      description:
+        "A WAI-ARIA radio group of icons. Arrow keys raise or lower the score by one step, Home and End jump to the ends, and hovering previews a score. Pass aria-label.",
+      props: [
+        STATE_PROPS.value("number", "score"),
+        STATE_PROPS.defaultValue("number", "0"),
+        STATE_PROPS.onValueChange(
+          "(value: number) => void",
+          "with the new score"
+        ),
+        {
+          name: "max",
+          type: "number",
+          default: "5",
+          description: "Number of icons.",
+        },
+        {
+          name: "step",
+          type: "1 | 0.5",
+          default: "1",
+          description: "0.5 lets each icon fill by half.",
+        },
+        {
+          name: "icon",
+          type: "ReactNode",
+          default: "<StarIcon />",
+          description:
+            "SVG icon drawn for each point. Filled with the root's text color.",
+        },
+        {
+          name: "readOnly",
+          type: "boolean",
+          description:
+            'Shows the score without radios, as an image labelled like "3.5 out of 5".',
+        },
+        {
+          name: "disabled",
+          type: "boolean",
+          description: "Dims the rating and removes it from the tab order.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
 }

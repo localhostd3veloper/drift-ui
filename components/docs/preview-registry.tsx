@@ -29,6 +29,7 @@ import { MultiSelectPreview } from "@/components/preview/multi-select-preview"
 import { NumberInputPreview } from "@/components/preview/number-input-preview"
 import { PasswordInputPreview } from "@/components/preview/password-input-preview"
 import { PopoverPreview } from "@/components/preview/popover-preview"
+import { RatingPreview } from "@/components/preview/rating-preview"
 import { RecurrenceEditorPreview } from "@/components/preview/recurrence-editor-preview"
 import { ShortcutRecorderPreview } from "@/components/preview/shortcut-recorder-preview"
 import { StepperPreview } from "@/components/preview/stepper-preview"
@@ -57,6 +58,7 @@ export const PREVIEWS: Record<string, ComponentType> = {
   "number-input": NumberInputPreview,
   "password-input": PasswordInputPreview,
   popover: PopoverPreview,
+  rating: RatingPreview,
   "recurrence-editor": RecurrenceEditorPreview,
   "shortcut-recorder": ShortcutRecorderPreview,
   stepper: StepperPreview,

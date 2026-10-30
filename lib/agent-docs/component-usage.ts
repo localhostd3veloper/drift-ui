@@ -338,4 +338,17 @@ export function ProjectName() {
   return <InlineEdit aria-label="Project name" value={name} onSave={setName} />
 }`,
   },
+  rating: {
+    notes:
+      'Radio group of icons for a score. Controlled with value/onValueChange or uncontrolled with defaultValue (0 means no rating). max sets the icon count (default 5), step={0.5} allows half scores, icon swaps the default lucide Star for any SVG icon. Arrow keys change the score, Home and End jump to the ends. readOnly renders a role=img labelled like "3.5 out of 5". The fill color is the root\'s text color (text-primary), so className="text-chart-4" recolors it. Pass aria-label.',
+    example: `"use client"
+
+import { useState } from "react"
+import { Rating } from "@/components/ui/rating"
+
+export function ReviewScore() {
+  const [score, setScore] = useState(0)
+  return <Rating aria-label="Your rating" value={score} onValueChange={setScore} step={0.5} />
+}`,
+  },
 }
