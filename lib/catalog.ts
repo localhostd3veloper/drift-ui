@@ -64,6 +64,7 @@ const ENTRY_LAYOUT: {
   { slug: "recurrence-editor", category: "inputs" },
   { slug: "color-picker", category: "inputs" },
   { slug: "mention-textarea", category: "inputs" },
+  { slug: "emoji-picker", category: "inputs" },
   { slug: "shortcut-recorder", category: "inputs", stageClassName: "gap-8" },
   { slug: "file-dropzone", category: "inputs" },
   { slug: "inline-edit", category: "inputs" },

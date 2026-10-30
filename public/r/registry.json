@@ -573,6 +573,28 @@
           "type": "registry:lib"
         }
       ]
+    },
+    {
+      "name": "emoji-picker",
+      "type": "registry:ui",
+      "title": "Emoji Picker",
+      "description": "Searchable emoji grid with categories, skin tones, recently used emoji and arrow-key navigation. Emoji data loads on demand.",
+      "dependencies": ["emojibase-data", "lucide-react"],
+      "registryDependencies": [
+        "utils",
+        "input",
+        "@drift-ui/use-controllable-state"
+      ],
+      "files": [
+        {
+          "path": "registry/default/ui/emoji-picker.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/default/lib/emoji-picker.ts",
+          "type": "registry:lib"
+        }
+      ]
     }
   ]
 }

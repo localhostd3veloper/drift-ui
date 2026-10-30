@@ -1074,4 +1074,35 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       rest: "<div>",
     },
   ],
+  "emoji-picker": [
+    {
+      name: "EmojiPicker",
+      description:
+        "An inline emoji panel with search, categories, skin tones and recently used emoji. Data loads on first mount, and recents and the skin tone persist in localStorage.",
+      props: [
+        {
+          name: "onSelect",
+          type: "(emoji: string) => void",
+          description: "Called with the chosen emoji, skin tone applied.",
+        },
+        {
+          name: "skinTone",
+          type: "0 | 1 | 2 | 3 | 4 | 5",
+          description: "Controlled skin tone. 0 is the default yellow.",
+        },
+        {
+          name: "defaultSkinTone",
+          type: "0 | 1 | 2 | 3 | 4 | 5",
+          default: "0",
+          description: "Tone to use until the user picks one.",
+        },
+        {
+          name: "onSkinToneChange",
+          type: "(skinTone: 0 | 1 | 2 | 3 | 4 | 5) => void",
+          description: "Called when the user picks a skin tone.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
 }
