@@ -355,6 +355,21 @@ export function ReviewScore() {
   return <Rating aria-label="Your rating" value={score} onValueChange={setScore} step={0.5} />
 }`,
   },
+  "avatar-group": {
+    notes:
+      "AvatarGroup stacks AvatarGroupItem children with overlap. max shows that many avatars and turns the rest into a +N button that opens a popover listing them by name. AvatarGroupItem takes name (required, used for initials, the title tooltip and the screen reader label), src and status (online, away, busy or offline) for a presence dot. Built on the shadcn avatar and popover primitives. Pass aria-label to the group.",
+    example: `import { AvatarGroup, AvatarGroupItem } from "@/components/ui/avatar-group"
+
+export function Assignees({ users }: { users: { id: string; name: string; image?: string }[] }) {
+  return (
+    <AvatarGroup aria-label="Assignees" max={4}>
+      {users.map((user) => (
+        <AvatarGroupItem key={user.id} name={user.name} src={user.image} status="online" />
+      ))}
+    </AvatarGroup>
+  )
+}`,
+  },
   "description-list": {
     notes:
       'DescriptionList renders a <dl> grid and DescriptionItem renders one label and value row. copyable adds a copy button for the value. editable turns string children into an InlineEdit that calls onValueChange(value), which may return a promise; the parent re-renders with the new text, so keep the value in state. Pass a string label so buttons get names like "Copy ID".',

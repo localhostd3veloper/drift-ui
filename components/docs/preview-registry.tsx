@@ -11,6 +11,7 @@ import { MultiSelectPreview as BaseUiMultiSelectPreview } from "@/components/pre
 import { PopoverPreview as BaseUiPopoverPreview } from "@/components/preview/base/popover-preview"
 import { StepperPreview as BaseUiStepperPreview } from "@/components/preview/base/stepper-preview"
 import { TourPreview as BaseUiTourPreview } from "@/components/preview/base/tour-preview"
+import { AvatarGroupPreview } from "@/components/preview/avatar-group-preview"
 import { AvatarPreview } from "@/components/preview/avatar-preview"
 import { BadgePreview } from "@/components/preview/badge-preview"
 import { BulkActionBarPreview } from "@/components/preview/bulk-action-bar-preview"
@@ -42,6 +43,7 @@ import { TreeViewPreview } from "@/components/preview/tree-view-preview"
 
 export const PREVIEWS: Record<string, ComponentType> = {
   avatar: AvatarPreview,
+  "avatar-group": AvatarGroupPreview,
   badge: BadgePreview,
   "bulk-action-bar": BulkActionBarPreview,
   button: ButtonPreview,

@@ -668,6 +668,24 @@
       ]
     },
     {
+      "name": "avatar-group",
+      "type": "registry:ui",
+      "title": "Avatar Group",
+      "description": "Stacked avatars with presence dots and a +N overflow that lists the rest.",
+      "registryDependencies": [
+        "utils",
+        "avatar",
+        "popover"
+      ],
+      "files": [
+        {
+          "path": "registry/default/ui/avatar-group.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": []
+    },
+    {
       "name": "description-list",
       "type": "registry:ui",
       "title": "Description List",

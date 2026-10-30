@@ -71,6 +71,7 @@ const ENTRY_LAYOUT: {
   { slug: "stepper", category: "structure" },
   { slug: "timeline", category: "structure" },
   { slug: "description-list", category: "structure" },
+  { slug: "avatar-group", category: "structure" },
   {
     slug: "filter-builder",
     category: "workflow",

@@ -968,6 +968,42 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       rest: "<div>",
     },
   ],
+  "avatar-group": [
+    {
+      name: "AvatarGroup",
+      description:
+        "Stacks its AvatarGroupItem children with overlap. Avatars past max collapse into a +N button that opens a popover listing them. Pass aria-label.",
+      props: [
+        {
+          name: "max",
+          type: "number",
+          description: "Most avatars shown before the +N button.",
+        },
+      ],
+      rest: "<div>",
+    },
+    {
+      name: "AvatarGroupItem",
+      description:
+        "One avatar built on the shadcn Avatar, with initials as the fallback and an optional presence dot.",
+      props: [
+        {
+          name: "name",
+          type: "string",
+          required: true,
+          description:
+            "Used for the initials, the tooltip and the screen reader label.",
+        },
+        { name: "src", type: "string", description: "Image URL." },
+        {
+          name: "status",
+          type: '"online" | "away" | "busy" | "offline"',
+          description: "Adds a presence dot and reads the status aloud.",
+        },
+      ],
+      rest: "<span>",
+    },
+  ],
   "description-list": [
     {
       name: "DescriptionList",
