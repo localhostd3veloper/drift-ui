@@ -397,4 +397,21 @@ export function WebhookPayload({ payload }: { payload: unknown }) {
   return <JsonViewer aria-label="Webhook payload" data={payload} defaultExpandDepth={2} />
 }`,
   },
+  "diff-viewer": {
+    notes:
+      "Compares two strings line by line with no dependencies. mode is split (default) or unified, and the component holds no mode state, so a mode switch belongs to the parent. Replaced lines that share a word get word-level highlights in ins and del elements. Runs of unchanged lines beyond contextLines (default 3) collapse behind a Show N unchanged lines button that stays in place as Hide once open, so keyboard focus stays on it. Added lines use the chart-2 token and removed lines use destructive; every changed line also has a + or - sign and screen reader text, so color is not the only signal. Past 2000 edits the middle of the text is shown as one full replacement, which keeps two unrelated large inputs from using unbounded memory. Pass aria-label to name the table.",
+    example: `import { DiffViewer } from "@/components/ui/diff-viewer"
+
+export function RevisionDiff({ before, after }: { before: string; after: string }) {
+  return (
+    <DiffViewer
+      aria-label="Changes to billing.yaml"
+      oldValue={before}
+      newValue={after}
+      mode="unified"
+      contextLines={2}
+    />
+  )
+}`,
+  },
 }

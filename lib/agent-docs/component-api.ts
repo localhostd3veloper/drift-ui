@@ -1074,4 +1074,38 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       rest: "<div>",
     },
   ],
+  "diff-viewer": [
+    {
+      name: "DiffViewer",
+      description:
+        "A line diff of two strings with word-level highlights inside replaced lines. Unchanged runs collapse behind a button that expands them in place.",
+      props: [
+        {
+          name: "oldValue",
+          type: "string",
+          required: true,
+          description: "The text before the change.",
+        },
+        {
+          name: "newValue",
+          type: "string",
+          required: true,
+          description: "The text after the change.",
+        },
+        {
+          name: "mode",
+          type: '"split" | "unified"',
+          default: '"split"',
+          description: "Two columns side by side, or one column.",
+        },
+        {
+          name: "contextLines",
+          type: "number",
+          default: "3",
+          description: "Unchanged lines kept visible next to each change.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
 }
