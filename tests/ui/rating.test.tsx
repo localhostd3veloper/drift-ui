@@ -58,6 +58,23 @@ describe("Rating", () => {
     expect(checked()).toHaveAccessibleName("0.5 out of 5")
   })
 
+  it("shows the keyboard score while the pointer rests on a star", async () => {
+    const user = userEvent.setup()
+    render(<Rating aria-label="Score" />)
+
+    await user.click(screen.getByRole("radio", { name: "4 out of 5" }))
+    await user.keyboard("{Home}")
+
+    expect(checked()).toHaveAccessibleName("1 out of 5")
+    expect(
+      [
+        ...document.querySelectorAll<HTMLElement>(
+          '[data-slot="rating-item"] > span:nth-child(2)'
+        ),
+      ].map((fill) => fill.style.width)
+    ).toEqual(["100%", "0%", "0%", "0%", "0%"])
+  })
+
   it("follows a controlled value", async () => {
     const user = userEvent.setup()
     const onValueChange = vi.fn()

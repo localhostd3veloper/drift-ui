@@ -74,6 +74,7 @@ function Rating({
       default:
         return
     }
+    setHovered(null)
     event.preventDefault()
   }
 
