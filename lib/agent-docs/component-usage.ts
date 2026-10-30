@@ -94,6 +94,23 @@ export function RevisionDiff({ before, after }: { before: string; after: string 
   )
 }`,
   },
+  "emoji-picker": {
+    notes:
+      "An inline panel: it has no trigger, so wrap it in a Popover for a reaction button, and override the border with className if the panel doubles it. onSelect(emoji) receives the emoji string, with the skin tone applied. Emoji data comes from emojibase-data through a dynamic import on first mount (about 100 KB gzipped) and is cached for later mounts. Emoji newer than Emoji 15 are left out so older systems do not show empty boxes. Recent emoji and the skin tone persist in localStorage under drift-ui:emoji-picker; recents appear on the next mount, so the grid never shifts under the pointer. skinTone (0 to 5, 0 is the default yellow) with onSkinToneChange makes the tone controlled, and defaultSkinTone sets it until the user picks one. Keyboard: ArrowDown leaves the search field for the grid, arrow keys move between emoji, ArrowUp from the top row returns to search, Home and End go to the row ends, Ctrl or Cmd with Home or End go to the grid ends, PageUp and PageDown jump between categories, Enter or Space selects, and Enter in the search field selects the first result. Category icons are pointer shortcuts, hidden from the keyboard and screen readers because PageUp and PageDown do the same job.",
+    example: `import { EmojiPicker } from "@/components/ui/emoji-picker"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+
+export function ReactionButton({ onReact }: { onReact: (emoji: string) => void }) {
+  return (
+    <Popover>
+      <PopoverTrigger>Add reaction</PopoverTrigger>
+      <PopoverContent className="w-auto p-0">
+        <EmojiPicker aria-label="Add a reaction" onSelect={onReact} className="border-0" />
+      </PopoverContent>
+    </Popover>
+  )
+}`,
+  },
   "file-dropzone": {
     notes:
       "FileDropzone validates accept (extensions, MIME types, image/*), maxSize in bytes and maxFiles, then calls onFilesAccepted(files) and onFilesRejected(rejections) where each rejection has { file, reason: 'type' | 'size' | 'count' }. It does not upload or store files: keep the list in your own state and render FileDropzoneList > FileDropzoneItem(name, size, progress?, error?, onRemove?). formatBytes is exported.",
@@ -274,6 +291,33 @@ export function CommandMenuShortcut() {
       <ShortcutRecorder aria-label="Command menu shortcut" defaultValue="Mod+K" />
       <ShortcutKeys shortcut="Mod+Shift+P" />
     </div>
+  )
+}`,
+  },
+  "sortable-list": {
+    notes:
+      "Reorderable list with drag-and-drop and full keyboard accessibility. Controlled with value/onValueChange or uncontrolled with defaultValue. Space/Enter picks up or drops an item, ArrowUp/ArrowDown (or ArrowLeft/ArrowRight for horizontal) moves it, Escape cancels and restores original order. Screen readers receive live status announcements. Supports optional SortableDragHandle for grab-only handles.",
+    example: `import {
+  SortableDragHandle,
+  SortableItem,
+  SortableList,
+} from "@/components/ui/sortable-list"
+
+const tasks = [
+  { id: "1", title: "Review pull requests" },
+  { id: "2", title: "Update documentation" },
+]
+
+export function TaskList() {
+  return (
+    <SortableList defaultValue={tasks} getKey={(task) => task.id}>
+      {(task) => (
+        <SortableItem key={task.id} value={task.id}>
+          <SortableDragHandle />
+          <span>{task.title}</span>
+        </SortableItem>
+      )}
+    </SortableList>
   )
 }`,
   },

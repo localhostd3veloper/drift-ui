@@ -22,6 +22,7 @@ import { DateTimeRangePreview } from "@/components/preview/date-time-range-previ
 import { DescriptionListPreview } from "@/components/preview/description-list-preview"
 import { DialogPreview } from "@/components/preview/dialog-preview"
 import { DiffViewerPreview } from "@/components/preview/diff-viewer-preview"
+import { EmojiPickerPreview } from "@/components/preview/emoji-picker-preview"
 import { FileDropzonePreview } from "@/components/preview/file-dropzone-preview"
 import { FilterBuilderPreview } from "@/components/preview/filter-builder-preview"
 import { InlineEditPreview } from "@/components/preview/inline-edit-preview"
@@ -36,6 +37,7 @@ import { PopoverPreview } from "@/components/preview/popover-preview"
 import { RatingPreview } from "@/components/preview/rating-preview"
 import { RecurrenceEditorPreview } from "@/components/preview/recurrence-editor-preview"
 import { ShortcutRecorderPreview } from "@/components/preview/shortcut-recorder-preview"
+import { SortableListPreview } from "@/components/preview/sortable-list-preview"
 import { StepperPreview } from "@/components/preview/stepper-preview"
 import { TagsInputPreview } from "@/components/preview/tags-input-preview"
 import { TimeFieldPreview } from "@/components/preview/time-field-preview"
@@ -56,6 +58,7 @@ export const PREVIEWS: Record<string, ComponentType> = {
   "description-list": DescriptionListPreview,
   dialog: DialogPreview,
   "diff-viewer": DiffViewerPreview,
+  "emoji-picker": EmojiPickerPreview,
   "file-dropzone": FileDropzonePreview,
   "filter-builder": FilterBuilderPreview,
   "inline-edit": InlineEditPreview,
@@ -70,6 +73,7 @@ export const PREVIEWS: Record<string, ComponentType> = {
   rating: RatingPreview,
   "recurrence-editor": RecurrenceEditorPreview,
   "shortcut-recorder": ShortcutRecorderPreview,
+  "sortable-list": SortableListPreview,
   stepper: StepperPreview,
   "tags-input": TagsInputPreview,
   "time-field": TimeFieldPreview,

@@ -10,6 +10,7 @@
       "color-picker",
       "date-time-range",
       "description-list",
+      "emoji-picker",
       "file-dropzone",
       "filter-chip",
       "json-viewer",
@@ -49,6 +50,11 @@
         "number": 31,
         "title": "chore(registry): reduce merge conflicts between pull requests",
         "mergedAt": "2026-10-30T17:40:37Z"
+      },
+      {
+        "number": 30,
+        "title": "feat(emoji-picker): add emoji picker component",
+        "mergedAt": "2026-10-30T18:05:02Z"
       }
     ]
   },
@@ -57,7 +63,15 @@
     "name": "Syed Fahad Junaid",
     "website": "https://syedfahadjunaid.netlify.app",
     "role": "maintainer",
-    "components": [],
-    "pullRequests": []
+    "components": [
+      "sortable-list"
+    ],
+    "pullRequests": [
+      {
+        "number": 27,
+        "title": "feat(sortable-list): add sortable list component",
+        "mergedAt": "2026-10-30T18:06:11Z"
+      }
+    ]
   }
 ]

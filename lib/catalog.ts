@@ -56,6 +56,7 @@ const ENTRY_LAYOUT: {
 }[] = [
   { slug: "color-picker", category: "inputs" },
   { slug: "date-time-range", category: "inputs" },
+  { slug: "emoji-picker", category: "inputs" },
   { slug: "file-dropzone", category: "inputs" },
   { slug: "inline-edit", category: "inputs" },
   { slug: "mention-textarea", category: "inputs" },
@@ -71,6 +72,7 @@ const ENTRY_LAYOUT: {
   { slug: "description-list", category: "structure" },
   { slug: "diff-viewer", category: "structure" },
   { slug: "json-viewer", category: "structure" },
+  { slug: "sortable-list", category: "structure" },
   { slug: "stepper", category: "structure" },
   { slug: "timeline", category: "structure" },
   { slug: "tree-view", category: "structure" },
