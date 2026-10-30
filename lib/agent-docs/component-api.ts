@@ -1074,4 +1074,47 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       rest: "<div>",
     },
   ],
+  "virtual-list": [
+    {
+      name: "VirtualList",
+      signature: "<T>",
+      description:
+        "A scrolling list that mounts only the rows in view. Rows measure themselves, so heights can vary, and the focused row stays mounted while scrolled away. Set a height through className.",
+      props: [
+        {
+          name: "items",
+          type: "T[]",
+          required: true,
+          description: "The full list of rows.",
+        },
+        {
+          name: "estimateSize",
+          type: "number",
+          required: true,
+          description:
+            "Height in pixels assumed for a row until it is measured.",
+        },
+        {
+          name: "children",
+          type: "(item: T, index: number) => ReactNode",
+          required: true,
+          description: "Renders one row.",
+        },
+        {
+          name: "overscan",
+          type: "number",
+          default: "4",
+          description: "Extra rows mounted above and below the viewport.",
+        },
+        {
+          name: "getItemKey",
+          type: "(item: T, index: number) => Key",
+          default: "index",
+          description:
+            "Stable identity for a row, so measured heights and focus follow it when the list changes.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
 }

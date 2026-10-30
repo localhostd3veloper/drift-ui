@@ -573,6 +573,23 @@
           "type": "registry:lib"
         }
       ]
+    },
+    {
+      "name": "virtual-list",
+      "type": "registry:ui",
+      "title": "Virtual List",
+      "description": "Renders only the visible rows of a long list, with variable row heights and keyboard focus that survives scrolling.",
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "registry/default/ui/virtual-list.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/default/lib/virtual-list.ts",
+          "type": "registry:lib"
+        }
+      ]
     }
   ]
 }

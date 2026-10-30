@@ -397,4 +397,23 @@ export function WebhookPayload({ payload }: { payload: unknown }) {
   return <JsonViewer aria-label="Webhook payload" data={payload} defaultExpandDepth={2} />
 }`,
   },
+  "virtual-list": {
+    notes:
+      "Renders only the rows in view plus overscan (default 4 on each side). Give the list a fixed height through className, a row size guess through estimateSize, and a render function as children. Rows measure themselves, so heights can vary, and a row growing above the viewport does not shift what is on screen. Pass getItemKey for any list that can reorder or take inserts, so measured heights and focus follow the item rather than the index. The list has one tab stop. Arrow keys, PageUp, PageDown, Home and End move between rows, including rows not mounted yet, and the focused row stays mounted while scrolled away. Arrow keys typed inside a control in a row stay with that control. Pass aria-label to name the list.",
+    example: `import { VirtualList } from "@/components/ui/virtual-list"
+
+export function DeployLog({ lines }: { lines: { id: string; text: string }[] }) {
+  return (
+    <VirtualList
+      aria-label="Deploy log"
+      items={lines}
+      estimateSize={32}
+      getItemKey={(line) => line.id}
+      className="h-96 rounded-lg border"
+    >
+      {(line) => <div className="px-3 py-1.5 font-mono text-xs">{line.text}</div>}
+    </VirtualList>
+  )
+}`,
+  },
 }
