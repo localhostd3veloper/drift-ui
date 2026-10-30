@@ -10,6 +10,7 @@
       "color-picker",
       "date-time-range",
       "description-list",
+      "diff-viewer",
       "emoji-picker",
       "file-dropzone",
       "filter-chip",
@@ -55,6 +56,11 @@
         "number": 30,
         "title": "feat(emoji-picker): add emoji picker component",
         "mergedAt": "2026-10-30T18:05:02Z"
+      },
+      {
+        "number": 29,
+        "title": "feat(diff-viewer): add diff viewer component",
+        "mergedAt": "2026-10-30T18:11:03Z"
       }
     ]
   },
