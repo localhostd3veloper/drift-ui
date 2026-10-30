@@ -20,9 +20,9 @@ import { TreeView, type TreeNode } from "@/registry/default/ui/tree-view"
 type CopyTarget = "value" | "path"
 
 const TYPE_CLASSES: Record<string, string> = {
-  string: "text-chart-2",
-  number: "text-chart-1",
-  boolean: "text-chart-3",
+  string: "text-[color-mix(in_oklab,var(--chart-2)_65%,var(--foreground))]",
+  number: "text-[color-mix(in_oklab,var(--chart-1)_65%,var(--foreground))]",
+  boolean: "text-[color-mix(in_oklab,var(--chart-3)_65%,var(--foreground))]",
   object: "text-muted-foreground italic",
 }
 
@@ -88,6 +88,9 @@ function JsonViewer({
   const [expanded, setExpanded] = React.useState(() =>
     expandedToDepth(data, defaultExpandDepth)
   )
+  const [expandedBeforeSearch, setExpandedBeforeSearch] = React.useState<
+    string[] | null
+  >(null)
   const [query, setQuery] = React.useState("")
   const { copied, copy } = useCopyToClipboard()
   const needle = query.trim()
@@ -107,9 +110,10 @@ function JsonViewer({
 
   function search(next: string) {
     setQuery(next)
+    const base = expandedBeforeSearch ?? expanded
     const { ancestors } = searchJson(data, next)
-    if (ancestors.size === 0) return
-    setExpanded((previous) => [...new Set([...previous, ...ancestors])])
+    setExpandedBeforeSearch(next.trim() ? base : null)
+    setExpanded([...new Set([...base, ...ancestors])])
   }
 
   function renderRow(entry: JsonEntry) {
@@ -145,7 +149,10 @@ function JsonViewer({
           </span>
         )}
         <ValueText value={entry.value} query={needle} />
-        <span className="inline-flex opacity-0 transition-opacity [[role=treeitem]:focus-visible_&]:opacity-100 [[role=treeitem]:hover_&]:opacity-100">
+        <span
+          aria-hidden
+          className="inline-flex opacity-0 transition-opacity pointer-coarse:opacity-100 [[role=treeitem]:focus-visible_&]:opacity-100 [[role=treeitem]:hover_&]:opacity-100"
+        >
           {(["value", "path"] as const).map((target) => (
             <button
               key={target}

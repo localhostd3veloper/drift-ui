@@ -390,7 +390,7 @@ export function UserDetails() {
   },
   "json-viewer": {
     notes:
-      "Read-only JSON tree built on tree-view, so arrow keys, Home, End and typeahead work. defaultExpandDepth (default 1) opens that many levels. Strings, numbers, booleans and null use the chart-2, chart-1 and chart-3 tokens and muted text. The search field highlights matching keys and values and opens their parents. Each row has copy value and copy path buttons; from the keyboard, Ctrl or Cmd+C copies the focused value and Shift+Ctrl or Cmd+C copies its path, like users[0].name. onCopy(path, value, target) runs after a copy. Arrays over 100 items split into groups of 100 and only open branches render.",
+      "Read-only JSON tree built on tree-view, so arrow keys, Home, End and typeahead work. defaultExpandDepth (default 1) opens that many levels. Strings, numbers and booleans use the chart-2, chart-1 and chart-3 tokens mixed with foreground for readable contrast, and null uses muted text. The search field highlights matching keys and values and opens their parents. Each row has pointer-only copy value and copy path buttons, shown on hover or always on touch screens; from the keyboard, Ctrl or Cmd+C copies the focused value and Shift+Ctrl or Cmd+C copies its path, like users[0].name. onCopy(path, value, target) runs after a copy. Arrays over 100 items split into groups of 100 and only open branches render.",
     example: `import { JsonViewer } from "@/components/ui/json-viewer"
 
 export function WebhookPayload({ payload }: { payload: unknown }) {

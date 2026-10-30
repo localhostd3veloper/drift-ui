@@ -64,7 +64,10 @@ describe("JsonViewer", () => {
     render(<JsonViewer data={PAYLOAD} />)
 
     await user.click(
-      within(row(/^customer/)).getByRole("button", { name: "Copy value" })
+      within(row(/^customer/)).getByRole("button", {
+        name: "Copy value",
+        hidden: true,
+      })
     )
 
     expect(JSON.parse(await navigator.clipboard.readText())).toEqual(
@@ -82,6 +85,37 @@ describe("JsonViewer", () => {
     expect(screen.getByText("1 match")).toBeInTheDocument()
     expect(row(/^lines/)).toHaveAttribute("aria-expanded", "true")
     expect(row(/^amount/).querySelector("mark")).toHaveTextContent("4900")
+  })
+
+  it("opens only the current query's parents and restores them when cleared", async () => {
+    const user = userEvent.setup()
+    render(
+      <JsonViewer
+        data={{ one: { alpha: 1 }, two: { ana: 2 } }}
+        defaultExpandDepth={0}
+      />
+    )
+    const search = screen.getByRole("searchbox")
+
+    await user.type(search, "a")
+    expect(row(/^one/)).toHaveAttribute("aria-expanded", "true")
+    expect(row(/^two/)).toHaveAttribute("aria-expanded", "true")
+
+    await user.type(search, "n")
+    expect(row(/^one/)).toHaveAttribute("aria-expanded", "false")
+    expect(row(/^two/)).toHaveAttribute("aria-expanded", "true")
+
+    await user.clear(search)
+    expect(row(/^one/)).toHaveAttribute("aria-expanded", "false")
+    expect(row(/^two/)).toHaveAttribute("aria-expanded", "false")
+  })
+
+  it("keeps row names free of the pointer-only copy buttons", () => {
+    render(<JsonViewer data={PAYLOAD} />)
+
+    expect(
+      within(row(/^id:/)).queryByRole("button", { name: "Copy value" })
+    ).not.toBeInTheDocument()
   })
 
   it("groups large arrays into ranges of 100", async () => {
