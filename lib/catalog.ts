@@ -71,6 +71,7 @@ const ENTRY_LAYOUT: {
   { slug: "avatar-group", category: "structure" },
   { slug: "description-list", category: "structure" },
   { slug: "json-viewer", category: "structure" },
+  { slug: "sortable-list", category: "structure" },
   { slug: "stepper", category: "structure" },
   { slug: "timeline", category: "structure" },
   { slug: "tree-view", category: "structure" },

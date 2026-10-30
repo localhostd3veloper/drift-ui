@@ -277,6 +277,33 @@ export function CommandMenuShortcut() {
   )
 }`,
   },
+  "sortable-list": {
+    notes:
+      "Reorderable list with drag-and-drop and full keyboard accessibility. Controlled with value/onValueChange or uncontrolled with defaultValue. Space/Enter picks up or drops an item, ArrowUp/ArrowDown (or ArrowLeft/ArrowRight for horizontal) moves it, Escape cancels and restores original order. Screen readers receive live status announcements. Supports optional SortableDragHandle for grab-only handles.",
+    example: `import {
+  SortableDragHandle,
+  SortableItem,
+  SortableList,
+} from "@/components/ui/sortable-list"
+
+const tasks = [
+  { id: "1", title: "Review pull requests" },
+  { id: "2", title: "Update documentation" },
+]
+
+export function TaskList() {
+  return (
+    <SortableList defaultValue={tasks} getKey={(task) => task.id}>
+      {(task) => (
+        <SortableItem key={task.id} value={task.id}>
+          <SortableDragHandle />
+          <span>{task.title}</span>
+        </SortableItem>
+      )}
+    </SortableList>
+  )
+}`,
+  },
   stepper: {
     notes:
       "Built on Radix Tabs, or Base UI Tabs from the Base UI registry. Steps are zero-based numbers: value/defaultValue/onValueChange. linear disables steps beyond the furthest one reached. Compose StepperList > StepperItem(step) > StepperTrigger > StepperIndicator + StepperTitle, plus StepperSeparator and StepperContent(step). StepperNext and StepperPrevious support asChild; pass stepCount so Next disables on the last step. useStepper() exposes activeStep and setActiveStep.",

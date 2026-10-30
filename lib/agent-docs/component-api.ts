@@ -769,6 +769,71 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
         "Import from @/lib/shortcut. Returns true when a keyboard event matches a stored shortcut.",
     },
   ],
+  "sortable-list": [
+    {
+      name: "SortableList",
+      description:
+        "Reorderable list with drag-and-drop and full keyboard accessibility. Space or Enter picks up and drops an item, arrow keys move it, and Escape cancels the reorder.",
+      props: [
+        STATE_PROPS.value("T[]", "list of items"),
+        STATE_PROPS.defaultValue("T[]", "[]"),
+        STATE_PROPS.onValueChange(
+          "(items: T[]) => void",
+          "after an item is moved or dropped"
+        ),
+        {
+          name: "getKey",
+          type: "(item: T, index: number) => string | number",
+          description:
+            "Extracts a unique key from each item. Defaults to item.id or index.",
+        },
+        {
+          name: "getItemLabel",
+          type: "(item: T, index: number) => string",
+          description:
+            "Returns an accessible name for screen reader announcements.",
+        },
+        {
+          name: "orientation",
+          type: '"vertical" | "horizontal"',
+          default: '"vertical"',
+          description: "Layout direction and keyboard arrow axis.",
+        },
+        {
+          name: "disabled",
+          type: "boolean",
+          description:
+            "Prevents dragging and keyboard reordering across the list.",
+        },
+      ],
+      rest: "<ul>",
+    },
+    {
+      name: "SortableItem",
+      description:
+        "An individual reorderable row. If no SortableDragHandle is present inside, the item itself is draggable and keyboard-interactive.",
+      props: [
+        {
+          name: "value",
+          type: "string | number",
+          required: true,
+          description: "Unique identifier matching the item's key.",
+        },
+        {
+          name: "disabled",
+          type: "boolean",
+          description: "Disables reordering for this specific item.",
+        },
+      ],
+      rest: "<li>",
+    },
+    {
+      name: "SortableDragHandle",
+      description:
+        "Optional handle button that restricts dragging and keyboard focus to a grab icon.",
+      rest: "<button>",
+    },
+  ],
   stepper: [
     {
       name: "Stepper",
