@@ -111,6 +111,33 @@ export function OnboardingSteps() {
   )
 }`,
   },
+  "sortable-list": {
+    notes:
+      "Reorderable list with drag-and-drop and full keyboard accessibility. Controlled with value/onValueChange or uncontrolled with defaultValue. Space/Enter picks up or drops an item, ArrowUp/ArrowDown (or ArrowLeft/ArrowRight for horizontal) moves it, Escape cancels and restores original order. Screen readers receive live status announcements. Supports optional SortableDragHandle for grab-only handles.",
+    example: `import {
+  SortableDragHandle,
+  SortableItem,
+  SortableList,
+} from "@/components/ui/sortable-list"
+
+const tasks = [
+  { id: "1", title: "Review pull requests" },
+  { id: "2", title: "Update documentation" },
+]
+
+export function TaskList() {
+  return (
+    <SortableList defaultValue={tasks} getKey={(task) => task.id}>
+      {(task) => (
+        <SortableItem key={task.id} value={task.id}>
+          <SortableDragHandle />
+          <span>{task.title}</span>
+        </SortableItem>
+      )}
+    </SortableList>
+  )
+}`,
+  },
   "number-input": {
     notes:
       "Value is number | null. Props: min, max, step, locale, formatOptions (Intl.NumberFormatOptions, e.g. currency), name (submits the raw number through a hidden input). Arrow keys step, Shift or PageUp/PageDown step by 10x, Home/End jump to min/max. Typed text is parsed with the locale's separators.",

@@ -29,6 +29,7 @@ import { PasswordInputPreview } from "@/components/preview/password-input-previe
 import { PopoverPreview } from "@/components/preview/popover-preview"
 import { RecurrenceEditorPreview } from "@/components/preview/recurrence-editor-preview"
 import { ShortcutRecorderPreview } from "@/components/preview/shortcut-recorder-preview"
+import { SortableListPreview } from "@/components/preview/sortable-list-preview"
 import { StepperPreview } from "@/components/preview/stepper-preview"
 import { TagsInputPreview } from "@/components/preview/tags-input-preview"
 import { TimeFieldPreview } from "@/components/preview/time-field-preview"
@@ -56,6 +57,7 @@ export const PREVIEWS: Record<string, ComponentType> = {
   popover: PopoverPreview,
   "recurrence-editor": RecurrenceEditorPreview,
   "shortcut-recorder": ShortcutRecorderPreview,
+  "sortable-list": SortableListPreview,
   stepper: StepperPreview,
   "tags-input": TagsInputPreview,
   "time-field": TimeFieldPreview,

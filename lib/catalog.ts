@@ -69,6 +69,7 @@ const ENTRY_LAYOUT: {
   { slug: "tree-view", category: "structure" },
   { slug: "stepper", category: "structure" },
   { slug: "timeline", category: "structure" },
+  { slug: "sortable-list", category: "structure" },
   {
     slug: "filter-builder",
     category: "workflow",
