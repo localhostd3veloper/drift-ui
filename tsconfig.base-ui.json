@@ -11,6 +11,7 @@
   },
   "include": ["registry/**/*.ts", "registry/**/*.tsx"],
   "exclude": [
+    "registry/default/ui/avatar.tsx",
     "registry/default/ui/badge.tsx",
     "registry/default/ui/bulk-action-bar.tsx",
     "registry/default/ui/button.tsx",

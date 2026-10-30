@@ -58,6 +58,7 @@ const ENTRY_LAYOUT: {
   { slug: "multi-select", category: "inputs" },
   { slug: "number-input", category: "inputs" },
   { slug: "password-input", category: "inputs" },
+  { slug: "rating", category: "inputs" },
   { slug: "date-time-range", category: "inputs" },
   { slug: "time-field", category: "inputs", stageClassName: "gap-8" },
   { slug: "recurrence-editor", category: "inputs" },
@@ -69,6 +70,9 @@ const ENTRY_LAYOUT: {
   { slug: "tree-view", category: "structure" },
   { slug: "stepper", category: "structure" },
   { slug: "timeline", category: "structure" },
+  { slug: "json-viewer", category: "structure" },
+  { slug: "description-list", category: "structure" },
+  { slug: "avatar-group", category: "structure" },
   {
     slug: "filter-builder",
     category: "workflow",
@@ -92,6 +96,7 @@ const ENTRY_LAYOUT: {
   { slug: "card", category: "primitives" },
   { slug: "dialog", category: "primitives" },
   { slug: "popover", category: "primitives" },
+  { slug: "avatar", category: "primitives" },
 ]
 
 const REGISTRY_ITEMS = new Map(

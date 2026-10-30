@@ -22,6 +22,11 @@ export const COMPONENT_USAGE: Record<string, ComponentUsage> = {
   card: { notes: SAME_AS_SHADCN },
   dialog: { notes: SAME_AS_SHADCN },
   popover: { notes: SAME_AS_SHADCN },
+  avatar: { notes: SAME_AS_SHADCN },
+  "use-copy-to-clipboard": {
+    notes:
+      "Hook returning copy(text, key?) and copied, the key of the last copy (or null once 1.6 seconds pass). Installed automatically by description-list and json-viewer.",
+  },
   "use-controllable-state": {
     notes:
       "Hook shared by several components to support both controlled (value + onValueChange) and uncontrolled (defaultValue) use. Installed automatically as a dependency.",
@@ -335,6 +340,61 @@ import { InlineEdit } from "@/components/ui/inline-edit"
 export function ProjectName() {
   const [name, setName] = useState("Billing migration")
   return <InlineEdit aria-label="Project name" value={name} onSave={setName} />
+}`,
+  },
+  rating: {
+    notes:
+      'Radio group of icons for a score. Controlled with value/onValueChange or uncontrolled with defaultValue (0 means no rating). max sets the icon count (default 5), step={0.5} allows half scores, icon swaps the default lucide Star for any SVG icon. Arrow keys change the score, Home and End jump to the ends. readOnly renders a role=img labelled like "3.5 out of 5". The fill color is the root\'s text color (text-primary), so className="text-chart-4" recolors it. Pass aria-label.',
+    example: `"use client"
+
+import { useState } from "react"
+import { Rating } from "@/components/ui/rating"
+
+export function ReviewScore() {
+  const [score, setScore] = useState(0)
+  return <Rating aria-label="Your rating" value={score} onValueChange={setScore} step={0.5} />
+}`,
+  },
+  "avatar-group": {
+    notes:
+      "AvatarGroup stacks AvatarGroupItem children with overlap. max shows that many avatars and turns the rest into a +N button that opens a popover listing them by name. AvatarGroupItem takes name (required, used for initials, the title tooltip and the screen reader label), src and status (online, away, busy or offline) for a presence dot. Built on the shadcn avatar and popover primitives. Pass aria-label to the group.",
+    example: `import { AvatarGroup, AvatarGroupItem } from "@/components/ui/avatar-group"
+
+export function Assignees({ users }: { users: { id: string; name: string; image?: string }[] }) {
+  return (
+    <AvatarGroup aria-label="Assignees" max={4}>
+      {users.map((user) => (
+        <AvatarGroupItem key={user.id} name={user.name} src={user.image} status="online" />
+      ))}
+    </AvatarGroup>
+  )
+}`,
+  },
+  "description-list": {
+    notes:
+      'DescriptionList renders a <dl> grid and DescriptionItem renders one label and value row. copyable adds a copy button for the value. editable turns string children into an InlineEdit that calls onValueChange(value), which may return a promise; the parent re-renders with the new text, so keep the value in state. Pass a string label so buttons get names like "Copy ID".',
+    example: `"use client"
+
+import { useState } from "react"
+import { DescriptionItem, DescriptionList } from "@/components/ui/description-list"
+
+export function UserDetails() {
+  const [owner, setOwner] = useState("Ana Lima")
+  return (
+    <DescriptionList>
+      <DescriptionItem label="ID" copyable>usr_8f2a</DescriptionItem>
+      <DescriptionItem label="Owner" editable onValueChange={setOwner}>{owner}</DescriptionItem>
+    </DescriptionList>
+  )
+}`,
+  },
+  "json-viewer": {
+    notes:
+      "Read-only JSON tree built on tree-view, so arrow keys, Home, End and typeahead work. defaultExpandDepth (default 1) opens that many levels. Strings, numbers, booleans and null use the chart-2, chart-1 and chart-3 tokens and muted text. The search field highlights matching keys and values and opens their parents. Each row has copy value and copy path buttons; from the keyboard, Ctrl or Cmd+C copies the focused value and Shift+Ctrl or Cmd+C copies its path, like users[0].name. onCopy(path, value, target) runs after a copy. Arrays over 100 items split into groups of 100 and only open branches render.",
+    example: `import { JsonViewer } from "@/components/ui/json-viewer"
+
+export function WebhookPayload({ payload }: { payload: unknown }) {
+  return <JsonViewer aria-label="Webhook payload" data={payload} defaultExpandDepth={2} />
 }`,
   },
 }

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "description-list",
+  "title": "Description List",
+  "description": "Key and value rows for detail pages, with copy buttons and inline editing.",
+  "dependencies": [
+    "lucide-react"
+  ],
+  "registryDependencies": [
+    "utils",
+    "@drift-ui/inline-edit",
+    "@drift-ui/use-copy-to-clipboard"
+  ],
+  "files": [
+    {
+      "path": "registry/default/ui/description-list.tsx",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\nimport { CheckIcon, CopyIcon } from \"lucide-react\"\n\nimport { useCopyToClipboard } from \"@/registry/default/hooks/use-copy-to-clipboard\"\nimport { cn } from \"@/registry/default/lib/utils\"\nimport { InlineEdit } from \"@/registry/default/ui/inline-edit\"\n\nfunction DescriptionList({ className, ...props }: React.ComponentProps<\"dl\">) {\n  return (\n    <dl\n      data-slot=\"description-list\"\n      className={cn(\n        \"grid grid-cols-[minmax(6rem,auto)_1fr] gap-x-6 text-sm\",\n        className\n      )}\n      {...props}\n    />\n  )\n}\n\nfunction DescriptionItem({\n  label,\n  copyable = false,\n  editable = false,\n  onValueChange,\n  placeholder,\n  children,\n  className,\n  ...props\n}: React.ComponentProps<\"div\"> & {\n  label: React.ReactNode\n  copyable?: boolean\n  editable?: boolean\n  onValueChange?: (value: string) => void | Promise<void>\n  placeholder?: string\n}) {\n  const { copied, copy } = useCopyToClipboard()\n  const valueRef = React.useRef<HTMLDivElement>(null)\n  const labelText = typeof label === \"string\" ? label : undefined\n\n  return (\n    <div\n      data-slot=\"description-item\"\n      className={cn(\n        \"col-span-2 grid min-h-11 grid-cols-subgrid items-center border-b py-1.5 last:border-b-0\",\n        className\n      )}\n      {...props}\n    >\n      <dt className=\"text-muted-foreground\">{label}</dt>\n      <dd className=\"flex min-w-0 items-center gap-1\">\n        <div ref={valueRef} className=\"min-w-0 flex-1 break-words\">\n          {editable ? (\n            <InlineEdit\n              aria-label={labelText}\n              value={typeof children === \"string\" ? children : \"\"}\n              placeholder={placeholder}\n              onSave={onValueChange ?? (() => {})}\n            />\n          ) : (\n            children\n          )}\n        </div>\n        {copyable && (\n          <button\n            type=\"button\"\n            data-slot=\"description-item-copy\"\n            aria-label={labelText ? `Copy ${labelText}` : \"Copy\"}\n            onClick={() =>\n              copy(\n                typeof children === \"string\"\n                  ? children\n                  : (valueRef.current?.textContent ?? \"\")\n              )\n            }\n            className=\"inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-accent hover:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 [&_svg]:size-3.5\"\n          >\n            {copied ? <CheckIcon /> : <CopyIcon />}\n          </button>\n        )}\n        {copyable && (\n          <span role=\"status\" className=\"sr-only\">\n            {copied ? \"Copied\" : \"\"}\n          </span>\n        )}\n      </dd>\n    </div>\n  )\n}\n\nexport { DescriptionItem, DescriptionList }\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

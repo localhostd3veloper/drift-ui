@@ -922,4 +922,156 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       ],
     },
   ],
+  rating: [
+    {
+      name: "Rating",
+      description:
+        "A WAI-ARIA radio group of icons. Arrow keys raise or lower the score by one step, Home and End jump to the ends, and hovering previews a score. Pass aria-label.",
+      props: [
+        STATE_PROPS.value("number", "score"),
+        STATE_PROPS.defaultValue("number", "0"),
+        STATE_PROPS.onValueChange(
+          "(value: number) => void",
+          "with the new score"
+        ),
+        {
+          name: "max",
+          type: "number",
+          default: "5",
+          description: "Number of icons.",
+        },
+        {
+          name: "step",
+          type: "1 | 0.5",
+          default: "1",
+          description: "0.5 lets each icon fill by half.",
+        },
+        {
+          name: "icon",
+          type: "ReactNode",
+          default: "<StarIcon />",
+          description:
+            "SVG icon drawn for each point. Filled with the root's text color.",
+        },
+        {
+          name: "readOnly",
+          type: "boolean",
+          description:
+            'Shows the score without radios, as an image labelled like "3.5 out of 5".',
+        },
+        {
+          name: "disabled",
+          type: "boolean",
+          description: "Dims the rating and removes it from the tab order.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
+  "avatar-group": [
+    {
+      name: "AvatarGroup",
+      description:
+        "Stacks its AvatarGroupItem children with overlap. Avatars past max collapse into a +N button that opens a popover listing them. Pass aria-label.",
+      props: [
+        {
+          name: "max",
+          type: "number",
+          description: "Most avatars shown before the +N button.",
+        },
+      ],
+      rest: "<div>",
+    },
+    {
+      name: "AvatarGroupItem",
+      description:
+        "One avatar built on the shadcn Avatar, with initials as the fallback and an optional presence dot.",
+      props: [
+        {
+          name: "name",
+          type: "string",
+          required: true,
+          description:
+            "Used for the initials, the tooltip and the screen reader label.",
+        },
+        { name: "src", type: "string", description: "Image URL." },
+        {
+          name: "status",
+          type: '"online" | "away" | "busy" | "offline"',
+          description: "Adds a presence dot and reads the status aloud.",
+        },
+      ],
+      rest: "<span>",
+    },
+  ],
+  "description-list": [
+    {
+      name: "DescriptionList",
+      description: "A two column <dl> grid for DescriptionItem rows.",
+      rest: "<dl>",
+    },
+    {
+      name: "DescriptionItem",
+      description:
+        "One label and value row. The value is the children, so editable rows take a string and the parent stores the edits.",
+      props: [
+        {
+          name: "label",
+          type: "ReactNode",
+          required: true,
+          description:
+            "The term. A string label also names the copy and edit buttons.",
+        },
+        {
+          name: "copyable",
+          type: "boolean",
+          description: "Adds a button that copies the value text.",
+        },
+        {
+          name: "editable",
+          type: "boolean",
+          description: "Edits the string children in place with InlineEdit.",
+        },
+        {
+          name: "onValueChange",
+          type: "(value: string) => void | Promise<void>",
+          description:
+            "Called with the edited text. A pending promise keeps the field read-only and a rejection keeps it open.",
+        },
+        {
+          name: "placeholder",
+          type: "string",
+          description: "Shown by an editable row while its value is empty.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
+  "json-viewer": [
+    {
+      name: "JsonViewer",
+      description:
+        "A searchable JSON tree on top of TreeView. Rows show copy value and copy path buttons on hover; Ctrl or Cmd+C copies the focused value and Shift+Ctrl or Cmd+C its path. Arrays over 100 items open as groups of 100.",
+      props: [
+        {
+          name: "data",
+          type: "unknown",
+          required: true,
+          description: "Any JSON value.",
+        },
+        {
+          name: "defaultExpandDepth",
+          type: "number",
+          default: "1",
+          description: "How many levels start open.",
+        },
+        {
+          name: "onCopy",
+          type: '(path: string, value: unknown, target: "value" | "path") => void',
+          description: "Called after a value or path is copied.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
 }
