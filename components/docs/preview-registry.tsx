@@ -25,6 +25,7 @@ import { FileDropzonePreview } from "@/components/preview/file-dropzone-preview"
 import { FilterBuilderPreview } from "@/components/preview/filter-builder-preview"
 import { InlineEditPreview } from "@/components/preview/inline-edit-preview"
 import { InputPreview } from "@/components/preview/input-preview"
+import { JsonViewerPreview } from "@/components/preview/json-viewer-preview"
 import { LabelPreview } from "@/components/preview/label-preview"
 import { MentionTextareaPreview } from "@/components/preview/mention-textarea-preview"
 import { MultiSelectPreview } from "@/components/preview/multi-select-preview"
@@ -56,6 +57,7 @@ export const PREVIEWS: Record<string, ComponentType> = {
   "filter-builder": FilterBuilderPreview,
   "inline-edit": InlineEditPreview,
   input: InputPreview,
+  "json-viewer": JsonViewerPreview,
   label: LabelPreview,
   "mention-textarea": MentionTextareaPreview,
   "multi-select": MultiSelectPreview,

@@ -1047,4 +1047,31 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       rest: "<div>",
     },
   ],
+  "json-viewer": [
+    {
+      name: "JsonViewer",
+      description:
+        "A searchable JSON tree on top of TreeView. Rows show copy value and copy path buttons on hover; Ctrl or Cmd+C copies the focused value and Shift+Ctrl or Cmd+C its path. Arrays over 100 items open as groups of 100.",
+      props: [
+        {
+          name: "data",
+          type: "unknown",
+          required: true,
+          description: "Any JSON value.",
+        },
+        {
+          name: "defaultExpandDepth",
+          type: "number",
+          default: "1",
+          description: "How many levels start open.",
+        },
+        {
+          name: "onCopy",
+          type: '(path: string, value: unknown, target: "value" | "path") => void',
+          description: "Called after a value or path is copied.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
 }

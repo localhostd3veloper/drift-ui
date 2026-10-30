@@ -704,6 +704,31 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "json-viewer",
+      "type": "registry:ui",
+      "title": "JSON Viewer",
+      "description": "Collapsible, searchable JSON with typed colors, copy value or path, and chunked large arrays.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "utils",
+        "input",
+        "@drift-ui/tree-view",
+        "@drift-ui/use-copy-to-clipboard"
+      ],
+      "files": [
+        {
+          "path": "registry/default/ui/json-viewer.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/default/lib/json-viewer.ts",
+          "type": "registry:lib"
+        }
+      ]
     }
   ]
 }

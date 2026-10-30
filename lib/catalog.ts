@@ -70,6 +70,7 @@ const ENTRY_LAYOUT: {
   { slug: "tree-view", category: "structure" },
   { slug: "stepper", category: "structure" },
   { slug: "timeline", category: "structure" },
+  { slug: "json-viewer", category: "structure" },
   { slug: "description-list", category: "structure" },
   { slug: "avatar-group", category: "structure" },
   {
