@@ -44,6 +44,11 @@
         "number": 28,
         "title": "feat(virtual-list): add virtual list component",
         "mergedAt": "2026-10-30T17:21:51Z"
+      },
+      {
+        "number": 31,
+        "title": "chore(registry): reduce merge conflicts between pull requests",
+        "mergedAt": "2026-10-30T17:40:37Z"
       }
     ]
   },
