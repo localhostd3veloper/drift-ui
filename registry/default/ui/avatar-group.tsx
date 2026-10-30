@@ -64,7 +64,7 @@ function AvatarGroupItem({
           aria-hidden
           data-status={status}
           className={cn(
-            "absolute right-0 bottom-0 size-2.5 rounded-full ring-2 ring-background",
+            "absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full ring-2 ring-background",
             STATUS_CLASSES[status]
           )}
         />
@@ -108,7 +108,11 @@ function AvatarGroup({
           >
             +{hidden.length}
           </PopoverTrigger>
-          <PopoverContent align="start" className="w-56 p-1">
+          <PopoverContent
+            align="start"
+            aria-label={`${hidden.length} more`}
+            className="w-56 p-1"
+          >
             <ul className="grid max-h-64 overflow-y-auto">
               {hidden.map((item) => (
                 <li

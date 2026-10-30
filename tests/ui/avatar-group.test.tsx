@@ -51,6 +51,9 @@ describe("AvatarGroup", () => {
     expect(overflow).toHaveFocus()
     await user.keyboard("{Enter}")
 
+    expect(
+      await screen.findByRole("dialog", { name: "2 more" })
+    ).toBeInTheDocument()
     const list = await screen.findByRole("list")
     const items = within(list).getAllByRole("listitem")
     expect(items).toHaveLength(2)
