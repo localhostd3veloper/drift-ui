@@ -10,6 +10,5 @@
 
 - [ ] `bun run typecheck`, `bun run lint` and `bun run test` pass
 - [ ] Tests cover the change, including keyboard interaction for UI components
-- [ ] `bun run registry:build` was run and `public/r` is committed (if registry files changed)
-- [ ] New components are added to `registry.json`, `lib/catalog.ts`, `components/docs/preview-registry.tsx` and `lib/agent-docs/component-usage.ts`
+- [ ] New components are added to `registry.json`, `lib/catalog.ts`, `components/docs/preview-registry.tsx` and `lib/agent-docs/component-usage.ts`, each at its alphabetical position
 - [ ] Checked in light and dark mode

@@ -8,14 +8,7 @@ Browse the live previews at [drift-ui-dev.vercel.app](https://drift-ui-dev.verce
 
 ## Components
 
-| Category   | Components                                                                                                                                                                                    |
-| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Inputs     | tags-input, multi-select, number-input, password-input, rating, date-time-range, time-field, recurrence-editor, color-picker, mention-textarea, shortcut-recorder, file-dropzone, inline-edit |
-| Structure  | tree-view, stepper, timeline, json-viewer, diff-viewer, description-list, avatar-group                                                                                                                     |
-| Workflow   | filter-builder, bulk-action-bar, tour                                                                                                                                                         |
-| Primitives | button, badge, input, label, card, dialog, popover, avatar                                                                                                                                    |
-
-The primitives have the same API as their shadcn/ui counterparts, so skip any you already have. Every component has a live preview, its source and install steps at [`/components/<name>`](https://drift-ui-dev.vercel.app/components).
+Components are grouped into inputs, structure, workflow and primitives. The primitives have the same API as their shadcn/ui counterparts, so skip any you already have. Every component has a live preview, its source and install steps at [`/components/<name>`](https://drift-ui-dev.vercel.app/components).
 
 ## Usage
 
@@ -75,10 +68,10 @@ registry/default/hooks/*.ts    shared hooks such as use-controllable-state
 components/preview/*           live demos, also used as usage examples in the docs
 components/docs/*              docs site UI
 components/landing/*           landing page sections
-lib/catalog.ts                 component categories and ordering
+lib/catalog.ts                 component categories, alphabetical within each
 lib/agent-docs/*               content for /llms.txt and /llms-full.txt
 tests/                         Vitest suites for components and lib code
-public/r/*.json                build output, served as static files
+public/r/*.json                gitignored build output, served as static files
 ```
 
 ## Contributing

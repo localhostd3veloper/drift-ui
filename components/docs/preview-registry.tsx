@@ -42,6 +42,7 @@ import { TimeFieldPreview } from "@/components/preview/time-field-preview"
 import { TimelinePreview } from "@/components/preview/timeline-preview"
 import { TourPreview } from "@/components/preview/tour-preview"
 import { TreeViewPreview } from "@/components/preview/tree-view-preview"
+import { VirtualListPreview } from "@/components/preview/virtual-list-preview"
 
 export const PREVIEWS: Record<string, ComponentType> = {
   avatar: AvatarPreview,
@@ -75,6 +76,7 @@ export const PREVIEWS: Record<string, ComponentType> = {
   timeline: TimelinePreview,
   tour: TourPreview,
   "tree-view": TreeViewPreview,
+  "virtual-list": VirtualListPreview,
 }
 
 export const BASE_UI_PREVIEWS: Record<string, ComponentType> = {

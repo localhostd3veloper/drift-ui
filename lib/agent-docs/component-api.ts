@@ -34,44 +34,480 @@ const STATE_PROPS = {
 }
 
 export const COMPONENT_API: Record<string, ApiPart[]> = {
-  "tags-input": [
+  "avatar-group": [
     {
-      name: "TagsInput",
+      name: "AvatarGroup",
       description:
-        "Enter or comma adds a tag. Backspace or ArrowLeft at the start of the field selects the last tag and announces it, and a second Backspace removes it. Pasted text splits on commas, tabs and newlines.",
+        "Stacks its AvatarGroupItem children with overlap. Avatars past max collapse into a +N button that opens a popover listing them. Pass aria-label.",
       props: [
-        STATE_PROPS.value("string[]", "list of tags"),
-        STATE_PROPS.defaultValue("string[]", "[]"),
-        STATE_PROPS.onValueChange(
-          "(tags: string[]) => void",
-          "after a tag is added or removed"
-        ),
         {
           name: "max",
           type: "number",
-          description:
-            "Most tags allowed. When full the field turns read-only, and tags stay removable by keyboard.",
-        },
-        {
-          name: "validate",
-          type: "(tag: string) => boolean",
-          description: "Return false to reject a tag.",
-        },
-        {
-          name: "allowDuplicates",
-          type: "boolean",
-          default: "false",
-          description: "Accept a tag that is already in the list.",
-        },
-        {
-          name: "addOnBlur",
-          type: "boolean",
-          default: "false",
-          description:
-            "Add the typed text as a tag when the field loses focus.",
+          description: "Most avatars shown before the +N button.",
         },
       ],
-      rest: "<input>",
+      rest: "<div>",
+    },
+    {
+      name: "AvatarGroupItem",
+      description:
+        "One avatar built on the shadcn Avatar, with initials as the fallback and an optional presence dot.",
+      props: [
+        {
+          name: "name",
+          type: "string",
+          required: true,
+          description:
+            "Used for the initials, the tooltip and the screen reader label.",
+        },
+        { name: "src", type: "string", description: "Image URL." },
+        {
+          name: "status",
+          type: '"online" | "away" | "busy" | "offline"',
+          description: "Adds a presence dot and reads the status aloud.",
+        },
+      ],
+      rest: "<span>",
+    },
+  ],
+  "bulk-action-bar": [
+    {
+      name: "BulkActionBar",
+      description:
+        "A floating toolbar that springs in while something is selected. Put BulkActionBarButton children inside. Needs the motion package.",
+      props: [
+        {
+          name: "selectedCount",
+          type: "number",
+          required: true,
+          description:
+            "Number of selected items. The bar shows while it is above 0.",
+        },
+        {
+          name: "onClear",
+          type: "() => void",
+          required: true,
+          description: "Called by the clear button and by Escape.",
+        },
+        {
+          name: "placement",
+          type: '"viewport" | "container"',
+          default: '"viewport"',
+          description:
+            "viewport portals the bar to the bottom of the screen, container positions it inside the nearest relative parent.",
+        },
+        {
+          name: "aria-label",
+          type: "string",
+          default: '"Bulk actions"',
+          description: "Name of the toolbar.",
+        },
+      ],
+      rest: "Toolbar root",
+    },
+    {
+      name: "BulkActionBarButton",
+      description: "A Button that joins the toolbar's arrow key navigation.",
+      props: [
+        {
+          name: "variant",
+          type: "Button variant",
+          default: '"ghost"',
+          description: "Button style.",
+        },
+        {
+          name: "size",
+          type: "Button size",
+          default: '"sm"',
+          description: "Button size.",
+        },
+      ],
+      rest: "Button",
+    },
+  ],
+  "color-picker": [
+    {
+      name: "ColorPicker",
+      description:
+        "A trigger button that opens a saturation and brightness area, hue and alpha sliders, a hex field, an oklch readout and, where the browser has it, the EyeDropper.",
+      props: [
+        STATE_PROPS.value("string", 'hex color, "#rrggbb" or "#rrggbbaa"'),
+        STATE_PROPS.defaultValue("string", '"#000000"'),
+        STATE_PROPS.onValueChange(
+          "(hex: string) => void",
+          "with the new hex color"
+        ),
+        {
+          name: "showAlpha",
+          type: "boolean",
+          default: "true",
+          description: "Show the opacity slider.",
+        },
+        {
+          name: "swatches",
+          type: "string[]",
+          description: "Preset hex colors shown as buttons.",
+        },
+        {
+          name: "variant",
+          type: "Button variant",
+          default: '"outline"',
+          description: "Style of the trigger button.",
+        },
+        {
+          name: "size",
+          type: "Button size",
+          description: "Size of the trigger button.",
+        },
+      ],
+      rest: "trigger <button>",
+    },
+  ],
+  "date-time-range": [
+    {
+      name: "DateTimeRangePicker",
+      description:
+        "A popover with a range calendar and start and end time inputs. Times default to 09:00 and 17:00.",
+      props: [
+        STATE_PROPS.value("{ from?: Date; to?: Date }", "range"),
+        STATE_PROPS.defaultValue("{ from?: Date; to?: Date }", "{}"),
+        STATE_PROPS.onValueChange(
+          "(range: { from?: Date; to?: Date }) => void",
+          "when a day or time changes"
+        ),
+        {
+          name: "locale",
+          type: "string",
+          description: "Locale for the trigger label.",
+        },
+        {
+          name: "placeholder",
+          type: "string",
+          default: '"Pick a date range"',
+          description: "Trigger text while no range is set.",
+        },
+        {
+          name: "numberOfMonths",
+          type: "number",
+          default: "2",
+          description: "Months shown side by side.",
+        },
+        {
+          name: "disabled",
+          type: "boolean",
+          description: "Disables the trigger.",
+        },
+        {
+          name: "id",
+          type: "string",
+          description: "Id of the trigger, so a Label can point at it.",
+        },
+        {
+          name: "className",
+          type: "string",
+          description: "Classes for the trigger.",
+        },
+      ],
+    },
+  ],
+  "description-list": [
+    {
+      name: "DescriptionList",
+      description: "A two column <dl> grid for DescriptionItem rows.",
+      rest: "<dl>",
+    },
+    {
+      name: "DescriptionItem",
+      description:
+        "One label and value row. The value is the children, so editable rows take a string and the parent stores the edits.",
+      props: [
+        {
+          name: "label",
+          type: "ReactNode",
+          required: true,
+          description:
+            "The term. A string label also names the copy and edit buttons.",
+        },
+        {
+          name: "copyable",
+          type: "boolean",
+          description: "Adds a button that copies the value text.",
+        },
+        {
+          name: "editable",
+          type: "boolean",
+          description: "Edits the string children in place with InlineEdit.",
+        },
+        {
+          name: "onValueChange",
+          type: "(value: string) => void | Promise<void>",
+          description:
+            "Called with the edited text. A pending promise keeps the field read-only and a rejection keeps it open.",
+        },
+        {
+          name: "placeholder",
+          type: "string",
+          description: "Shown by an editable row while its value is empty.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
+  "diff-viewer": [
+    {
+      name: "DiffViewer",
+      description:
+        "A line diff of two strings with word-level highlights inside replaced lines. Unchanged runs collapse behind a button that expands them in place.",
+      props: [
+        {
+          name: "oldValue",
+          type: "string",
+          required: true,
+          description: "The text before the change.",
+        },
+        {
+          name: "newValue",
+          type: "string",
+          required: true,
+          description: "The text after the change.",
+        },
+        {
+          name: "mode",
+          type: '"split" | "unified"',
+          default: '"split"',
+          description: "Two columns side by side, or one column.",
+        },
+        {
+          name: "contextLines",
+          type: "number",
+          default: "3",
+          description: "Unchanged lines kept visible next to each change.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
+  "file-dropzone": [
+    {
+      name: "FileDropzone",
+      description:
+        "Validates dropped or picked files and reports them. It does not upload or store anything, so keep the list in your own state.",
+      props: [
+        {
+          name: "accept",
+          type: "string",
+          description:
+            "Comma separated extensions, MIME types or wildcards such as image/*.",
+        },
+        {
+          name: "maxSize",
+          type: "number",
+          description: "Largest file in bytes.",
+        },
+        {
+          name: "maxFiles",
+          type: "number",
+          description: "Most files accepted from one drop or pick.",
+        },
+        {
+          name: "multiple",
+          type: "boolean",
+          default: "true",
+          description: "Allow more than one file at a time.",
+        },
+        {
+          name: "disabled",
+          type: "boolean",
+          description: "Ignore drops and clicks.",
+        },
+        {
+          name: "onFilesAccepted",
+          type: "(files: File[]) => void",
+          description: "Called with the files that passed validation.",
+        },
+        {
+          name: "onFilesRejected",
+          type: "(rejections: FileRejection[]) => void",
+          description:
+            'Called with { file, reason } for each rejected file, where reason is "type", "size" or "count".',
+        },
+      ],
+      rest: "<label>",
+    },
+    {
+      name: "FileDropzoneItem",
+      description:
+        "One row of a FileDropzoneList. A progress bar shows while progress is below 100.",
+      props: [
+        {
+          name: "name",
+          type: "string",
+          required: true,
+          description: "File name.",
+        },
+        {
+          name: "size",
+          type: "number",
+          required: true,
+          description: "File size in bytes.",
+        },
+        {
+          name: "progress",
+          type: "number",
+          description: "Upload progress from 0 to 100.",
+        },
+        {
+          name: "error",
+          type: "string",
+          description: "Marks the row invalid and shows the message.",
+        },
+        {
+          name: "onRemove",
+          type: "() => void",
+          description: "Shows a remove button that calls it.",
+        },
+      ],
+      rest: "<li>",
+    },
+  ],
+  "filter-builder": [
+    {
+      name: "FilterBuilder",
+      description:
+        "A row of filter chips with an Add filter menu. Each chip edits its operator and value in place.",
+      props: [
+        {
+          name: "fields",
+          type: "FilterField[]",
+          required: true,
+          description:
+            'Filterable fields: { id, label, type: "text" | "number" | "select", options?, icon? }.',
+        },
+        STATE_PROPS.value("Filter[]", "filters"),
+        STATE_PROPS.defaultValue("Filter[]", "[]"),
+        STATE_PROPS.onValueChange(
+          "(filters: Filter[]) => void",
+          "when a filter is added, changed or removed"
+        ),
+        {
+          name: "aria-label",
+          type: "string",
+          default: '"Filters"',
+          description: "Name of the filter group.",
+        },
+      ],
+      rest: "<div>",
+    },
+    {
+      name: "matchesFilter",
+      signature:
+        "matchesFilter(fieldValue: string | number, filter: Filter): boolean",
+      description:
+        "Import from @/lib/filter to apply a Filter ({ id, fieldId, operator, value }) to your rows. An empty filter value matches everything. Text fields use contains, not-contains, is and is-not, numbers use eq, gt and lt, and selects use is and is-not.",
+    },
+  ],
+  "inline-edit": [
+    {
+      name: "InlineEdit",
+      description:
+        "Text that turns into an input on click. Enter or blur saves and Escape cancels. Pass aria-label to describe the field.",
+      props: [
+        {
+          name: "value",
+          type: "string",
+          required: true,
+          description: "The saved text.",
+        },
+        {
+          name: "onSave",
+          type: "(value: string) => void | Promise<void>",
+          required: true,
+          description:
+            "Called with the edited text. While a returned promise is pending the field is read-only, and a rejection marks it invalid and keeps it open.",
+        },
+        {
+          name: "placeholder",
+          type: "string",
+          default: '"Empty"',
+          description: "Text shown while value is empty.",
+        },
+        { name: "disabled", type: "boolean", description: "Prevents editing." },
+      ],
+      rest: "<div>",
+    },
+  ],
+  "json-viewer": [
+    {
+      name: "JsonViewer",
+      description:
+        "A searchable JSON tree on top of TreeView. Rows show copy value and copy path buttons on hover, or always on touch screens; Ctrl or Cmd+C copies the focused value and Shift+Ctrl or Cmd+C its path. Arrays over 100 items open as groups of 100.",
+      props: [
+        {
+          name: "data",
+          type: "unknown",
+          required: true,
+          description: "Any JSON value.",
+        },
+        {
+          name: "defaultExpandDepth",
+          type: "number",
+          default: "1",
+          description: "How many levels start open.",
+        },
+        {
+          name: "onCopy",
+          type: '(path: string, value: unknown, target: "value" | "path") => void',
+          description: "Called after a value or path is copied.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
+  "mention-textarea": [
+    {
+      name: "MentionTextarea",
+      description:
+        "Opens a suggestion list when the caret follows a trigger character. Arrow keys move through it, Enter or Tab inserts the trigger, the option's value and a space, and Escape closes it.",
+      props: [
+        STATE_PROPS.value("string", "text"),
+        STATE_PROPS.defaultValue("string", '""'),
+        STATE_PROPS.onValueChange(
+          "(value: string) => void",
+          "when the text changes"
+        ),
+        {
+          name: "triggers",
+          type: "Record<string, MentionOption[]>",
+          required: true,
+          description:
+            'Maps a trigger character to its options, for example { "@": people, "#": channels }.',
+        },
+      ],
+      rest: "<textarea>",
+    },
+    {
+      name: "MentionOption",
+      description: "One suggestion.",
+      props: [
+        {
+          name: "value",
+          type: "string",
+          required: true,
+          description:
+            "Text inserted after the trigger. Typing filters on value and label.",
+        },
+        {
+          name: "label",
+          type: "string",
+          required: true,
+          description: "Text shown in the list.",
+        },
+        {
+          name: "description",
+          type: "string",
+          description: "Second line under the label.",
+        },
+      ],
     },
   ],
   "multi-select": [
@@ -204,86 +640,47 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       rest: "<div>",
     },
   ],
-  "date-time-range": [
+  rating: [
     {
-      name: "DateTimeRangePicker",
+      name: "Rating",
       description:
-        "A popover with a range calendar and start and end time inputs. Times default to 09:00 and 17:00.",
+        "A WAI-ARIA radio group of icons. Arrow keys raise or lower the score by one step, Home and End jump to the ends, and hovering previews a score. Pass aria-label.",
       props: [
-        STATE_PROPS.value("{ from?: Date; to?: Date }", "range"),
-        STATE_PROPS.defaultValue("{ from?: Date; to?: Date }", "{}"),
+        STATE_PROPS.value("number", "score"),
+        STATE_PROPS.defaultValue("number", "0"),
         STATE_PROPS.onValueChange(
-          "(range: { from?: Date; to?: Date }) => void",
-          "when a day or time changes"
+          "(value: number) => void",
+          "with the new score"
         ),
         {
-          name: "locale",
-          type: "string",
-          description: "Locale for the trigger label.",
-        },
-        {
-          name: "placeholder",
-          type: "string",
-          default: '"Pick a date range"',
-          description: "Trigger text while no range is set.",
-        },
-        {
-          name: "numberOfMonths",
+          name: "max",
           type: "number",
-          default: "2",
-          description: "Months shown side by side.",
+          default: "5",
+          description: "Number of icons.",
         },
         {
-          name: "disabled",
-          type: "boolean",
-          description: "Disables the trigger.",
-        },
-        {
-          name: "id",
-          type: "string",
-          description: "Id of the trigger, so a Label can point at it.",
-        },
-        {
-          name: "className",
-          type: "string",
-          description: "Classes for the trigger.",
-        },
-      ],
-    },
-  ],
-  "time-field": [
-    {
-      name: "TimeField",
-      description:
-        "Segmented hour and minute input. The root has role=group, so pass aria-label or aria-labelledby.",
-      props: [
-        STATE_PROPS.value("string", 'time as "HH:mm" in 24 hour time'),
-        STATE_PROPS.defaultValue("string", '""'),
-        STATE_PROPS.onValueChange(
-          "(value: string) => void",
-          'with "HH:mm", or an empty string when cleared'
-        ),
-        {
-          name: "hourCycle",
-          type: "12 | 24",
-          default: "24",
-          description: "12 adds an AM/PM segment.",
-        },
-        {
-          name: "minuteStep",
-          type: "number",
+          name: "step",
+          type: "1 | 0.5",
           default: "1",
-          description: "Amount the arrow keys change the minutes by.",
+          description: "0.5 lets each icon fill by half.",
         },
         {
-          name: "name",
-          type: "string",
-          description: "Submits the value through a hidden input.",
+          name: "icon",
+          type: "ReactNode",
+          default: "<StarIcon />",
+          description:
+            "SVG icon drawn for each point. Filled with the root's text color.",
+        },
+        {
+          name: "readOnly",
+          type: "boolean",
+          description:
+            'Shows the score without radios, as an image labelled like "3.5 out of 5".',
         },
         {
           name: "disabled",
           type: "boolean",
-          description: "Disables every segment.",
+          description: "Dims the rating and removes it from the tab order.",
         },
       ],
       rest: "<div>",
@@ -323,91 +720,6 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
         "parseRRule(rule: string): Recurrence; formatRRule(recurrence: Recurrence): string; describeRecurrence(recurrence: Recurrence, start: Date): string; occurrences(recurrence: Recurrence, start: Date, limit: number): Date[]",
       description:
         "Import from @/lib/recurrence to read, write, summarize or expand a rule outside the editor.",
-    },
-  ],
-  "color-picker": [
-    {
-      name: "ColorPicker",
-      description:
-        "A trigger button that opens a saturation and brightness area, hue and alpha sliders, a hex field, an oklch readout and, where the browser has it, the EyeDropper.",
-      props: [
-        STATE_PROPS.value("string", 'hex color, "#rrggbb" or "#rrggbbaa"'),
-        STATE_PROPS.defaultValue("string", '"#000000"'),
-        STATE_PROPS.onValueChange(
-          "(hex: string) => void",
-          "with the new hex color"
-        ),
-        {
-          name: "showAlpha",
-          type: "boolean",
-          default: "true",
-          description: "Show the opacity slider.",
-        },
-        {
-          name: "swatches",
-          type: "string[]",
-          description: "Preset hex colors shown as buttons.",
-        },
-        {
-          name: "variant",
-          type: "Button variant",
-          default: '"outline"',
-          description: "Style of the trigger button.",
-        },
-        {
-          name: "size",
-          type: "Button size",
-          description: "Size of the trigger button.",
-        },
-      ],
-      rest: "trigger <button>",
-    },
-  ],
-  "mention-textarea": [
-    {
-      name: "MentionTextarea",
-      description:
-        "Opens a suggestion list when the caret follows a trigger character. Arrow keys move through it, Enter or Tab inserts the trigger, the option's value and a space, and Escape closes it.",
-      props: [
-        STATE_PROPS.value("string", "text"),
-        STATE_PROPS.defaultValue("string", '""'),
-        STATE_PROPS.onValueChange(
-          "(value: string) => void",
-          "when the text changes"
-        ),
-        {
-          name: "triggers",
-          type: "Record<string, MentionOption[]>",
-          required: true,
-          description:
-            'Maps a trigger character to its options, for example { "@": people, "#": channels }.',
-        },
-      ],
-      rest: "<textarea>",
-    },
-    {
-      name: "MentionOption",
-      description: "One suggestion.",
-      props: [
-        {
-          name: "value",
-          type: "string",
-          required: true,
-          description:
-            "Text inserted after the trigger. Typing filters on value and label.",
-        },
-        {
-          name: "label",
-          type: "string",
-          required: true,
-          description: "Text shown in the list.",
-        },
-        {
-          name: "description",
-          type: "string",
-          description: "Second line under the label.",
-        },
-      ],
     },
   ],
   "shortcut-recorder": [
@@ -460,117 +772,251 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
         "Import from @/lib/shortcut. Returns true when a keyboard event matches a stored shortcut.",
     },
   ],
-  "file-dropzone": [
+  stepper: [
     {
-      name: "FileDropzone",
+      name: "Stepper",
       description:
-        "Validates dropped or picked files and reports them. It does not upload or store anything, so keep the list in your own state.",
+        "Compose StepperList > StepperItem > StepperTrigger > StepperIndicator + StepperTitle, with StepperSeparator between items and a StepperContent for each step. Steps are zero-based.",
+      props: [
+        STATE_PROPS.value("number", "step"),
+        STATE_PROPS.defaultValue("number", "0"),
+        STATE_PROPS.onValueChange(
+          "(step: number) => void",
+          "when the step changes"
+        ),
+        {
+          name: "linear",
+          type: "boolean",
+          default: "false",
+          description: "Disable steps past the furthest one reached.",
+        },
+        {
+          name: "stepCount",
+          type: "number",
+          description:
+            "Number of steps, so StepperNext disables on the last one.",
+        },
+        {
+          name: "orientation",
+          type: '"horizontal" | "vertical"',
+          default: '"horizontal"',
+          description: "Layout direction.",
+        },
+      ],
+      rest: "Tabs root",
+    },
+    {
+      name: "StepperItem",
+      description:
+        'Wraps one step and sets data-state to "completed", "active" or "upcoming" for its children.',
       props: [
         {
-          name: "accept",
-          type: "string",
-          description:
-            "Comma separated extensions, MIME types or wildcards such as image/*.",
-        },
-        {
-          name: "maxSize",
+          name: "step",
           type: "number",
-          description: "Largest file in bytes.",
+          required: true,
+          description: "The step this item stands for.",
         },
+      ],
+      rest: "<div>",
+    },
+    {
+      name: "StepperContent",
+      description: "Panel shown while its step is active.",
+      props: [
         {
-          name: "maxFiles",
+          name: "step",
           type: "number",
-          description: "Most files accepted from one drop or pick.",
+          required: true,
+          description: "The step this panel belongs to.",
         },
+      ],
+      rest: "Tabs panel",
+    },
+    {
+      name: "StepperPrevious, StepperNext",
+      description:
+        "Buttons that move one step back or forward. They disable on the first step and, with stepCount, on the last.",
+      props: [
         {
-          name: "multiple",
+          name: "asChild",
           type: "boolean",
-          default: "true",
-          description: "Allow more than one file at a time.",
+          default: "false",
+          description:
+            "Render the child element, such as a Button, instead of a button.",
+        },
+      ],
+      rest: "<button>",
+    },
+    {
+      name: "useStepper",
+      signature:
+        "useStepper(): { activeStep: number; setActiveStep: (step: number) => void }",
+      description: "For custom controls rendered inside Stepper.",
+    },
+  ],
+  "tags-input": [
+    {
+      name: "TagsInput",
+      description:
+        "Enter or comma adds a tag. Backspace or ArrowLeft at the start of the field selects the last tag and announces it, and a second Backspace removes it. Pasted text splits on commas, tabs and newlines.",
+      props: [
+        STATE_PROPS.value("string[]", "list of tags"),
+        STATE_PROPS.defaultValue("string[]", "[]"),
+        STATE_PROPS.onValueChange(
+          "(tags: string[]) => void",
+          "after a tag is added or removed"
+        ),
+        {
+          name: "max",
+          type: "number",
+          description:
+            "Most tags allowed. When full the field turns read-only, and tags stay removable by keyboard.",
+        },
+        {
+          name: "validate",
+          type: "(tag: string) => boolean",
+          description: "Return false to reject a tag.",
+        },
+        {
+          name: "allowDuplicates",
+          type: "boolean",
+          default: "false",
+          description: "Accept a tag that is already in the list.",
+        },
+        {
+          name: "addOnBlur",
+          type: "boolean",
+          default: "false",
+          description:
+            "Add the typed text as a tag when the field loses focus.",
+        },
+      ],
+      rest: "<input>",
+    },
+  ],
+  "time-field": [
+    {
+      name: "TimeField",
+      description:
+        "Segmented hour and minute input. The root has role=group, so pass aria-label or aria-labelledby.",
+      props: [
+        STATE_PROPS.value("string", 'time as "HH:mm" in 24 hour time'),
+        STATE_PROPS.defaultValue("string", '""'),
+        STATE_PROPS.onValueChange(
+          "(value: string) => void",
+          'with "HH:mm", or an empty string when cleared'
+        ),
+        {
+          name: "hourCycle",
+          type: "12 | 24",
+          default: "24",
+          description: "12 adds an AM/PM segment.",
+        },
+        {
+          name: "minuteStep",
+          type: "number",
+          default: "1",
+          description: "Amount the arrow keys change the minutes by.",
+        },
+        {
+          name: "name",
+          type: "string",
+          description: "Submits the value through a hidden input.",
         },
         {
           name: "disabled",
           type: "boolean",
-          description: "Ignore drops and clicks.",
-        },
-        {
-          name: "onFilesAccepted",
-          type: "(files: File[]) => void",
-          description: "Called with the files that passed validation.",
-        },
-        {
-          name: "onFilesRejected",
-          type: "(rejections: FileRejection[]) => void",
-          description:
-            'Called with { file, reason } for each rejected file, where reason is "type", "size" or "count".',
+          description: "Disables every segment.",
         },
       ],
-      rest: "<label>",
+      rest: "<div>",
+    },
+  ],
+  timeline: [
+    {
+      name: "Timeline",
+      description:
+        "Compose Timeline > TimelineItem > TimelineIndicator + TimelineContent, with TimelineHeader holding TimelineTitle and TimelineTime, then TimelineDescription. Every part spreads its props onto its element, and none needs client JavaScript.",
+      rest: "<ol>",
     },
     {
-      name: "FileDropzoneItem",
+      name: "TimelineIndicator",
+      description: "The dot next to an item.",
+      props: [
+        {
+          name: "variant",
+          type: '"default" | "current" | "success" | "destructive"',
+          default: '"default"',
+          description: "Color and ring of the dot.",
+        },
+      ],
+      rest: "<span>",
+    },
+  ],
+  tour: [
+    {
+      name: "Tour",
       description:
-        "One row of a FileDropzoneList. A progress bar shows while progress is below 100.",
+        "Wrap the page in Tour and mark elements with TourTarget. Arrow keys move between steps and Escape ends the tour. Focus stays in the card and returns to the opener when it closes.",
+      props: [
+        {
+          name: "steps",
+          type: "TourStep[]",
+          required: true,
+          description:
+            'Steps in order: { target, title, description?, side? }, where side is "top", "right", "bottom" or "left".',
+        },
+        {
+          name: "open",
+          type: "boolean",
+          description: "Controlled open state.",
+        },
+        {
+          name: "defaultOpen",
+          type: "boolean",
+          default: "false",
+          description: "Initial open state when uncontrolled.",
+        },
+        {
+          name: "onOpenChange",
+          type: "(open: boolean) => void",
+          description: "Called when the tour starts or ends.",
+        },
+        {
+          name: "step",
+          type: "number",
+          description: "Controlled zero-based step.",
+        },
+        {
+          name: "defaultStep",
+          type: "number",
+          default: "0",
+          description: "Initial step when uncontrolled.",
+        },
+        {
+          name: "onStepChange",
+          type: "(step: number) => void",
+          description: "Called when the step changes.",
+        },
+        {
+          name: "onComplete",
+          type: "() => void",
+          description: "Called after Finish on the last step.",
+        },
+      ],
+    },
+    {
+      name: "TourTarget",
+      description:
+        "Marks its single child as a tour target without adding an element.",
       props: [
         {
           name: "name",
           type: "string",
           required: true,
-          description: "File name.",
-        },
-        {
-          name: "size",
-          type: "number",
-          required: true,
-          description: "File size in bytes.",
-        },
-        {
-          name: "progress",
-          type: "number",
-          description: "Upload progress from 0 to 100.",
-        },
-        {
-          name: "error",
-          type: "string",
-          description: "Marks the row invalid and shows the message.",
-        },
-        {
-          name: "onRemove",
-          type: "() => void",
-          description: "Shows a remove button that calls it.",
+          description: "Matches a step's target.",
         },
       ],
-      rest: "<li>",
-    },
-  ],
-  "inline-edit": [
-    {
-      name: "InlineEdit",
-      description:
-        "Text that turns into an input on click. Enter or blur saves and Escape cancels. Pass aria-label to describe the field.",
-      props: [
-        {
-          name: "value",
-          type: "string",
-          required: true,
-          description: "The saved text.",
-        },
-        {
-          name: "onSave",
-          type: "(value: string) => void | Promise<void>",
-          required: true,
-          description:
-            "Called with the edited text. While a returned promise is pending the field is read-only, and a rejection marks it invalid and keeps it open.",
-        },
-        {
-          name: "placeholder",
-          type: "string",
-          default: '"Empty"',
-          description: "Text shown while value is empty.",
-        },
-        { name: "disabled", type: "boolean", description: "Prevents editing." },
-      ],
-      rest: "<div>",
     },
   ],
   "tree-view": [
@@ -662,447 +1108,44 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       ],
     },
   ],
-  stepper: [
+  "virtual-list": [
     {
-      name: "Stepper",
+      name: "VirtualList",
+      signature: "<T>",
       description:
-        "Compose StepperList > StepperItem > StepperTrigger > StepperIndicator + StepperTitle, with StepperSeparator between items and a StepperContent for each step. Steps are zero-based.",
-      props: [
-        STATE_PROPS.value("number", "step"),
-        STATE_PROPS.defaultValue("number", "0"),
-        STATE_PROPS.onValueChange(
-          "(step: number) => void",
-          "when the step changes"
-        ),
-        {
-          name: "linear",
-          type: "boolean",
-          default: "false",
-          description: "Disable steps past the furthest one reached.",
-        },
-        {
-          name: "stepCount",
-          type: "number",
-          description:
-            "Number of steps, so StepperNext disables on the last one.",
-        },
-        {
-          name: "orientation",
-          type: '"horizontal" | "vertical"',
-          default: '"horizontal"',
-          description: "Layout direction.",
-        },
-      ],
-      rest: "Tabs root",
-    },
-    {
-      name: "StepperItem",
-      description:
-        'Wraps one step and sets data-state to "completed", "active" or "upcoming" for its children.',
+        "A scrolling list that mounts only the rows in view. Rows measure themselves, so heights can vary, and the focused row stays mounted while scrolled away. Set a height through className.",
       props: [
         {
-          name: "step",
-          type: "number",
+          name: "items",
+          type: "T[]",
           required: true,
-          description: "The step this item stands for.",
+          description: "The full list of rows.",
         },
-      ],
-      rest: "<div>",
-    },
-    {
-      name: "StepperContent",
-      description: "Panel shown while its step is active.",
-      props: [
         {
-          name: "step",
-          type: "number",
-          required: true,
-          description: "The step this panel belongs to.",
-        },
-      ],
-      rest: "Tabs panel",
-    },
-    {
-      name: "StepperPrevious, StepperNext",
-      description:
-        "Buttons that move one step back or forward. They disable on the first step and, with stepCount, on the last.",
-      props: [
-        {
-          name: "asChild",
-          type: "boolean",
-          default: "false",
-          description:
-            "Render the child element, such as a Button, instead of a button.",
-        },
-      ],
-      rest: "<button>",
-    },
-    {
-      name: "useStepper",
-      signature:
-        "useStepper(): { activeStep: number; setActiveStep: (step: number) => void }",
-      description: "For custom controls rendered inside Stepper.",
-    },
-  ],
-  timeline: [
-    {
-      name: "Timeline",
-      description:
-        "Compose Timeline > TimelineItem > TimelineIndicator + TimelineContent, with TimelineHeader holding TimelineTitle and TimelineTime, then TimelineDescription. Every part spreads its props onto its element, and none needs client JavaScript.",
-      rest: "<ol>",
-    },
-    {
-      name: "TimelineIndicator",
-      description: "The dot next to an item.",
-      props: [
-        {
-          name: "variant",
-          type: '"default" | "current" | "success" | "destructive"',
-          default: '"default"',
-          description: "Color and ring of the dot.",
-        },
-      ],
-      rest: "<span>",
-    },
-  ],
-  "filter-builder": [
-    {
-      name: "FilterBuilder",
-      description:
-        "A row of filter chips with an Add filter menu. Each chip edits its operator and value in place.",
-      props: [
-        {
-          name: "fields",
-          type: "FilterField[]",
-          required: true,
-          description:
-            'Filterable fields: { id, label, type: "text" | "number" | "select", options?, icon? }.',
-        },
-        STATE_PROPS.value("Filter[]", "filters"),
-        STATE_PROPS.defaultValue("Filter[]", "[]"),
-        STATE_PROPS.onValueChange(
-          "(filters: Filter[]) => void",
-          "when a filter is added, changed or removed"
-        ),
-        {
-          name: "aria-label",
-          type: "string",
-          default: '"Filters"',
-          description: "Name of the filter group.",
-        },
-      ],
-      rest: "<div>",
-    },
-    {
-      name: "matchesFilter",
-      signature:
-        "matchesFilter(fieldValue: string | number, filter: Filter): boolean",
-      description:
-        "Import from @/lib/filter to apply a Filter ({ id, fieldId, operator, value }) to your rows. An empty filter value matches everything. Text fields use contains, not-contains, is and is-not, numbers use eq, gt and lt, and selects use is and is-not.",
-    },
-  ],
-  "bulk-action-bar": [
-    {
-      name: "BulkActionBar",
-      description:
-        "A floating toolbar that springs in while something is selected. Put BulkActionBarButton children inside. Needs the motion package.",
-      props: [
-        {
-          name: "selectedCount",
+          name: "estimateSize",
           type: "number",
           required: true,
           description:
-            "Number of selected items. The bar shows while it is above 0.",
+            "Height in pixels assumed for a row until it is measured.",
         },
         {
-          name: "onClear",
-          type: "() => void",
+          name: "children",
+          type: "(item: T, index: number) => ReactNode",
           required: true,
-          description: "Called by the clear button and by Escape.",
+          description: "Renders one row.",
         },
         {
-          name: "placement",
-          type: '"viewport" | "container"',
-          default: '"viewport"',
-          description:
-            "viewport portals the bar to the bottom of the screen, container positions it inside the nearest relative parent.",
-        },
-        {
-          name: "aria-label",
-          type: "string",
-          default: '"Bulk actions"',
-          description: "Name of the toolbar.",
-        },
-      ],
-      rest: "Toolbar root",
-    },
-    {
-      name: "BulkActionBarButton",
-      description: "A Button that joins the toolbar's arrow key navigation.",
-      props: [
-        {
-          name: "variant",
-          type: "Button variant",
-          default: '"ghost"',
-          description: "Button style.",
-        },
-        {
-          name: "size",
-          type: "Button size",
-          default: '"sm"',
-          description: "Button size.",
-        },
-      ],
-      rest: "Button",
-    },
-  ],
-  tour: [
-    {
-      name: "Tour",
-      description:
-        "Wrap the page in Tour and mark elements with TourTarget. Arrow keys move between steps and Escape ends the tour. Focus stays in the card and returns to the opener when it closes.",
-      props: [
-        {
-          name: "steps",
-          type: "TourStep[]",
-          required: true,
-          description:
-            'Steps in order: { target, title, description?, side? }, where side is "top", "right", "bottom" or "left".',
-        },
-        {
-          name: "open",
-          type: "boolean",
-          description: "Controlled open state.",
-        },
-        {
-          name: "defaultOpen",
-          type: "boolean",
-          default: "false",
-          description: "Initial open state when uncontrolled.",
-        },
-        {
-          name: "onOpenChange",
-          type: "(open: boolean) => void",
-          description: "Called when the tour starts or ends.",
-        },
-        {
-          name: "step",
+          name: "overscan",
           type: "number",
-          description: "Controlled zero-based step.",
+          default: "4",
+          description: "Extra rows mounted above and below the viewport.",
         },
         {
-          name: "defaultStep",
-          type: "number",
-          default: "0",
-          description: "Initial step when uncontrolled.",
-        },
-        {
-          name: "onStepChange",
-          type: "(step: number) => void",
-          description: "Called when the step changes.",
-        },
-        {
-          name: "onComplete",
-          type: "() => void",
-          description: "Called after Finish on the last step.",
-        },
-      ],
-    },
-    {
-      name: "TourTarget",
-      description:
-        "Marks its single child as a tour target without adding an element.",
-      props: [
-        {
-          name: "name",
-          type: "string",
-          required: true,
-          description: "Matches a step's target.",
-        },
-      ],
-    },
-  ],
-  rating: [
-    {
-      name: "Rating",
-      description:
-        "A WAI-ARIA radio group of icons. Arrow keys raise or lower the score by one step, Home and End jump to the ends, and hovering previews a score. Pass aria-label.",
-      props: [
-        STATE_PROPS.value("number", "score"),
-        STATE_PROPS.defaultValue("number", "0"),
-        STATE_PROPS.onValueChange(
-          "(value: number) => void",
-          "with the new score"
-        ),
-        {
-          name: "max",
-          type: "number",
-          default: "5",
-          description: "Number of icons.",
-        },
-        {
-          name: "step",
-          type: "1 | 0.5",
-          default: "1",
-          description: "0.5 lets each icon fill by half.",
-        },
-        {
-          name: "icon",
-          type: "ReactNode",
-          default: "<StarIcon />",
+          name: "getItemKey",
+          type: "(item: T, index: number) => Key",
+          default: "index",
           description:
-            "SVG icon drawn for each point. Filled with the root's text color.",
-        },
-        {
-          name: "readOnly",
-          type: "boolean",
-          description:
-            'Shows the score without radios, as an image labelled like "3.5 out of 5".',
-        },
-        {
-          name: "disabled",
-          type: "boolean",
-          description: "Dims the rating and removes it from the tab order.",
-        },
-      ],
-      rest: "<div>",
-    },
-  ],
-  "avatar-group": [
-    {
-      name: "AvatarGroup",
-      description:
-        "Stacks its AvatarGroupItem children with overlap. Avatars past max collapse into a +N button that opens a popover listing them. Pass aria-label.",
-      props: [
-        {
-          name: "max",
-          type: "number",
-          description: "Most avatars shown before the +N button.",
-        },
-      ],
-      rest: "<div>",
-    },
-    {
-      name: "AvatarGroupItem",
-      description:
-        "One avatar built on the shadcn Avatar, with initials as the fallback and an optional presence dot.",
-      props: [
-        {
-          name: "name",
-          type: "string",
-          required: true,
-          description:
-            "Used for the initials, the tooltip and the screen reader label.",
-        },
-        { name: "src", type: "string", description: "Image URL." },
-        {
-          name: "status",
-          type: '"online" | "away" | "busy" | "offline"',
-          description: "Adds a presence dot and reads the status aloud.",
-        },
-      ],
-      rest: "<span>",
-    },
-  ],
-  "description-list": [
-    {
-      name: "DescriptionList",
-      description: "A two column <dl> grid for DescriptionItem rows.",
-      rest: "<dl>",
-    },
-    {
-      name: "DescriptionItem",
-      description:
-        "One label and value row. The value is the children, so editable rows take a string and the parent stores the edits.",
-      props: [
-        {
-          name: "label",
-          type: "ReactNode",
-          required: true,
-          description:
-            "The term. A string label also names the copy and edit buttons.",
-        },
-        {
-          name: "copyable",
-          type: "boolean",
-          description: "Adds a button that copies the value text.",
-        },
-        {
-          name: "editable",
-          type: "boolean",
-          description: "Edits the string children in place with InlineEdit.",
-        },
-        {
-          name: "onValueChange",
-          type: "(value: string) => void | Promise<void>",
-          description:
-            "Called with the edited text. A pending promise keeps the field read-only and a rejection keeps it open.",
-        },
-        {
-          name: "placeholder",
-          type: "string",
-          description: "Shown by an editable row while its value is empty.",
-        },
-      ],
-      rest: "<div>",
-    },
-  ],
-  "json-viewer": [
-    {
-      name: "JsonViewer",
-      description:
-        "A searchable JSON tree on top of TreeView. Rows show copy value and copy path buttons on hover, or always on touch screens; Ctrl or Cmd+C copies the focused value and Shift+Ctrl or Cmd+C its path. Arrays over 100 items open as groups of 100.",
-      props: [
-        {
-          name: "data",
-          type: "unknown",
-          required: true,
-          description: "Any JSON value.",
-        },
-        {
-          name: "defaultExpandDepth",
-          type: "number",
-          default: "1",
-          description: "How many levels start open.",
-        },
-        {
-          name: "onCopy",
-          type: '(path: string, value: unknown, target: "value" | "path") => void',
-          description: "Called after a value or path is copied.",
-        },
-      ],
-      rest: "<div>",
-    },
-  ],
-  "diff-viewer": [
-    {
-      name: "DiffViewer",
-      description:
-        "A line diff of two strings with word-level highlights inside replaced lines. Unchanged runs collapse behind a button that expands them in place.",
-      props: [
-        {
-          name: "oldValue",
-          type: "string",
-          required: true,
-          description: "The text before the change.",
-        },
-        {
-          name: "newValue",
-          type: "string",
-          required: true,
-          description: "The text after the change.",
-        },
-        {
-          name: "mode",
-          type: '"split" | "unified"',
-          default: '"split"',
-          description: "Two columns side by side, or one column.",
-        },
-        {
-          name: "contextLines",
-          type: "number",
-          default: "3",
-          description: "Unchanged lines kept visible next to each change.",
+            "Stable identity for a row, so measured heights and focus follow it when the list changes.",
         },
       ],
       rest: "<div>",
