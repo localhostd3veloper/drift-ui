@@ -70,6 +70,7 @@ const ENTRY_LAYOUT: {
   { slug: "time-field", category: "inputs", stageClassName: "gap-8" },
   { slug: "avatar-group", category: "structure" },
   { slug: "description-list", category: "structure" },
+  { slug: "diff-viewer", category: "structure" },
   { slug: "json-viewer", category: "structure" },
   { slug: "sortable-list", category: "structure" },
   { slug: "stepper", category: "structure" },

@@ -21,6 +21,7 @@ import { ColorPickerPreview } from "@/components/preview/color-picker-preview"
 import { DateTimeRangePreview } from "@/components/preview/date-time-range-preview"
 import { DescriptionListPreview } from "@/components/preview/description-list-preview"
 import { DialogPreview } from "@/components/preview/dialog-preview"
+import { DiffViewerPreview } from "@/components/preview/diff-viewer-preview"
 import { EmojiPickerPreview } from "@/components/preview/emoji-picker-preview"
 import { FileDropzonePreview } from "@/components/preview/file-dropzone-preview"
 import { FilterBuilderPreview } from "@/components/preview/filter-builder-preview"
@@ -56,6 +57,7 @@ export const PREVIEWS: Record<string, ComponentType> = {
   "date-time-range": DateTimeRangePreview,
   "description-list": DescriptionListPreview,
   dialog: DialogPreview,
+  "diff-viewer": DiffViewerPreview,
   "emoji-picker": EmojiPickerPreview,
   "file-dropzone": FileDropzonePreview,
   "filter-builder": FilterBuilderPreview,
