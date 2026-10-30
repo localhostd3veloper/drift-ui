@@ -10,6 +10,7 @@
       "color-picker",
       "date-time-range",
       "description-list",
+      "emoji-picker",
       "file-dropzone",
       "filter-chip",
       "json-viewer",
@@ -49,6 +50,11 @@
         "number": 31,
         "title": "chore(registry): reduce merge conflicts between pull requests",
         "mergedAt": "2026-10-30T17:40:37Z"
+      },
+      {
+        "number": 30,
+        "title": "feat(emoji-picker): add emoji picker component",
+        "mergedAt": "2026-10-30T18:05:02Z"
       }
     ]
   },
