@@ -12,7 +12,7 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,json}\"",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.base-ui.json",
     "registry:build": "shadcn build && bun scripts/build-base-ui-registry.ts && shadcn build registry.base.json --output public/r/base",
-    "test": "vitest run",
+    "test": "bun run registry:build && vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {

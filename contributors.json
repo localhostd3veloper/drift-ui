@@ -16,7 +16,8 @@
       "multi-select",
       "rating",
       "recurrence-editor",
-      "tour-spotlight"
+      "tour-spotlight",
+      "virtual-list"
     ],
     "pullRequests": [
       {
@@ -38,6 +39,16 @@
         "number": 26,
         "title": "feat: add rating, avatar-group, description-list and json-viewer",
         "mergedAt": "2026-10-30T16:36:08Z"
+      },
+      {
+        "number": 28,
+        "title": "feat(virtual-list): add virtual list component",
+        "mergedAt": "2026-10-30T17:21:51Z"
+      },
+      {
+        "number": 31,
+        "title": "chore(registry): reduce merge conflicts between pull requests",
+        "mergedAt": "2026-10-30T17:40:37Z"
       }
     ]
   },
