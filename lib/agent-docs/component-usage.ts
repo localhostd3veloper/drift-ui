@@ -23,6 +23,10 @@ export const COMPONENT_USAGE: Record<string, ComponentUsage> = {
   dialog: { notes: SAME_AS_SHADCN },
   popover: { notes: SAME_AS_SHADCN },
   avatar: { notes: SAME_AS_SHADCN },
+  "use-copy-to-clipboard": {
+    notes:
+      "Hook returning copy(text, key?) and copied, the key of the last copy (or null once 1.6 seconds pass). Installed automatically by description-list and json-viewer.",
+  },
   "use-controllable-state": {
     notes:
       "Hook shared by several components to support both controlled (value + onValueChange) and uncontrolled (defaultValue) use. Installed automatically as a dependency.",
@@ -349,6 +353,24 @@ import { Rating } from "@/components/ui/rating"
 export function ReviewScore() {
   const [score, setScore] = useState(0)
   return <Rating aria-label="Your rating" value={score} onValueChange={setScore} step={0.5} />
+}`,
+  },
+  "description-list": {
+    notes:
+      'DescriptionList renders a <dl> grid and DescriptionItem renders one label and value row. copyable adds a copy button for the value. editable turns string children into an InlineEdit that calls onValueChange(value), which may return a promise; the parent re-renders with the new text, so keep the value in state. Pass a string label so buttons get names like "Copy ID".',
+    example: `"use client"
+
+import { useState } from "react"
+import { DescriptionItem, DescriptionList } from "@/components/ui/description-list"
+
+export function UserDetails() {
+  const [owner, setOwner] = useState("Ana Lima")
+  return (
+    <DescriptionList>
+      <DescriptionItem label="ID" copyable>usr_8f2a</DescriptionItem>
+      <DescriptionItem label="Owner" editable onValueChange={setOwner}>{owner}</DescriptionItem>
+    </DescriptionList>
+  )
 }`,
   },
 }

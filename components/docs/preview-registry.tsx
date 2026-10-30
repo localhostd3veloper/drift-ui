@@ -18,6 +18,7 @@ import { ButtonPreview } from "@/components/preview/button-preview"
 import { CardPreview } from "@/components/preview/card-preview"
 import { ColorPickerPreview } from "@/components/preview/color-picker-preview"
 import { DateTimeRangePreview } from "@/components/preview/date-time-range-preview"
+import { DescriptionListPreview } from "@/components/preview/description-list-preview"
 import { DialogPreview } from "@/components/preview/dialog-preview"
 import { FileDropzonePreview } from "@/components/preview/file-dropzone-preview"
 import { FilterBuilderPreview } from "@/components/preview/filter-builder-preview"
@@ -47,6 +48,7 @@ export const PREVIEWS: Record<string, ComponentType> = {
   card: CardPreview,
   "color-picker": ColorPickerPreview,
   "date-time-range": DateTimeRangePreview,
+  "description-list": DescriptionListPreview,
   dialog: DialogPreview,
   "file-dropzone": FileDropzonePreview,
   "filter-builder": FilterBuilderPreview,

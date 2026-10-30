@@ -968,4 +968,47 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       rest: "<div>",
     },
   ],
+  "description-list": [
+    {
+      name: "DescriptionList",
+      description: "A two column <dl> grid for DescriptionItem rows.",
+      rest: "<dl>",
+    },
+    {
+      name: "DescriptionItem",
+      description:
+        "One label and value row. The value is the children, so editable rows take a string and the parent stores the edits.",
+      props: [
+        {
+          name: "label",
+          type: "ReactNode",
+          required: true,
+          description:
+            "The term. A string label also names the copy and edit buttons.",
+        },
+        {
+          name: "copyable",
+          type: "boolean",
+          description: "Adds a button that copies the value text.",
+        },
+        {
+          name: "editable",
+          type: "boolean",
+          description: "Edits the string children in place with InlineEdit.",
+        },
+        {
+          name: "onValueChange",
+          type: "(value: string) => void | Promise<void>",
+          description:
+            "Called with the edited text. A pending promise keeps the field read-only and a rejection keeps it open.",
+        },
+        {
+          name: "placeholder",
+          type: "string",
+          description: "Shown by an editable row while its value is empty.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
 }

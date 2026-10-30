@@ -11,7 +11,7 @@ Browse the live previews at [drift-ui-dev.vercel.app](https://drift-ui-dev.verce
 | Category   | Components                                                                                                                                                                                    |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Inputs     | tags-input, multi-select, number-input, password-input, rating, date-time-range, time-field, recurrence-editor, color-picker, mention-textarea, shortcut-recorder, file-dropzone, inline-edit |
-| Structure  | tree-view, stepper, timeline                                                                                                                                                                  |
+| Structure  | tree-view, stepper, timeline, description-list                                                                                                                                                |
 | Workflow   | filter-builder, bulk-action-bar, tour                                                                                                                                                         |
 | Primitives | button, badge, input, label, card, dialog, popover, avatar                                                                                                                                    |
 

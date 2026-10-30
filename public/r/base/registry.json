@@ -618,6 +618,19 @@
       ]
     },
     {
+      "name": "use-copy-to-clipboard",
+      "type": "registry:hook",
+      "title": "useCopyToClipboard",
+      "description": "Copy text to the clipboard and remember what was copied for a moment.",
+      "files": [
+        {
+          "path": "registry/default/hooks/use-copy-to-clipboard.ts",
+          "type": "registry:hook"
+        }
+      ],
+      "dependencies": []
+    },
+    {
       "name": "avatar",
       "type": "registry:ui",
       "title": "Avatar",
@@ -650,6 +663,26 @@
       "files": [
         {
           "path": "registry/default/ui/rating.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "description-list",
+      "type": "registry:ui",
+      "title": "Description List",
+      "description": "Key and value rows for detail pages, with copy buttons and inline editing.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "utils",
+        "@drift-ui/inline-edit",
+        "@drift-ui/use-copy-to-clipboard"
+      ],
+      "files": [
+        {
+          "path": "registry/default/ui/description-list.tsx",
           "type": "registry:ui"
         }
       ]
