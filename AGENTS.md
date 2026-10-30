@@ -30,10 +30,10 @@ bun run format
 | `registry.json`                         | Registry manifest read by `shadcn build`                |
 | `components/preview/<name>-preview.tsx` | Live demo and usage example on the docs page            |
 | `components/docs/preview-registry.tsx`  | Maps slugs to previews                                  |
-| `lib/catalog.ts`                        | Categories and ordering                                 |
+| `lib/catalog.ts`                        | Categories, alphabetical within each                    |
 | `lib/agent-docs/component-usage.ts`     | Usage notes served at `/llms.txt` and `/llms-full.txt`  |
 | `tests/ui`, `tests/lib`                 | Vitest suites                                           |
-| `public/r/**/*.json`                    | Build output. Never edit by hand, regenerate it         |
+| `public/r/**/*.json`                    | Build output, gitignored. Regenerate, never hand-edit   |
 | `contributors.json`                     | Hall of fame data behind `/contributors`                |
 
 ## Working on a GitHub issue
@@ -76,9 +76,10 @@ For a new component, follow every step of [Adding a component](CONTRIBUTING.md#a
 2. Entry in `registry.json` with `dependencies` and `registryDependencies` (shadcn built-ins by bare name, like `button`; `@drift-ui/` prefix only for drift-only items)
 3. `components/preview/<name>-preview.tsx`, registered in `components/docs/preview-registry.tsx`
 4. Category in `lib/catalog.ts`
-5. Usage notes in `lib/agent-docs/component-usage.ts`
+5. Usage notes in `lib/agent-docs/component-usage.ts` and prop reference in `lib/agent-docs/component-api.ts`
 6. Tests in `tests/ui/<name>.test.tsx`, plus `tests/lib/<name>.test.ts` for lib code, covering keyboard interaction
-7. `bun run registry:build` and commit the regenerated `public/r` files
+
+Insert at the alphabetical position in `registry.json`, `lib/catalog.ts` (within the category), `component-usage.ts` and `component-api.ts`, never at the end. Appending is what makes pull requests conflict, and `tests/lib/sorted-lists.test.ts` fails if a list is out of order. If a conflict still happens, keep both entries.
 
 Before writing a component, read two existing ones that are close to it (for example `tags-input.tsx` and `stepper.tsx`) and match their structure. Rules that reviewers enforce:
 
@@ -95,7 +96,6 @@ All of these must pass before you open a pull request:
 
 ```bash
 bun run typecheck && bun run lint && bun run test
-bun run registry:build && git status public/r
 ```
 
 For visual changes, run `bun dev`, open `/components/<name>`, and check light and dark mode. Attach a screenshot to the pull request.
@@ -120,6 +120,6 @@ Do not edit `contributors.json` by hand to credit yourself or anyone else. When 
 ## Do not
 
 - Push to `main` or force-push a shared branch
-- Edit `public/r/*.json` by hand
+- Commit or hand-edit `public/r/*.json`
 - Add dependencies without saying why in the pull request
 - Work on more than one issue in a single pull request
