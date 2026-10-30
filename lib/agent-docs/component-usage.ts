@@ -22,6 +22,7 @@ export const COMPONENT_USAGE: Record<string, ComponentUsage> = {
   card: { notes: SAME_AS_SHADCN },
   dialog: { notes: SAME_AS_SHADCN },
   popover: { notes: SAME_AS_SHADCN },
+  avatar: { notes: SAME_AS_SHADCN },
   "use-controllable-state": {
     notes:
       "Hook shared by several components to support both controlled (value + onValueChange) and uncontrolled (defaultValue) use. Installed automatically as a dependency.",

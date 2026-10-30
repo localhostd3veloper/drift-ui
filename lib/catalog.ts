@@ -92,6 +92,7 @@ const ENTRY_LAYOUT: {
   { slug: "card", category: "primitives" },
   { slug: "dialog", category: "primitives" },
   { slug: "popover", category: "primitives" },
+  { slug: "avatar", category: "primitives" },
 ]
 
 const REGISTRY_ITEMS = new Map(

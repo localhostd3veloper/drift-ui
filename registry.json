@@ -485,6 +485,17 @@
       "files": [
         { "path": "registry/default/ui/inline-edit.tsx", "type": "registry:ui" }
       ]
+    },
+    {
+      "name": "avatar",
+      "type": "registry:ui",
+      "title": "Avatar",
+      "description": "An image with a fallback for when it fails to load.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/default/ui/avatar.tsx", "type": "registry:ui" }
+      ]
     }
   ]
 }
