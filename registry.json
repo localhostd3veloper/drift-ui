@@ -467,7 +467,7 @@
       "type": "registry:ui",
       "title": "Sortable List",
       "description": "Reorderable list with drag-and-drop and full keyboard accessibility.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react", "motion"],
       "registryDependencies": ["utils", "@drift-ui/use-controllable-state"],
       "files": [
         {

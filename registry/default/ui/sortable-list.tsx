@@ -2,38 +2,58 @@
 
 import * as React from "react"
 import { GripVerticalIcon } from "lucide-react"
+import {
+  MotionConfig,
+  Reorder,
+  useDragControls,
+  type DragControls,
+  type HTMLMotionProps,
+} from "motion/react"
 
 import { cn } from "@/registry/default/lib/utils"
 import { useControllableState } from "@/registry/default/hooks/use-controllable-state"
 import {
+  applyOrder,
   getCancelAnnouncement,
+  getDefaultItemKey,
+  getDefaultItemLabel,
   getDropAnnouncement,
   getMoveAnnouncement,
   getPickupAnnouncement,
   getTargetIndex,
   reorderItem,
+  type SortableKey,
   type SortableOrientation,
 } from "@/registry/default/lib/sortable-list"
 
+const SORTABLE_SPRING = {
+  type: "spring",
+  bounce: 0.15,
+  visualDuration: 0.25,
+} as const
+
+const DROP_SETTLE = { bounceStiffness: 500, bounceDamping: 45 }
+const LIFTED_SCALE = 1.02
+const INTERACTIVE_SELECTOR = "a,button,input,select,textarea,[contenteditable]"
+
+interface SortSession {
+  key: SortableKey
+  order: SortableKey[]
+  dragControls?: DragControls
+}
+
 interface SortableContextValue {
-  activeKey: string | number | null
-  isGrabbed: boolean
-  isDragging: boolean
+  activeKey: SortableKey | null
+  isPointerDrag: boolean
   orientation: SortableOrientation
   disabled: boolean
   instructionsId: string
-  registerItem: (key: string | number, element: HTMLElement) => void
-  unregisterItem: (key: string | number) => void
-  registerHandle: (key: string | number) => void
-  unregisterHandle: (key: string | number) => void
-  hasHandle: (key: string | number) => boolean
+  getLabel: (key: SortableKey) => string
+  beginPointerDrag: (key: SortableKey, dragControls: DragControls) => void
+  finishSession: () => void
   onItemKeyDown: (
     event: React.KeyboardEvent<HTMLElement>,
-    key: string | number
-  ) => void
-  onPointerStart: (
-    event: React.PointerEvent<HTMLElement>,
-    key: string | number
+    key: SortableKey
   ) => void
 }
 
@@ -42,44 +62,50 @@ const SortableContext = React.createContext<SortableContextValue | null>(null)
 function useSortableContext() {
   const context = React.useContext(SortableContext)
   if (!context) {
-    throw new Error(
-      "SortableItem and SortableDragHandle must be used within a SortableList"
-    )
+    throw new Error("SortableItem must be used within a SortableList")
+  }
+  return context
+}
+
+interface SortableItemContextValue {
+  value: SortableKey
+  disabled: boolean
+  isGrabbed: boolean
+  registerHandle: () => () => void
+  startDrag: (event: React.PointerEvent<HTMLElement>) => void
+}
+
+const SortableItemContext =
+  React.createContext<SortableItemContextValue | null>(null)
+
+function useSortableItemContext() {
+  const context = React.useContext(SortableItemContext)
+  if (!context) {
+    throw new Error("SortableDragHandle must be used within a SortableItem")
   }
   return context
 }
 
 export interface SortableListProps<T> extends Omit<
-  React.ComponentProps<"ul">,
-  "children" | "defaultValue"
+  HTMLMotionProps<"ul">,
+  "children" | "defaultValue" | "layout" | "values"
 > {
   value?: T[]
   defaultValue?: T[]
   onValueChange?: (items: T[]) => void
-  getKey?: (item: T, index: number) => string | number
+  getKey?: (item: T, index: number) => SortableKey
   getItemLabel?: (item: T, index: number) => string
   orientation?: SortableOrientation
   disabled?: boolean
-  children?: React.ReactNode | ((item: T, index: number) => React.ReactNode)
+  children: (item: T, index: number) => React.ReactNode
 }
 
 export function SortableList<T>({
   value,
   defaultValue = [],
   onValueChange,
-  getKey = (item, index) =>
-    typeof item === "object" && item !== null && "id" in item
-      ? String((item as { id: unknown }).id)
-      : index,
-  getItemLabel = (item, index) => {
-    if (typeof item === "object" && item !== null) {
-      if ("label" in item && typeof item.label === "string") return item.label
-      if ("title" in item && typeof item.title === "string") return item.title
-      if ("name" in item && typeof item.name === "string") return item.name
-    }
-    if (typeof item === "string") return item
-    return `Item ${index + 1}`
-  },
+  getKey = getDefaultItemKey,
+  getItemLabel = getDefaultItemLabel,
   orientation = "vertical",
   disabled = false,
   className,
@@ -92,298 +118,165 @@ export function SortableList<T>({
     onChange: onValueChange,
   })
 
-  const [activeKey, setActiveKey] = React.useState<string | number | null>(null)
-  const [isGrabbed, setIsGrabbed] = React.useState(false)
-  const [isDragging, setIsDragging] = React.useState(false)
+  const [session, setSession] = React.useState<SortSession | null>(null)
   const [announcement, setAnnouncement] = React.useState("")
-
-  const itemElementsRef = React.useRef(new Map<string | number, HTMLElement>())
-  const hasHandleRef = React.useRef(new Set<string | number>())
-  const initialItemsRef = React.useRef<T[]>(items)
-  const pointerDragRef = React.useRef<{
-    key: string | number
-    pointerId: number
-    startY: number
-    startX: number
-    hasMoved: boolean
-  } | null>(null)
-
+  const sessionRef = React.useRef<SortSession | null>(null)
   const instructionsId = React.useId()
 
-  const registerItem = React.useCallback(
-    (key: string | number, element: HTMLElement) => {
-      itemElementsRef.current.set(key, element)
-    },
-    []
-  )
+  const keys = items.map((item, index) => getKey(item, index))
+  const orderedItems = session
+    ? applyOrder(items, session.order, getKey)
+    : items
 
-  const unregisterItem = React.useCallback((key: string | number) => {
-    itemElementsRef.current.delete(key)
-  }, [])
+  function updateSession(next: SortSession | null) {
+    sessionRef.current = next
+    setSession(next)
+  }
 
-  const registerHandle = React.useCallback((key: string | number) => {
-    hasHandleRef.current.add(key)
-  }, [])
+  function getLabel(key: SortableKey) {
+    const index = keys.indexOf(key)
+    return index === -1 ? String(key) : getItemLabel(items[index], index)
+  }
 
-  const unregisterHandle = React.useCallback((key: string | number) => {
-    hasHandleRef.current.delete(key)
-  }, [])
+  function pickUp(key: SortableKey, dragControls?: DragControls) {
+    updateSession({ key, order: keys, dragControls })
+    setAnnouncement(
+      getPickupAnnouncement(getLabel(key), keys.indexOf(key), keys.length)
+    )
+  }
 
-  const hasHandle = React.useCallback((key: string | number) => {
-    return hasHandleRef.current.has(key)
-  }, [])
+  function moveTo(order: SortableKey[]) {
+    const current = sessionRef.current
+    if (!current) return
 
-  const findIndexByKey = React.useCallback(
-    (key: string | number) => {
-      return items.findIndex((item, index) => getKey(item, index) === key)
-    },
-    [items, getKey]
-  )
-
-  const cancelReorder = React.useCallback(() => {
-    if (activeKey !== null) {
-      const originalIndex = initialItemsRef.current.findIndex(
-        (item, index) => getKey(item, index) === activeKey
+    updateSession({ ...current, order })
+    setAnnouncement(
+      getMoveAnnouncement(
+        getLabel(current.key),
+        order.indexOf(current.key),
+        order.length
       )
-      const label =
-        originalIndex !== -1
-          ? getItemLabel(initialItemsRef.current[originalIndex], originalIndex)
-          : String(activeKey)
+    )
+  }
 
-      setItems(initialItemsRef.current)
-      setAnnouncement(
-        getCancelAnnouncement(
-          label,
-          originalIndex !== -1 ? originalIndex : 0,
-          initialItemsRef.current.length
-        )
+  function finishSession() {
+    const current = sessionRef.current
+    if (!current) return
+
+    const nextItems = applyOrder(items, current.order, getKey)
+    updateSession(null)
+    setAnnouncement(
+      getDropAnnouncement(
+        getLabel(current.key),
+        current.order.indexOf(current.key),
+        current.order.length
       )
+    )
+    if (nextItems.some((item, index) => item !== items[index])) {
+      setItems(nextItems)
     }
-    setActiveKey(null)
-    setIsGrabbed(false)
-    setIsDragging(false)
-    pointerDragRef.current = null
-  }, [activeKey, getKey, getItemLabel, setItems])
+  }
 
-  const dropItem = React.useCallback(() => {
-    if (activeKey !== null) {
-      const currentIndex = findIndexByKey(activeKey)
-      if (currentIndex !== -1) {
-        const label = getItemLabel(items[currentIndex], currentIndex)
-        setAnnouncement(getDropAnnouncement(label, currentIndex, items.length))
-      }
-    }
-    setActiveKey(null)
-    setIsGrabbed(false)
-    setIsDragging(false)
-    pointerDragRef.current = null
-  }, [activeKey, findIndexByKey, getItemLabel, items])
+  function cancelSession() {
+    const current = sessionRef.current
+    if (!current) return
 
-  const onItemKeyDown = React.useCallback(
-    (event: React.KeyboardEvent<HTMLElement>, key: string | number) => {
-      if (disabled) return
+    updateSession(null)
+    current.dragControls?.stop()
+    setAnnouncement(
+      getCancelAnnouncement(
+        getLabel(current.key),
+        keys.indexOf(current.key),
+        keys.length
+      )
+    )
+  }
 
-      const currentIndex = findIndexByKey(key)
-      if (currentIndex === -1) return
+  function onItemKeyDown(
+    event: React.KeyboardEvent<HTMLElement>,
+    key: SortableKey
+  ) {
+    if (disabled) return
 
-      const currentItem = items[currentIndex]
-      const label = getItemLabel(currentItem, currentIndex)
+    const current = sessionRef.current
+    const isGrabbed = current?.key === key && !current.dragControls
 
-      if (event.key === " " || event.key === "Enter") {
-        event.preventDefault()
-        if (isGrabbed && activeKey === key) {
-          dropItem()
-        } else {
-          initialItemsRef.current = items
-          setActiveKey(key)
-          setIsGrabbed(true)
-          setIsDragging(false)
-          setAnnouncement(
-            getPickupAnnouncement(label, currentIndex, items.length)
-          )
-        }
-        return
-      }
-
-      if (event.key === "Escape" && isGrabbed && activeKey === key) {
-        event.preventDefault()
-        cancelReorder()
-        return
-      }
-
-      if (isGrabbed && activeKey === key) {
-        const targetIndex = getTargetIndex(
-          event.key,
-          currentIndex,
-          items.length,
-          orientation
-        )
-
-        if (targetIndex !== null && targetIndex !== currentIndex) {
-          event.preventDefault()
-          const nextItems = reorderItem(items, currentIndex, targetIndex)
-          setItems(nextItems)
-          setAnnouncement(getMoveAnnouncement(label, targetIndex, items.length))
-
-          requestAnimationFrame(() => {
-            const el = itemElementsRef.current.get(key)
-            if (el) {
-              const handle = el.querySelector<HTMLElement>(
-                "[data-sortable-handle]"
-              )
-              ;(handle ?? el).focus()
-            }
-          })
-        }
-      }
-    },
-    [
-      disabled,
-      findIndexByKey,
-      items,
-      getItemLabel,
-      isGrabbed,
-      activeKey,
-      dropItem,
-      cancelReorder,
-      orientation,
-      setItems,
-    ]
-  )
-
-  const onPointerStart = React.useCallback(
-    (event: React.PointerEvent<HTMLElement>, key: string | number) => {
-      if (disabled || event.button !== 0) return
-
-      initialItemsRef.current = items
-      pointerDragRef.current = {
-        key,
-        pointerId: event.pointerId,
-        startY: event.clientY,
-        startX: event.clientX,
-        hasMoved: false,
-      }
-
-      const target = event.currentTarget
-      target.setPointerCapture(event.pointerId)
-    },
-    [disabled, items]
-  )
-
-  const onPointerMove = React.useCallback(
-    (event: React.PointerEvent<HTMLUListElement>) => {
-      const drag = pointerDragRef.current
-      if (!drag || drag.pointerId !== event.pointerId) return
-
-      const deltaX = Math.abs(event.clientX - drag.startX)
-      const deltaY = Math.abs(event.clientY - drag.startY)
-
-      if (!drag.hasMoved && (deltaX > 4 || deltaY > 4)) {
-        drag.hasMoved = true
-        setActiveKey(drag.key)
-        setIsDragging(true)
-        setIsGrabbed(false)
-
-        const currentIndex = findIndexByKey(drag.key)
-        if (currentIndex !== -1) {
-          const label = getItemLabel(items[currentIndex], currentIndex)
-          setAnnouncement(
-            getPickupAnnouncement(label, currentIndex, items.length)
-          )
-        }
-      }
-
-      if (drag.hasMoved) {
-        const elementBelow = document.elementFromPoint(
-          event.clientX,
-          event.clientY
-        )
-        const targetItemEl = elementBelow?.closest<HTMLElement>(
-          "[data-sortable-item]"
-        )
-
-        if (targetItemEl) {
-          const targetKeyStr = targetItemEl.dataset.sortableKey
-          if (targetKeyStr !== undefined) {
-            const targetKey =
-              typeof drag.key === "number" ? Number(targetKeyStr) : targetKeyStr
-
-            if (targetKey !== drag.key) {
-              const fromIndex = findIndexByKey(drag.key)
-              const toIndex = findIndexByKey(targetKey)
-
-              if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
-                const item = items[fromIndex]
-                const label = getItemLabel(item, fromIndex)
-                const nextItems = reorderItem(items, fromIndex, toIndex)
-                setItems(nextItems)
-                setAnnouncement(
-                  getMoveAnnouncement(label, toIndex, items.length)
-                )
-              }
-            }
-          }
-        }
-      }
-    },
-    [findIndexByKey, getItemLabel, items, setItems]
-  )
-
-  const onPointerEnd = React.useCallback(
-    (event: React.PointerEvent<HTMLUListElement>) => {
-      const drag = pointerDragRef.current
-      if (!drag || drag.pointerId !== event.pointerId) return
-
-      if (drag.hasMoved) {
-        dropItem()
+    if (event.key === " " || event.key === "Enter") {
+      event.preventDefault()
+      if (event.repeat) return
+      if (isGrabbed) {
+        finishSession()
       } else {
-        pointerDragRef.current = null
+        pickUp(key)
       }
-    },
-    [dropItem]
-  )
+      return
+    }
 
-  const renderedChildren =
-    typeof children === "function"
-      ? items.map((item, index) =>
-          (children as (item: T, index: number) => React.ReactNode)(item, index)
-        )
-      : children
+    if (!isGrabbed) return
+
+    const currentIndex = current.order.indexOf(key)
+    const targetIndex = getTargetIndex(
+      event.key,
+      currentIndex,
+      current.order.length,
+      orientation
+    )
+    if (targetIndex === null) return
+
+    event.preventDefault()
+    if (targetIndex !== currentIndex) {
+      moveTo(reorderItem(current.order, currentIndex, targetIndex))
+    }
+  }
+
+  React.useEffect(() => {
+    if (!session) return
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key !== "Escape") return
+      event.preventDefault()
+      event.stopPropagation()
+      cancelSession()
+    }
+
+    window.addEventListener("keydown", handleEscape, true)
+    return () => window.removeEventListener("keydown", handleEscape, true)
+  })
 
   return (
     <SortableContext.Provider
       value={{
-        activeKey,
-        isGrabbed,
-        isDragging,
+        activeKey: session?.key ?? null,
+        isPointerDrag: Boolean(session?.dragControls),
         orientation,
         disabled,
         instructionsId,
-        registerItem,
-        unregisterItem,
-        registerHandle,
-        unregisterHandle,
-        hasHandle,
+        getLabel,
+        beginPointerDrag: pickUp,
+        finishSession,
         onItemKeyDown,
-        onPointerStart,
       }}
     >
-      <ul
-        role="list"
-        data-orientation={orientation}
-        data-disabled={disabled ? "" : undefined}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerEnd}
-        onPointerCancel={onPointerEnd}
-        className={cn(
-          "flex select-none",
-          orientation === "vertical" ? "flex-col gap-2" : "flex-row gap-2",
-          className
-        )}
-        {...props}
-      >
-        {renderedChildren}
-      </ul>
+      <MotionConfig reducedMotion="user" transition={SORTABLE_SPRING}>
+        <Reorder.Group
+          as="ul"
+          role="list"
+          axis={orientation === "vertical" ? "y" : "x"}
+          values={session?.order ?? keys}
+          onReorder={moveTo}
+          data-orientation={orientation}
+          data-disabled={disabled ? "" : undefined}
+          className={cn(
+            "flex gap-2",
+            orientation === "vertical" ? "flex-col" : "flex-row",
+            session && "select-none",
+            className
+          )}
+          {...props}
+        >
+          {orderedItems.map((item, index) => children(item, index))}
+        </Reorder.Group>
+      </MotionConfig>
 
       <span id={instructionsId} className="sr-only">
         Press Space or Enter to pick up the item. Use arrow keys to reorder.
@@ -397,9 +290,13 @@ export function SortableList<T>({
   )
 }
 
-export interface SortableItemProps extends React.ComponentProps<"li"> {
-  value: string | number
+export interface SortableItemProps extends Omit<
+  HTMLMotionProps<"li">,
+  "children" | "layout" | "value"
+> {
+  value: SortableKey
   disabled?: boolean
+  children?: React.ReactNode
 }
 
 export function SortableItem({
@@ -407,89 +304,127 @@ export function SortableItem({
   disabled: itemDisabled = false,
   className,
   children,
+  onBlur,
+  onDragEnd,
+  onDragStart,
   onKeyDown,
   onPointerDown,
   ...props
 }: SortableItemProps) {
   const {
     activeKey,
-    isGrabbed,
-    isDragging,
+    isPointerDrag,
     orientation,
     disabled: listDisabled,
     instructionsId,
-    registerItem,
-    unregisterItem,
-    hasHandle,
+    beginPointerDrag,
+    finishSession,
     onItemKeyDown,
-    onPointerStart,
   } = useSortableContext()
 
-  const elementRef = React.useRef<HTMLLIElement>(null)
+  const dragControls = useDragControls()
+  const [hasHandle, setHasHandle] = React.useState(false)
   const disabled = listDisabled || itemDisabled
-  const isItemActive = activeKey === value
-  const isItemGrabbed = isItemActive && isGrabbed
-  const isItemDragging = isItemActive && isDragging
-  const itemHasHandle = hasHandle(value)
+  const isActive = activeKey === value
+  const isGrabbed = isActive && !isPointerDrag
+  const isDragging = isActive && isPointerDrag
+  const isRowDraggable = !hasHandle && !disabled
 
-  React.useEffect(() => {
-    if (elementRef.current) {
-      registerItem(value, elementRef.current)
-    }
-    return () => unregisterItem(value)
-  }, [value, registerItem, unregisterItem])
+  const registerHandle = React.useCallback(() => {
+    setHasHandle(true)
+    return () => setHasHandle(false)
+  }, [])
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLLIElement>) => {
-    onKeyDown?.(event)
-    if (!itemHasHandle && !event.defaultPrevented) {
-      onItemKeyDown(event, value)
+  const startDrag = (event: React.PointerEvent<HTMLElement>) => {
+    if (!disabled && event.button === 0 && event.isPrimary) {
+      dragControls.start(event)
     }
   }
 
   const handlePointerDown = (event: React.PointerEvent<HTMLLIElement>) => {
     onPointerDown?.(event)
-    if (!itemHasHandle && !event.defaultPrevented) {
-      onPointerStart(event, value)
+    const isInteractiveTarget =
+      event.target instanceof Element &&
+      event.target.closest(INTERACTIVE_SELECTOR) !== null
+    if (!hasHandle && !event.defaultPrevented && !isInteractiveTarget) {
+      startDrag(event)
+    }
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLLIElement>) => {
+    onKeyDown?.(event)
+    if (
+      isRowDraggable &&
+      event.target === event.currentTarget &&
+      !event.defaultPrevented
+    ) {
+      onItemKeyDown(event, value)
+    }
+  }
+
+  const handleBlur = (event: React.FocusEvent<HTMLLIElement>) => {
+    onBlur?.(event)
+    if (isGrabbed && !event.currentTarget.contains(event.relatedTarget)) {
+      finishSession()
     }
   }
 
   return (
-    <li
-      ref={elementRef}
-      role="listitem"
-      data-sortable-item=""
-      data-sortable-key={String(value)}
-      data-grabbed={isItemGrabbed ? "" : undefined}
-      data-dragging={isItemDragging ? "" : undefined}
-      data-orientation={orientation}
-      data-disabled={disabled ? "" : undefined}
-      tabIndex={!itemHasHandle && !disabled ? 0 : undefined}
-      aria-roledescription="sortable item"
-      aria-grabbed={isItemGrabbed || isItemDragging}
-      aria-describedby={!itemHasHandle ? instructionsId : undefined}
-      onKeyDown={handleKeyDown}
-      onPointerDown={handlePointerDown}
-      className={cn(
-        "group relative flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-card-foreground shadow-xs transition-all",
-        !itemHasHandle && !disabled && "cursor-grab active:cursor-grabbing",
-        !itemHasHandle &&
-          "focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none",
-        isItemGrabbed && "z-10 border-ring shadow-md ring-2 ring-ring",
-        isItemDragging &&
-          "z-20 scale-[1.01] cursor-grabbing border-ring opacity-90 shadow-lg",
-        disabled && "pointer-events-none opacity-50",
-        className
-      )}
-      {...props}
+    <SortableItemContext.Provider
+      value={{ value, disabled, isGrabbed, registerHandle, startDrag }}
     >
-      {children}
-    </li>
+      <Reorder.Item
+        as="li"
+        role="listitem"
+        value={value}
+        layout="position"
+        drag={disabled ? false : orientation === "vertical" ? "y" : "x"}
+        dragListener={false}
+        dragControls={dragControls}
+        dragMomentum={false}
+        dragTransition={DROP_SETTLE}
+        initial={false}
+        animate={{ scale: isActive ? LIFTED_SCALE : 1 }}
+        data-sortable-item=""
+        data-grabbed={isGrabbed ? "" : undefined}
+        data-dragging={isDragging ? "" : undefined}
+        data-orientation={orientation}
+        data-disabled={disabled ? "" : undefined}
+        tabIndex={isRowDraggable ? 0 : undefined}
+        aria-roledescription="sortable item"
+        aria-grabbed={isActive}
+        aria-describedby={hasHandle ? undefined : instructionsId}
+        onBlur={handleBlur}
+        onDragEnd={(event, info) => {
+          onDragEnd?.(event, info)
+          finishSession()
+        }}
+        onDragStart={(event, info) => {
+          onDragStart?.(event, info)
+          beginPointerDrag(value, dragControls)
+        }}
+        onKeyDown={handleKeyDown}
+        onPointerDown={handlePointerDown}
+        className={cn(
+          "group relative flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-card-foreground shadow-xs transition-[border-color,box-shadow,opacity]",
+          isRowDraggable &&
+            "cursor-grab select-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none active:cursor-grabbing",
+          isRowDraggable &&
+            (orientation === "vertical" ? "touch-pan-x" : "touch-pan-y"),
+          isGrabbed && "border-ring shadow-md ring-2 ring-ring/50",
+          isDragging && "cursor-grabbing border-ring shadow-lg",
+          disabled && "pointer-events-none opacity-50",
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </Reorder.Item>
+    </SortableItemContext.Provider>
   )
 }
 
-export interface SortableDragHandleProps extends React.ComponentProps<"button"> {
-  value?: string | number
-}
+export type SortableDragHandleProps = React.ComponentProps<"button">
 
 export function SortableDragHandle({
   className,
@@ -498,69 +433,31 @@ export function SortableDragHandle({
   onPointerDown,
   ...props
 }: SortableDragHandleProps) {
-  const {
-    activeKey,
-    isGrabbed,
-    disabled: listDisabled,
-    instructionsId,
-    registerHandle,
-    unregisterHandle,
-    onItemKeyDown,
-    onPointerStart,
-  } = useSortableContext()
+  const { instructionsId, getLabel, onItemKeyDown } = useSortableContext()
+  const { value, disabled, isGrabbed, registerHandle, startDrag } =
+    useSortableItemContext()
 
-  // Retrieve item key from nearest SortableItem
-  const [itemKey, setItemKey] = React.useState<string | number | null>(null)
-
-  const handleRef = React.useCallback(
-    (node: HTMLButtonElement | null) => {
-      if (node) {
-        const itemEl = node.closest<HTMLElement>("[data-sortable-item]")
-        const keyStr = itemEl?.dataset.sortableKey
-        if (keyStr !== undefined) {
-          setItemKey(keyStr)
-          registerHandle(keyStr)
-        }
-      }
-    },
-    [registerHandle]
-  )
-
-  React.useEffect(() => {
-    return () => {
-      if (itemKey !== null) {
-        unregisterHandle(itemKey)
-      }
-    }
-  }, [itemKey, unregisterHandle])
-
-  const isHandleGrabbed = itemKey !== null && activeKey === itemKey && isGrabbed
+  React.useLayoutEffect(registerHandle, [registerHandle])
 
   return (
     <button
-      ref={handleRef}
       type="button"
       data-sortable-handle=""
-      aria-label="Reorder item"
+      aria-label={`Reorder ${getLabel(value)}`}
       aria-describedby={instructionsId}
-      aria-pressed={isHandleGrabbed}
-      disabled={listDisabled}
-      tabIndex={listDisabled ? -1 : 0}
+      aria-pressed={isGrabbed}
+      disabled={disabled}
       onKeyDown={(event) => {
         onKeyDown?.(event)
-        if (itemKey !== null && !event.defaultPrevented) {
-          onItemKeyDown(event, itemKey)
-        }
+        if (!event.defaultPrevented) onItemKeyDown(event, value)
       }}
       onPointerDown={(event) => {
         onPointerDown?.(event)
-        if (itemKey !== null && !event.defaultPrevented) {
-          onPointerStart(event, itemKey)
-        }
+        if (!event.defaultPrevented) startDrag(event)
       }}
       className={cn(
-        "shrink-0 cursor-grab touch-none rounded p-1 text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:cursor-grabbing",
-        isHandleGrabbed && "cursor-grabbing text-foreground",
+        "shrink-0 cursor-grab touch-none rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:cursor-grabbing",
+        isGrabbed && "bg-muted text-foreground",
         className
       )}
       {...props}

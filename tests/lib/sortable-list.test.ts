@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest"
 
 import {
+  applyOrder,
   getCancelAnnouncement,
+  getDefaultItemKey,
+  getDefaultItemLabel,
   getDropAnnouncement,
   getMoveAnnouncement,
   getPickupAnnouncement,
@@ -10,6 +13,62 @@ import {
 } from "@/registry/default/lib/sortable-list"
 
 describe("sortable-list lib", () => {
+  describe("getDefaultItemKey", () => {
+    it("uses strings and numbers as their own key", () => {
+      expect(getDefaultItemKey("a", 3)).toBe("a")
+      expect(getDefaultItemKey(7, 3)).toBe(7)
+    })
+
+    it("keeps the type of an id", () => {
+      expect(getDefaultItemKey({ id: 7 }, 3)).toBe(7)
+      expect(getDefaultItemKey({ id: "x" }, 3)).toBe("x")
+    })
+
+    it("falls back to the index", () => {
+      expect(getDefaultItemKey({ title: "a" }, 3)).toBe(3)
+    })
+  })
+
+  describe("getDefaultItemLabel", () => {
+    it("reads a string, label, title or name", () => {
+      expect(getDefaultItemLabel("a", 0)).toBe("a")
+      expect(getDefaultItemLabel({ label: "b" }, 0)).toBe("b")
+      expect(getDefaultItemLabel({ title: "c" }, 0)).toBe("c")
+      expect(getDefaultItemLabel({ name: "d" }, 0)).toBe("d")
+    })
+
+    it("falls back to the position", () => {
+      expect(getDefaultItemLabel({}, 1)).toBe("Item 2")
+    })
+  })
+
+  describe("applyOrder", () => {
+    const getKey = (item: string) => item
+
+    it("sorts items by the given keys", () => {
+      expect(applyOrder(["a", "b", "c"], ["c", "a", "b"], getKey)).toEqual([
+        "c",
+        "a",
+        "b",
+      ])
+    })
+
+    it("keeps items that are missing from the order at the end", () => {
+      expect(applyOrder(["a", "b", "new"], ["b", "a"], getKey)).toEqual([
+        "b",
+        "a",
+        "new",
+      ])
+    })
+
+    it("skips keys whose items are gone", () => {
+      expect(applyOrder(["a", "c"], ["c", "b", "a"], getKey)).toEqual([
+        "c",
+        "a",
+      ])
+    })
+  })
+
   describe("reorderItem", () => {
     const list = ["a", "b", "c", "d"]
 

@@ -807,19 +807,26 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
     {
       name: "SortableList",
       description:
-        "Reorderable list with drag-and-drop and full keyboard accessibility. Space or Enter picks up and drops an item, arrow keys move it, and Escape cancels the reorder.",
+        "Reorderable list with drag-and-drop and full keyboard accessibility. Space or Enter picks up and drops an item, arrow keys, Home and End move it, and Escape cancels the move for both keyboard and pointer.",
       props: [
         STATE_PROPS.value("T[]", "list of items"),
         STATE_PROPS.defaultValue("T[]", "[]"),
         STATE_PROPS.onValueChange(
           "(items: T[]) => void",
-          "after an item is moved or dropped"
+          "once on drop, if the order changed"
         ),
+        {
+          name: "children",
+          type: "(item: T, index: number) => ReactNode",
+          required: true,
+          description:
+            "Renders one SortableItem. index follows the live order during a move.",
+        },
         {
           name: "getKey",
           type: "(item: T, index: number) => string | number",
           description:
-            "Extracts a unique key from each item. Defaults to item.id or index.",
+            "Extracts a unique key from each item. Defaults to the item itself for strings and numbers, then item.id, then the index.",
         },
         {
           name: "getItemLabel",
@@ -840,12 +847,12 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
             "Prevents dragging and keyboard reordering across the list.",
         },
       ],
-      rest: "<ul>",
+      rest: "<motion.ul>",
     },
     {
       name: "SortableItem",
       description:
-        "An individual reorderable row. If no SortableDragHandle is present inside, the item itself is draggable and keyboard-interactive.",
+        "An individual reorderable row. If no SortableDragHandle is present inside, the item itself is draggable and keyboard-interactive, except from links, buttons and form controls inside it. data-grabbed and data-dragging mark the moving row.",
       props: [
         {
           name: "value",
@@ -859,12 +866,12 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
           description: "Disables reordering for this specific item.",
         },
       ],
-      rest: "<li>",
+      rest: "<motion.li>",
     },
     {
       name: "SortableDragHandle",
       description:
-        "Optional handle button that restricts dragging and keyboard focus to a grab icon.",
+        "Optional handle button that restricts dragging and keyboard focus to a grab icon. Its accessible name comes from getItemLabel.",
       rest: "<button>",
     },
   ],

@@ -70,11 +70,10 @@ describe("SortableList", () => {
 
     // ArrowDown moves it to index 1 (between 2 and 3)
     await user.keyboard("{ArrowDown}")
-    expect(onValueChange).toHaveBeenLastCalledWith([
-      INITIAL_TASKS[1],
-      INITIAL_TASKS[0],
-      INITIAL_TASKS[2],
-    ])
+    expect(screen.getAllByRole("listitem")[1]).toHaveTextContent(
+      "Design review"
+    )
+    expect(onValueChange).not.toHaveBeenCalled()
 
     // Space drops the item
     await user.keyboard(" ")
@@ -82,6 +81,12 @@ describe("SortableList", () => {
       "aria-grabbed",
       "false"
     )
+    expect(onValueChange).toHaveBeenCalledOnce()
+    expect(onValueChange).toHaveBeenCalledWith([
+      INITIAL_TASKS[1],
+      INITIAL_TASKS[0],
+      INITIAL_TASKS[2],
+    ])
   })
 
   it("cancels reorder when Escape is pressed", async () => {
@@ -110,15 +115,127 @@ describe("SortableList", () => {
     await user.keyboard(" ")
     // Move down
     await user.keyboard("{ArrowDown}")
-    expect(onValueChange).toHaveBeenLastCalledWith([
-      INITIAL_TASKS[1],
-      INITIAL_TASKS[0],
-      INITIAL_TASKS[2],
-    ])
+    expect(screen.getAllByRole("listitem")[0]).toHaveTextContent(
+      "API integration"
+    )
 
     // Escape cancels
     await user.keyboard("{Escape}")
-    expect(onValueChange).toHaveBeenLastCalledWith(INITIAL_TASKS)
+    expect(screen.getAllByRole("listitem")[0]).toHaveTextContent(
+      "Design review"
+    )
+    expect(onValueChange).not.toHaveBeenCalled()
+  })
+
+  it("keeps the Escape keypress from reaching a parent when cancelling", async () => {
+    const user = userEvent.setup()
+    const onParentKeyDown = vi.fn()
+
+    render(
+      <div onKeyDown={onParentKeyDown}>
+        <SortableList
+          aria-label="Tasks"
+          defaultValue={INITIAL_TASKS}
+          getKey={(t) => t.id}
+        >
+          {(task) => (
+            <SortableItem key={task.id} value={task.id}>
+              {task.title}
+            </SortableItem>
+          )}
+        </SortableList>
+      </div>
+    )
+
+    screen.getAllByRole("listitem")[0].focus()
+    await user.keyboard(" ")
+    await user.keyboard("{Escape}")
+    expect(onParentKeyDown).not.toHaveBeenCalledWith(
+      expect.objectContaining({ key: "Escape" })
+    )
+  })
+
+  it("does not call onValueChange when an item is dropped in place", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+
+    render(
+      <SortableList
+        aria-label="Tasks"
+        defaultValue={INITIAL_TASKS}
+        onValueChange={onValueChange}
+        getKey={(t) => t.id}
+      >
+        {(task) => (
+          <SortableItem key={task.id} value={task.id}>
+            {task.title}
+          </SortableItem>
+        )}
+      </SortableList>
+    )
+
+    screen.getAllByRole("listitem")[0].focus()
+    await user.keyboard(" ")
+    await user.keyboard(" ")
+    expect(onValueChange).not.toHaveBeenCalled()
+  })
+
+  it("drops the item when focus leaves it", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+
+    render(
+      <SortableList
+        aria-label="Tasks"
+        defaultValue={INITIAL_TASKS}
+        onValueChange={onValueChange}
+        getKey={(t) => t.id}
+      >
+        {(task) => (
+          <SortableItem key={task.id} value={task.id}>
+            {task.title}
+          </SortableItem>
+        )}
+      </SortableList>
+    )
+
+    screen.getAllByRole("listitem")[0].focus()
+    await user.keyboard(" ")
+    await user.keyboard("{ArrowDown}")
+    await user.tab()
+
+    expect(onValueChange).toHaveBeenCalledOnce()
+    expect(
+      screen
+        .getAllByRole("listitem")
+        .every((item) => item.getAttribute("aria-grabbed") === "false")
+    ).toBe(true)
+  })
+
+  it("leaves typing in a control inside an item alone", async () => {
+    const user = userEvent.setup()
+
+    render(
+      <SortableList
+        aria-label="Tasks"
+        defaultValue={INITIAL_TASKS}
+        getKey={(t) => t.id}
+      >
+        {(task) => (
+          <SortableItem key={task.id} value={task.id}>
+            <input aria-label={`Rename ${task.title}`} />
+          </SortableItem>
+        )}
+      </SortableList>
+    )
+
+    const input = screen.getByLabelText("Rename Design review")
+    await user.type(input, "a b")
+    expect(input).toHaveValue("a b")
+    expect(screen.getAllByRole("listitem")[0]).toHaveAttribute(
+      "aria-grabbed",
+      "false"
+    )
   })
 
   it("supports SortableDragHandle", async () => {
@@ -141,22 +258,111 @@ describe("SortableList", () => {
       </SortableList>
     )
 
-    const handles = screen.getAllByLabelText("Reorder item")
-    expect(handles).toHaveLength(3)
+    const handle = screen.getByRole("button", {
+      name: "Reorder Design review",
+    })
+    expect(screen.getAllByRole("button")).toHaveLength(3)
+    expect(handle.closest("li")).not.toHaveAttribute("tabindex")
 
-    handles[0].focus()
+    handle.focus()
     await user.keyboard(" ")
-    expect(handles[0]).toHaveAttribute("aria-pressed", "true")
+    expect(handle).toHaveAttribute("aria-pressed", "true")
 
     await user.keyboard("{ArrowDown}")
-    expect(onValueChange).toHaveBeenLastCalledWith([
-      INITIAL_TASKS[1],
-      INITIAL_TASKS[0],
-      INITIAL_TASKS[2],
-    ])
+    await user.keyboard("{ArrowDown}")
+    expect(handle).toHaveFocus()
 
     await user.keyboard(" ")
-    expect(handles[0]).toHaveAttribute("aria-pressed", "false")
+    expect(handle).toHaveAttribute("aria-pressed", "false")
+    expect(onValueChange).toHaveBeenCalledOnce()
+    expect(onValueChange).toHaveBeenCalledWith([
+      INITIAL_TASKS[1],
+      INITIAL_TASKS[2],
+      INITIAL_TASKS[0],
+    ])
+  })
+
+  it("disables the handle of a disabled item", () => {
+    render(
+      <SortableList
+        aria-label="Tasks"
+        defaultValue={INITIAL_TASKS}
+        getKey={(t) => t.id}
+      >
+        {(task) => (
+          <SortableItem
+            key={task.id}
+            value={task.id}
+            disabled={task.id === "1"}
+          >
+            <SortableDragHandle />
+            <span>{task.title}</span>
+          </SortableItem>
+        )}
+      </SortableList>
+    )
+
+    expect(
+      screen.getByRole("button", { name: "Reorder Design review" })
+    ).toBeDisabled()
+    expect(
+      screen.getByRole("button", { name: "Reorder Documentation" })
+    ).toBeEnabled()
+  })
+
+  it("reorders items with numeric keys through a handle", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    const items = [
+      { id: 1, title: "First" },
+      { id: 2, title: "Second" },
+    ]
+
+    render(
+      <SortableList
+        aria-label="Tasks"
+        defaultValue={items}
+        onValueChange={onValueChange}
+      >
+        {(task) => (
+          <SortableItem key={task.id} value={task.id}>
+            <SortableDragHandle />
+            <span>{task.title}</span>
+          </SortableItem>
+        )}
+      </SortableList>
+    )
+
+    screen.getByRole("button", { name: "Reorder First" }).focus()
+    await user.keyboard(" ")
+    await user.keyboard("{ArrowDown}")
+    await user.keyboard(" ")
+    expect(onValueChange).toHaveBeenCalledWith([items[1], items[0]])
+  })
+
+  it("passes the live order index to children while moving", async () => {
+    const user = userEvent.setup()
+
+    render(
+      <SortableList
+        aria-label="Tasks"
+        defaultValue={INITIAL_TASKS}
+        getKey={(t) => t.id}
+      >
+        {(task, index) => (
+          <SortableItem key={task.id} value={task.id}>
+            {index + 1}. {task.title}
+          </SortableItem>
+        )}
+      </SortableList>
+    )
+
+    screen.getAllByRole("listitem")[0].focus()
+    await user.keyboard(" ")
+    await user.keyboard("{ArrowDown}")
+    expect(screen.getAllByRole("listitem")[1]).toHaveTextContent(
+      "2. Design review"
+    )
   })
 
   it("does not allow dragging or keyboard reordering when disabled", async () => {
@@ -210,6 +416,7 @@ describe("SortableList", () => {
     items[0].focus()
     await user.keyboard(" ")
     await user.keyboard("{ArrowRight}")
+    await user.keyboard(" ")
     expect(onValueChange).toHaveBeenLastCalledWith([
       INITIAL_TASKS[1],
       INITIAL_TASKS[0],
@@ -240,6 +447,7 @@ describe("SortableList", () => {
     items[0].focus()
     await user.keyboard(" ")
     await user.keyboard("{End}")
+    await user.keyboard(" ")
     expect(onValueChange).toHaveBeenLastCalledWith([
       INITIAL_TASKS[1],
       INITIAL_TASKS[2],
