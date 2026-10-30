@@ -63,7 +63,15 @@
     "name": "Syed Fahad Junaid",
     "website": "https://syedfahadjunaid.netlify.app",
     "role": "maintainer",
-    "components": [],
-    "pullRequests": []
+    "components": [
+      "sortable-list"
+    ],
+    "pullRequests": [
+      {
+        "number": 27,
+        "title": "feat(sortable-list): add sortable list component",
+        "mergedAt": "2026-10-30T18:06:11Z"
+      }
+    ]
   }
 ]
