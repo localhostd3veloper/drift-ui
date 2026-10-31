@@ -27,7 +27,7 @@ function scoreForPolicy(value: string): PasswordStrengthScore {
 }
 
 export function PasswordInputCustomRulesPreview() {
-  const [password, setPassword] = React.useState("correct-horse")
+  const [password, setPassword] = React.useState("")
 
   return (
     <div className="grid w-full max-w-sm gap-2">
@@ -35,6 +35,7 @@ export function PasswordInputCustomRulesPreview() {
       <PasswordInput
         id="password-policy"
         autoComplete="new-password"
+        placeholder="Try a password"
         value={password}
         onChange={(event) => setPassword(event.target.value)}
       />

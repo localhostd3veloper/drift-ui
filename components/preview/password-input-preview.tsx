@@ -9,7 +9,7 @@ import {
 } from "@/registry/default/ui/password-input"
 
 export function PasswordInputPreview() {
-  const [password, setPassword] = React.useState("copper-lantern")
+  const [password, setPassword] = React.useState("")
 
   return (
     <>
@@ -18,6 +18,7 @@ export function PasswordInputPreview() {
         <PasswordInput
           id="preview-password"
           autoComplete="new-password"
+          placeholder="Try a password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />

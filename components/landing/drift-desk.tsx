@@ -82,7 +82,7 @@ function ShortcutBody() {
 }
 
 function PasswordBody() {
-  const [password, setPassword] = useState("copper-lantern")
+  const [password, setPassword] = useState("")
 
   return (
     <div className="grid gap-2">
@@ -90,6 +90,7 @@ function PasswordBody() {
       <PasswordInput
         id="desk-password"
         autoComplete="new-password"
+        placeholder="Try a password"
         value={password}
         onChange={(event) => setPassword(event.target.value)}
       />
