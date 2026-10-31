@@ -20,13 +20,13 @@ export function SiteNav({ search }: { search?: React.ReactNode }) {
       <nav className="relative mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-10">
         <Link
           href="/"
-          className="flex items-center gap-2.5 font-display text-lg font-semibold tracking-tight"
+          className="flex shrink-0 items-center gap-2.5 font-display text-lg font-semibold tracking-tight"
         >
           <LogoMark />
           drift-ui
         </Link>
-        <div className="flex items-center gap-1 sm:gap-6">
-          <ul className="hidden items-center gap-6 text-sm text-muted-foreground sm:flex">
+        <div className="flex items-center gap-1 md:gap-6">
+          <ul className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
@@ -44,7 +44,7 @@ export function SiteNav({ search }: { search?: React.ReactNode }) {
             <GithubStarLink />
             <ThemeToggle />
           </div>
-          <MobileNav links={NAV_LINKS} className="sm:hidden" />
+          <MobileNav links={NAV_LINKS} className="md:hidden" />
         </div>
       </nav>
     </header>
