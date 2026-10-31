@@ -34,7 +34,7 @@ bun run format
 | `lib/agent-docs/component-usage.ts`     | Usage notes served at `/llms.txt` and `/llms-full.txt`  |
 | `tests/ui`, `tests/lib`                 | Vitest suites                                           |
 | `public/r/**/*.json`                    | Build output, gitignored. Regenerate, never hand-edit   |
-| `contributors.json`                     | Hall of fame data behind `/contributors`                |
+| `lib/contributors.ts`                   | Maintainers and GitHub data behind `/contributors`      |
 
 ## Working on a GitHub issue
 
@@ -115,7 +115,7 @@ Write `pr-body.md` outside the repo, or delete it before committing. Base it on 
 
 ### 7. Credit
 
-Do not edit `contributors.json` by hand to credit yourself or anyone else. When a pull request merges into `main`, the `Record contributor` workflow adds the author and the components they touched. A contributor may edit only the `name` and `website` fields of their own entry.
+`/contributors` reads GitHub's contributors API and ranks people by merged pull requests, so there is nothing to edit to credit yourself or anyone else. Merging a pull request is what adds its author. Only the two maintainers are listed in code, in `lib/contributors.ts`.
 
 ## Do not
 

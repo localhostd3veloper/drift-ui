@@ -18,10 +18,10 @@ const STEPS = [
   },
   {
     title: "Get merged",
-    body: "A workflow adds you to contributors.json with the components you touched. Add your name and website to your entry any time.",
+    body: "This page reads GitHub's contributor list, so your handle shows up here within a few hours of the merge.",
     link: {
-      href: `${siteConfig.repo}/blob/main/contributors.json`,
-      label: "contributors.json",
+      href: `${siteConfig.repo}/graphs/contributors`,
+      label: "Contributor graph",
     },
   },
 ]

@@ -5,18 +5,13 @@ import { JoinSteps } from "@/components/contributors/join-steps"
 import { MaintainerCard } from "@/components/contributors/maintainer-card"
 import { SiteFooter } from "@/components/landing/site-footer"
 import { SiteNav } from "@/components/landing/site-nav"
-import {
-  COMMUNITY,
-  CONTRIBUTORS,
-  MAINTAINERS,
-  MERGED_PULL_REQUEST_COUNT,
-} from "@/lib/contributors"
+import { fetchCommunity, MAINTAINERS } from "@/lib/contributors"
 import { createPageMetadata } from "@/lib/page-metadata"
 
 export const metadata: Metadata = createPageMetadata({
   title: "Contributors",
   description:
-    "The people behind drift-ui. Everyone whose pull request is merged gets a place on this page, with the components they shipped.",
+    "The people behind drift-ui. Everyone whose pull request is merged gets a place on this page.",
   path: "/contributors",
 })
 
@@ -31,7 +26,9 @@ function SectionTitle({ title, lead }: { title: string; lead: string }) {
   )
 }
 
-export default function ContributorsPage() {
+export default async function ContributorsPage() {
+  const community = await fetchCommunity()
+
   return (
     <div className="flex min-h-dvh flex-col bg-background text-foreground">
       <SiteNav />
@@ -48,9 +45,8 @@ export default function ContributorsPage() {
             </span>
           </h1>
           <p className="max-w-[52ch] rise text-lg leading-relaxed text-muted-foreground [--rise-delay:160ms]">
-            {CONTRIBUTORS.length} people, {MERGED_PULL_REQUEST_COUNT} merged
-            pull requests. Every merged pull request puts its author on this
-            page.
+            {MAINTAINERS.length + community.length} people. Every merged pull
+            request puts its author on this page.
           </p>
         </header>
 
@@ -69,11 +65,11 @@ export default function ContributorsPage() {
         <section className="flex reveal flex-col gap-8">
           <SectionTitle
             title="Contributors"
-            lead="Ranked by merged pull requests, with the components each person touched."
+            lead="Ranked by merged pull requests."
           />
-          {COMMUNITY.length > 0 ? (
+          {community.length > 0 ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {COMMUNITY.map((contributor) => (
+              {community.map((contributor) => (
                 <ContributorCard
                   key={contributor.login}
                   contributor={contributor}

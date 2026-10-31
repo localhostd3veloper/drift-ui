@@ -1,22 +1,16 @@
 import { ArrowUpRightIcon } from "lucide-react"
 
 import { ContributorAvatar } from "@/components/contributors/contributor-avatar"
-import {
-  displayNameOf,
-  githubProfileOf,
-  type Contributor,
-} from "@/lib/contributors"
+import { githubProfileOf, type Maintainer } from "@/lib/contributors"
 
 function hostOf(url: string) {
   return new URL(url).host
 }
 
-export function MaintainerCard({ maintainer }: { maintainer: Contributor }) {
+export function MaintainerCard({ maintainer }: { maintainer: Maintainer }) {
   const links = [
-    { href: githubProfileOf(maintainer), label: `@${maintainer.login}` },
-    ...(maintainer.website
-      ? [{ href: maintainer.website, label: hostOf(maintainer.website) }]
-      : []),
+    { href: githubProfileOf(maintainer.login), label: `@${maintainer.login}` },
+    { href: maintainer.website, label: hostOf(maintainer.website) },
   ]
 
   return (
@@ -25,7 +19,7 @@ export function MaintainerCard({ maintainer }: { maintainer: Contributor }) {
         <ContributorAvatar login={maintainer.login} sizePx={64} />
         <div className="flex flex-col gap-1">
           <h3 className="text-xl font-medium tracking-tight">
-            {displayNameOf(maintainer)}
+            {maintainer.name}
           </h3>
           <span className="font-mono text-xs tracking-widest text-brand uppercase">
             Maintainer

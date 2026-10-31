@@ -18,4 +18,4 @@ Follow "Working on a GitHub issue" in `AGENTS.md` step by step. This skill adds 
 6. **Show the work.** Before pushing, summarize the diff (`git diff main --stat`) and the verification results, and ask whether to push and open the pull request.
 7. **Open the pull request.** Use the template, include `Closes #<n>`, tick only checks that ran, and give the human the URL.
 
-Never edit `contributors.json` to credit anyone. The `Record contributor` workflow does that on merge.
+There is nothing to edit to credit anyone. `/contributors` reads GitHub's contributors API, so a merged pull request adds its author.
