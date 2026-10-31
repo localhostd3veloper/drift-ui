@@ -1,107 +1,118 @@
-import { describe, expect, it } from "vitest"
+import { PHASE_PRODUCTION_BUILD } from "next/constants"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 import {
-  componentsTouchedBy,
+  fetchCommunity,
   rankCommunity,
-  recordMergedPullRequest,
-  type Contributor,
+  type GitHubContributor,
 } from "@/lib/contributors"
-
-const PULL_REQUEST = {
-  number: 30,
-  title: "feat(registry): add avatar group",
-  mergedAt: "2026-11-02T10:00:00Z",
-}
 
 function contributorOf(
   login: string,
-  overrides: Partial<Contributor> = {}
-): Contributor {
-  return {
-    login,
-    role: "contributor",
-    components: [],
-    pullRequests: [],
-    ...overrides,
-  }
+  overrides: Partial<GitHubContributor> = {}
+): GitHubContributor {
+  return { login, type: "User", contributions: 1, ...overrides }
 }
 
-describe("contributors", () => {
-  it("reads component slugs from registry ui paths only", () => {
-    expect(
-      componentsTouchedBy([
-        "registry/default/ui/avatar-group.tsx",
-        "registry/default/ui/avatar-group.tsx",
-        "registry/default/lib/avatar-group.ts",
-        "components/preview/avatar-group-preview.tsx",
-        "registry/default/ui/badge.tsx",
-      ])
-    ).toEqual(["avatar-group", "badge"])
-  })
+function respondWith(status: number, body: unknown = []) {
+  const fetchMock = vi.fn(async () => Response.json(body, { status }))
+  vi.stubGlobal("fetch", fetchMock)
+  return fetchMock
+}
 
-  it("adds a first-time author as a contributor", () => {
-    const result = recordMergedPullRequest([], "octocat", PULL_REQUEST, [
-      "registry/default/ui/avatar-group.tsx",
-    ])
+function authorizationSentBy(fetchMock: ReturnType<typeof respondWith>) {
+  const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
+  return new Headers(init.headers).get("Authorization")
+}
 
-    expect(result).toEqual([
-      contributorOf("octocat", {
-        components: ["avatar-group"],
-        pullRequests: [PULL_REQUEST],
-      }),
-    ])
-  })
-
-  it("appends to an existing entry and keeps its profile and role", () => {
-    const existing = contributorOf("OctoCat", {
-      name: "Octo Cat",
-      website: "https://octo.cat",
-      role: "maintainer",
-      components: ["badge"],
-    })
-
-    const [updated] = recordMergedPullRequest(
-      [existing],
-      "octocat",
-      PULL_REQUEST,
-      ["registry/default/ui/avatar-group.tsx"]
-    )
-
-    expect(updated).toEqual({
-      ...existing,
-      components: ["avatar-group", "badge"],
-      pullRequests: [PULL_REQUEST],
-    })
-  })
-
-  it("ignores a pull request that is already recorded", () => {
-    const existing = [
-      contributorOf("octocat", { pullRequests: [PULL_REQUEST] }),
-    ]
-
-    expect(recordMergedPullRequest(existing, "octocat", PULL_REQUEST, [])).toBe(
-      existing
-    )
-  })
-
-  it("ranks community by merged count, then by who merged first", () => {
-    const early = { ...PULL_REQUEST, mergedAt: "2026-11-01T00:00:00Z" }
-    const late = { ...PULL_REQUEST, mergedAt: "2026-11-05T00:00:00Z" }
-
+describe("rankCommunity", () => {
+  it("drops bots", () => {
     const ranked = rankCommunity([
-      contributorOf("maintainer", {
-        role: "maintainer",
-        pullRequests: [early, late],
-      }),
-      contributorOf("late", { pullRequests: [late] }),
-      contributorOf("prolific", { pullRequests: [late, late] }),
-      contributorOf("early", { pullRequests: [early] }),
+      contributorOf("dependabot[bot]", { type: "Bot" }),
+      contributorOf("octocat"),
+    ])
+
+    expect(ranked.map((contributor) => contributor.login)).toEqual(["octocat"])
+  })
+
+  it("drops maintainers whatever the login's case", () => {
+    const ranked = rankCommunity([
+      contributorOf("LocalhostD3veloper"),
+      contributorOf("SYEDFAHADJUNAID"),
+      contributorOf("octocat"),
+    ])
+
+    expect(ranked.map((contributor) => contributor.login)).toEqual(["octocat"])
+  })
+
+  it("ranks by contributions, highest first", () => {
+    const ranked = rankCommunity([
+      contributorOf("one", { contributions: 1 }),
+      contributorOf("nine", { contributions: 9 }),
+      contributorOf("three", { contributions: 3 }),
     ])
 
     expect(ranked.map((contributor) => contributor.login)).toEqual([
-      "prolific",
-      "early",
-      "late",
+      "nine",
+      "three",
+      "one",
     ])
+  })
+})
+
+describe("fetchCommunity", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.unstubAllEnvs()
+    vi.restoreAllMocks()
+  })
+
+  it("returns the ranked community", async () => {
+    respondWith(200, [
+      contributorOf("one", { contributions: 1 }),
+      contributorOf("two", { contributions: 2 }),
+    ])
+
+    const community = await fetchCommunity()
+
+    expect(community.map((contributor) => contributor.login)).toEqual([
+      "two",
+      "one",
+    ])
+  })
+
+  it("sends the token only when one is set", async () => {
+    vi.stubEnv("GITHUB_TOKEN", "")
+    const anonymous = respondWith(200)
+    await fetchCommunity()
+    expect(authorizationSentBy(anonymous)).toBeNull()
+
+    vi.stubEnv("GITHUB_TOKEN", "secret")
+    const authenticated = respondWith(200)
+    await fetchCommunity()
+    expect(authorizationSentBy(authenticated)).toBe("Bearer secret")
+  })
+
+  it("renders without community data when the build cannot reach GitHub", async () => {
+    vi.stubEnv("NODE_ENV", "production")
+    vi.stubEnv("NEXT_PHASE", PHASE_PRODUCTION_BUILD)
+    vi.spyOn(console, "warn").mockImplementation(() => {})
+    respondWith(403)
+
+    await expect(fetchCommunity()).resolves.toEqual([])
+  })
+
+  it("renders without community data in development", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {})
+    respondWith(403)
+
+    await expect(fetchCommunity()).resolves.toEqual([])
+  })
+
+  it("throws in production so the last good page keeps serving", async () => {
+    vi.stubEnv("NODE_ENV", "production")
+    respondWith(403)
+
+    await expect(fetchCommunity()).rejects.toThrow("403")
   })
 })

@@ -1,104 +1,79 @@
-import contributorsFile from "@/contributors.json"
+import { PHASE_PRODUCTION_BUILD } from "next/constants"
 
-export type ContributorRole = "maintainer" | "contributor"
-
-export type MergedPullRequest = {
-  number: number
-  title: string
-  mergedAt: string
-}
-
-export type Contributor = {
+export type Maintainer = {
   login: string
-  name?: string
-  website?: string
-  role: ContributorRole
-  components: string[]
-  pullRequests: MergedPullRequest[]
+  name: string
+  website: string
 }
 
-const REGISTRY_UI_PATH = /^registry\/default\/ui\/([a-z0-9-]+)\.tsx$/
-
-export function componentsTouchedBy(changedFiles: string[]) {
-  const slugs = changedFiles.flatMap((path) => {
-    const match = REGISTRY_UI_PATH.exec(path.trim())
-    return match ? [match[1]] : []
-  })
-  return [...new Set(slugs)].sort()
+export type GitHubContributor = {
+  login: string
+  type: string
+  contributions: number
 }
 
-function isSameLogin(a: string, b: string) {
-  return a.toLowerCase() === b.toLowerCase()
-}
+export const MAINTAINERS: Maintainer[] = [
+  {
+    login: "localhostd3veloper",
+    name: "Gautam Anand",
+    website: "https://localhostdeveloper.com",
+  },
+  {
+    login: "syedfahadjunaid",
+    name: "Syed Fahad Junaid",
+    website: "https://syedfahadjunaid.netlify.app",
+  },
+]
 
-export function recordMergedPullRequest(
-  contributors: Contributor[],
-  login: string,
-  pullRequest: MergedPullRequest,
-  changedFiles: string[]
-): Contributor[] {
-  const components = componentsTouchedBy(changedFiles)
-  const existing = contributors.find((contributor) =>
-    isSameLogin(contributor.login, login)
-  )
+const CONTRIBUTORS_URL =
+  "https://api.github.com/repos/localhostd3veloper/drift-ui/contributors?per_page=100"
+const REVALIDATE_SECONDS = 3600
+const REQUEST_TIMEOUT_MS = 5000
 
-  if (!existing) {
-    return [
-      ...contributors,
-      { login, role: "contributor", components, pullRequests: [pullRequest] },
-    ]
-  }
+const MAINTAINER_LOGINS = new Set(
+  MAINTAINERS.map((maintainer) => maintainer.login.toLowerCase())
+)
 
-  const isAlreadyRecorded = existing.pullRequests.some(
-    (recorded) => recorded.number === pullRequest.number
-  )
-  if (isAlreadyRecorded) return contributors
-
-  const updated: Contributor = {
-    ...existing,
-    components: [...new Set([...existing.components, ...components])].sort(),
-    pullRequests: [...existing.pullRequests, pullRequest],
-  }
-  return contributors.map((contributor) =>
-    contributor === existing ? updated : contributor
-  )
-}
-
-function firstMergedAt(contributor: Contributor) {
-  return contributor.pullRequests.reduce(
-    (earliest, pullRequest) =>
-      pullRequest.mergedAt < earliest ? pullRequest.mergedAt : earliest,
-    "9999"
-  )
-}
-
-export function rankCommunity(contributors: Contributor[]) {
+export function rankCommunity(contributors: GitHubContributor[]) {
   return contributors
-    .filter((contributor) => contributor.role === "contributor")
-    .sort(
-      (a, b) =>
-        b.pullRequests.length - a.pullRequests.length ||
-        firstMergedAt(a).localeCompare(firstMergedAt(b))
+    .filter(
+      (contributor) =>
+        contributor.type !== "Bot" &&
+        !MAINTAINER_LOGINS.has(contributor.login.toLowerCase())
     )
+    .sort((a, b) => b.contributions - a.contributions)
 }
 
-export function displayNameOf(contributor: Contributor) {
-  return contributor.name ?? contributor.login
+export function githubProfileOf(login: string) {
+  return `https://github.com/${login}`
 }
 
-export function githubProfileOf(contributor: Contributor) {
-  return `https://github.com/${contributor.login}`
+function hasPreviousPageToKeepServing() {
+  return (
+    process.env.NODE_ENV === "production" &&
+    process.env.NEXT_PHASE !== PHASE_PRODUCTION_BUILD
+  )
 }
 
-export const CONTRIBUTORS = contributorsFile as Contributor[]
+export async function fetchCommunity() {
+  const token = process.env.GITHUB_TOKEN
 
-export const MAINTAINERS = CONTRIBUTORS.filter(
-  (contributor) => contributor.role === "maintainer"
-)
-
-export const COMMUNITY = rankCommunity(CONTRIBUTORS)
-
-export const MERGED_PULL_REQUEST_COUNT = CONTRIBUTORS.reduce(
-  (total, contributor) => total + contributor.pullRequests.length,
-  0
-)
+  try {
+    const response = await fetch(CONTRIBUTORS_URL, {
+      headers: {
+        Accept: "application/vnd.github+json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      next: { revalidate: REVALIDATE_SECONDS },
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    })
+    if (!response.ok) {
+      throw new Error(`GitHub contributors returned ${response.status}`)
+    }
+    return rankCommunity(await response.json())
+  } catch (error) {
+    if (hasPreviousPageToKeepServing()) throw error
+    console.warn("Rendering /contributors without community data", error)
+    return []
+  }
+}
