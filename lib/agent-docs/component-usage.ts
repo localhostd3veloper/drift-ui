@@ -275,6 +275,28 @@ export function NewPasswordField() {
   )
 }`,
   },
+  "phone-input": {
+    notes:
+      'PhoneInput stores an E.164 string through value/defaultValue and onValueChange, and shows the number without its dial code next to a searchable country picker. defaultCountry (default "US") applies until the value identifies a country. While the user types, the value is the partial number so far, such as "+1415", so validate on submit with isValidPhoneNumber from libphonenumber-js. Typing a leading + switches country from the digits, and a pasted or autofilled +number also moves the dial code out of the field. Changing country keeps the national digits. countries limits the list and accepts codes or { code, name, flag } objects, in display order; excludedCountries removes entries. Both also block numbers from other countries, typed or pasted. Remaining props go to the tel input, so pass id or aria-label there; name submits the E.164 value through a hidden input. Flags are emoji, which Windows browsers show as two letters, so pass flag in countries to use images. Installs libphonenumber-js, about 36 KB gzipped.',
+    example: `"use client"
+
+import * as React from "react"
+
+import { PhoneInput } from "@/components/ui/phone-input"
+
+export function ContactField() {
+  const [phone, setPhone] = React.useState("")
+
+  return (
+    <PhoneInput
+      aria-label="Phone number"
+      value={phone}
+      onValueChange={setPhone}
+      defaultCountry="US"
+    />
+  )
+}`,
+  },
   popover: { notes: SAME_AS_SHADCN },
   rating: {
     notes:

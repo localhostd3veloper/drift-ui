@@ -413,6 +413,28 @@
       ]
     },
     {
+      "name": "phone-input",
+      "type": "registry:ui",
+      "title": "Phone Input",
+      "description": "Phone number field with a searchable country picker, formatting as you type and E.164 output.",
+      "dependencies": ["libphonenumber-js", "lucide-react"],
+      "registryDependencies": [
+        "utils",
+        "popover",
+        "@drift-ui/use-controllable-state"
+      ],
+      "files": [
+        {
+          "path": "registry/default/ui/phone-input.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/default/lib/phone-input.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "popover",
       "type": "registry:ui",
       "title": "Popover",

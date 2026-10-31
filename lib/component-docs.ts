@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs"
 import { readFile } from "node:fs/promises"
 import path from "node:path"
+import type { ComponentType } from "react"
 
 import {
   findEntry,
@@ -14,6 +15,19 @@ import { componentPath, type PrimitiveLibrary } from "@/lib/primitive-library"
 export type HighlightedFile = { title: string; code: string; html: string }
 
 export type BuildsOn = { label: string; href?: string }
+
+export type ComponentExample = {
+  id: string
+  title: string
+  description: string
+  Preview: ComponentType
+  BasePreview?: ComponentType
+}
+
+export type LoadedExample = Pick<
+  ComponentExample,
+  "id" | "title" | "description" | "Preview"
+> & { usage: HighlightedFile }
 
 const IMPORT_REWRITES: [RegExp, string][] = [
   [/@\/registry\/[^/]+\/lib\/utils/g, "@/lib/utils"],
@@ -75,14 +89,48 @@ async function toHighlightedFile(title: string, code: string) {
   return { title, code, html: await highlight(code) }
 }
 
-export async function loadUsage(
-  entry: CatalogEntry,
-  library: PrimitiveLibrary
-) {
-  const source = await readProjectFile(previewPath(entry.slug, library))
-  const code = source.replace(/(\w+)Preview\b/g, "$1Demo")
+async function loadDemo(filePath: string, title: string) {
+  const source = await readProjectFile(filePath)
 
-  return toHighlightedFile(`${entry.slug}-demo.tsx`, code)
+  return toHighlightedFile(title, source.replace(/(\w+)Preview\b/g, "$1Demo"))
+}
+
+export function loadUsage(entry: CatalogEntry, library: PrimitiveLibrary) {
+  return loadDemo(previewPath(entry.slug, library), `${entry.slug}-demo.tsx`)
+}
+
+function examplePath(slug: string, id: string, library: PrimitiveLibrary) {
+  const basePath = `components/preview/base/examples/${slug}/${id}.tsx`
+  if (library === "base" && existsSync(basePath)) return basePath
+  return `components/preview/examples/${slug}/${id}.tsx`
+}
+
+export async function loadExamples(
+  slug: string,
+  library: PrimitiveLibrary
+): Promise<LoadedExample[]> {
+  if (!existsSync(`components/preview/examples/${slug}/index.ts`)) return []
+
+  const { examples }: { examples: ComponentExample[] } = await import(
+    `@/components/preview/examples/${slug}/index`
+  )
+
+  return Promise.all(
+    examples.map(async ({ id, title, description, Preview, BasePreview }) => ({
+      id: `${slug}-${id}`,
+      title,
+      description,
+      Preview: (library === "base" && BasePreview) || Preview,
+      usage: await loadDemo(
+        examplePath(slug, id, library),
+        `${slug}-${id}.tsx`
+      ),
+    }))
+  )
+}
+
+export function loadUsageSnippet(entry: CatalogEntry, code: string) {
+  return toHighlightedFile(`${entry.slug}-usage.tsx`, code)
 }
 
 export function loadSources(entry: CatalogEntry) {

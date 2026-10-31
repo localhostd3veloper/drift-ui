@@ -2,6 +2,8 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import { ApiReference } from "@/components/docs/api-reference"
+import { CodeFrame } from "@/components/docs/code-frame"
+import { ComponentExamples } from "@/components/docs/component-examples"
 import { ComponentHeader } from "@/components/docs/component-header"
 import { DocSection } from "@/components/docs/doc-section"
 import { InstallPanel } from "@/components/docs/install-panel"
@@ -27,8 +29,10 @@ import {
 } from "@/lib/catalog"
 import {
   listInstallPaths,
+  loadExamples,
   loadSources,
   loadUsage,
+  loadUsageSnippet,
   resolveBuildsOn,
 } from "@/lib/component-docs"
 import { createPageMetadata } from "@/lib/page-metadata"
@@ -123,15 +127,29 @@ export default async function ComponentPage({ params }: ComponentPageProps) {
   if (!entry || !isPrimitiveLibrary(library)) notFound()
 
   const source = library === "base" ? toBaseUiItem(entry) : entry
-  const [usage, sources] = await Promise.all([
+  const usageEntry = COMPONENT_USAGE[entry.slug]
+  const [usage, sources, snippet, examples] = await Promise.all([
     loadUsage(entry, library),
     loadSources(source),
+    usageEntry?.example && loadUsageSnippet(entry, usageEntry.example),
+    loadExamples(entry.slug, library),
   ])
   const api = COMPONENT_API[entry.slug]
-  const notes = api ? undefined : COMPONENT_USAGE[entry.slug]?.notes
+  const notes = api ? undefined : usageEntry?.notes
   const { previous, next } = findNeighbors(entry.slug)
   const sections = [
     { id: "installation", label: "Installation" },
+    ...(snippet ? [{ id: "usage", label: "Usage" }] : []),
+    ...(examples.length > 0
+      ? [
+          { id: "examples", label: "Examples" },
+          ...examples.map(({ id, title }) => ({
+            id,
+            label: title,
+            isNested: true,
+          })),
+        ]
+      : []),
     ...(api ? [{ id: "api", label: "API reference" }] : []),
     ...(notes ? [{ id: "notes", label: "Notes" }] : []),
     { id: "source", label: "Source" },
@@ -158,6 +176,16 @@ export default async function ComponentPage({ params }: ComponentPageProps) {
             installPaths={listInstallPaths(source)}
           />
         </DocSection>
+        {snippet && (
+          <DocSection id="usage" title="Usage">
+            <CodeFrame {...snippet} collapsible />
+          </DocSection>
+        )}
+        {examples.length > 0 && (
+          <DocSection id="examples" title="Examples">
+            <ComponentExamples examples={examples} />
+          </DocSection>
+        )}
         {api && (
           <DocSection id="api" title="API reference">
             <ApiReference parts={api} />

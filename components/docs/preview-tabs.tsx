@@ -5,6 +5,7 @@ import { RotateCcwIcon } from "lucide-react"
 import { motion } from "motion/react"
 import { Tabs as TabsPrimitive } from "radix-ui"
 
+import { cn } from "@/registry/default/lib/utils"
 import { CodeFrame } from "@/components/docs/code-frame"
 import { TabsRail } from "@/components/docs/tabs-rail"
 import { ThemeScopeControl } from "@/components/docs/theme-scope-control"
@@ -18,9 +19,11 @@ const TABS = [
 export function PreviewTabs({
   preview,
   usage,
+  compact = false,
 }: {
   preview: React.ReactNode
   usage: HighlightedFile
+  compact?: boolean
 }) {
   const [tab, setTab] = useState("preview")
   const [resetCount, setResetCount] = useState(0)
@@ -31,7 +34,7 @@ export function PreviewTabs({
         <TabsRail items={TABS} value={tab} label="Example" />
         {tab === "preview" && (
           <div className="flex items-center gap-1">
-            <ThemeScopeControl />
+            {!compact && <ThemeScopeControl />}
             <button
               type="button"
               onClick={() => setResetCount((count) => count + 1)}
@@ -56,9 +59,15 @@ export function PreviewTabs({
       >
         <div
           data-theme-scope
-          className="flex min-h-[26rem] items-center justify-center overflow-hidden rounded-[1.75rem] border bg-background bg-[radial-gradient(80%_70%_at_50%_0%,color-mix(in_oklab,var(--foreground)_5%,transparent),transparent)] px-4 py-10 font-sans text-foreground sm:px-10 md:py-16"
+          className={cn(
+            "flex items-center justify-center overflow-hidden rounded-[1.75rem] border bg-background bg-[radial-gradient(80%_70%_at_50%_0%,color-mix(in_oklab,var(--foreground)_5%,transparent),transparent)] px-4 font-sans text-foreground sm:px-10",
+            compact ? "min-h-56 py-10" : "min-h-[26rem] py-10 md:py-16"
+          )}
         >
-          <div key={resetCount} className="w-full max-w-2xl">
+          <div
+            key={resetCount}
+            className={cn("w-full max-w-2xl", compact && "flex justify-center")}
+          >
             {preview}
           </div>
         </div>
