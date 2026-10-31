@@ -2,34 +2,33 @@
 
 import * as React from "react"
 
+import { formatDuration } from "@/registry/default/lib/duration-input"
 import { DurationInput } from "@/registry/default/ui/duration-input"
 import { Label } from "@/registry/default/ui/label"
 
 export function DurationInputPreview() {
-  const [timeout, setTimeout] = React.useState<number | null>(5400000)
+  const [limit, setLimit] = React.useState<number | null>(900000)
 
   return (
-    <>
-      <div className="flex flex-col gap-2">
-        <Label>Execution timeout</Label>
-        <DurationInput
-          aria-label="Execution timeout"
-          value={timeout}
-          onValueChange={setTimeout}
-          units={["h", "m", "s"]}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label>Service SLA window</Label>
-        <DurationInput
-          aria-label="Service SLA window"
-          defaultValue={187200000}
-          units={["d", "h", "m"]}
-        />
-      </div>
-      <p className="w-full text-center text-xs text-muted-foreground">
-        Type or paste shorthand like 90m or 1h 30m.
+    <div className="flex w-64 flex-col gap-2">
+      <Label>Stop the job after</Label>
+      <DurationInput
+        aria-label="Stop the job after"
+        value={limit}
+        onValueChange={setLimit}
+      />
+      <p className="mt-1 text-sm">
+        {limit === null
+          ? "No time limit"
+          : `Stops after ${formatDuration(limit, ["h", "m", "s"])}`}
       </p>
-    </>
+      <p className="font-mono text-xs text-muted-foreground">
+        Saved as {limit ?? "null"}
+        {limit !== null && " ms"}
+      </p>
+      <p className="mt-3 text-xs text-muted-foreground">
+        Try it: click a box, type 90, then press m.
+      </p>
+    </div>
   )
 }

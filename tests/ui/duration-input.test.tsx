@@ -173,6 +173,176 @@ describe("DurationInput", () => {
     expect(onValueChange).not.toHaveBeenCalled()
   })
 
+  it.each([
+    ["Minutes", "90m", 5400000],
+    ["Minutes", "75m", 4500000],
+    ["Seconds", "90s", 90000],
+    ["Minutes", "90s", 90000],
+    ["Hours", "120h", 432000000],
+    ["Minutes", "120m", 7200000],
+    ["Hours", "1h30m", 5400000],
+    ["Hours", "12h30m", 45000000],
+  ] as const)(
+    "from %s, typing %s commits the unit once",
+    async (start, keys, expected) => {
+      const user = userEvent.setup()
+      const onValueChange = vi.fn()
+      render(
+        <DurationInput aria-label="Timeout" onValueChange={onValueChange} />
+      )
+
+      await user.click(segment(start))
+      await user.keyboard(keys)
+
+      expect(onValueChange).toHaveBeenLastCalledWith(expected)
+    }
+  )
+
+  it("keeps earlier segments when digits are reassigned to another unit", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <DurationInput
+        aria-label="Timeout"
+        defaultValue={7200000}
+        onValueChange={onValueChange}
+      />
+    )
+
+    await user.click(segment("Hours"))
+    await user.keyboard("5m")
+
+    expect(onValueChange).toHaveBeenLastCalledWith(7500000)
+    expect(segment("Minutes")).toHaveFocus()
+  })
+
+  it("ignores a unit key after the digits were stepped away from", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(<DurationInput aria-label="Timeout" onValueChange={onValueChange} />)
+
+    await user.click(segment("Minutes"))
+    await user.keyboard("5{ArrowUp}s")
+
+    expect(onValueChange).toHaveBeenLastCalledWith(360000)
+    expect(segment("Seconds")).toHaveFocus()
+  })
+
+  it("does not let min leak into segments while digits are typed", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <DurationInput
+        aria-label="Timeout"
+        min={1800000}
+        onValueChange={onValueChange}
+      />
+    )
+
+    await user.click(segment("Hours"))
+    await user.keyboard("02")
+
+    expect(onValueChange).toHaveBeenLastCalledWith(7200000)
+  })
+
+  it("leaves modified keys to the browser", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <DurationInput
+        aria-label="Timeout"
+        defaultValue={3600000}
+        onValueChange={onValueChange}
+      />
+    )
+
+    await user.click(segment("Hours"))
+    await user.keyboard("{Control>}s{/Control}{Meta>}1{/Meta}")
+
+    expect(onValueChange).not.toHaveBeenCalled()
+    expect(segment("Hours")).toHaveFocus()
+  })
+
+  it("reads a pasted bare number in the focused segment's unit", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(<DurationInput aria-label="Timeout" onValueChange={onValueChange} />)
+
+    await user.click(segment("Minutes"))
+    await user.paste("90")
+
+    expect(onValueChange).toHaveBeenLastCalledWith(5400000)
+  })
+
+  it("rounds pasted values to the smallest visible unit", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <DurationInput
+        aria-label="Timeout"
+        units={["h", "m"]}
+        onValueChange={onValueChange}
+      />
+    )
+
+    await user.click(segment("Hours"))
+    await user.paste("20s")
+
+    expect(onValueChange).toHaveBeenLastCalledWith(0)
+  })
+
+  it("keeps aria bounds consistent with the value", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <DurationInput
+        aria-label="Timeout"
+        defaultValue={4320000000}
+        min={7200000}
+        onValueChange={onValueChange}
+      />
+    )
+
+    expect(segment("Hours")).toHaveAttribute("aria-valuemax", "1200")
+    expect(segment("Hours")).toHaveAttribute("aria-valuemin", "2")
+
+    await user.click(segment("Hours"))
+    await user.keyboard("{End}")
+
+    expect(onValueChange).not.toHaveBeenCalled()
+    expect(segment("Hours")).toHaveAttribute("aria-valuenow", "1200")
+  })
+
+  it("announces a singular unit for a count of one", () => {
+    render(<DurationInput aria-label="Timeout" defaultValue={3600000} />)
+
+    expect(segment("Hours")).toHaveAttribute("aria-valuetext", "1 Hour")
+    expect(segment("Minutes")).toHaveAttribute("aria-valuetext", "0 Minutes")
+  })
+
+  it("does not submit while disabled", () => {
+    const { container } = render(
+      <DurationInput
+        aria-label="SLA"
+        name="sla"
+        defaultValue={3600000}
+        disabled
+      />
+    )
+
+    expect(container.querySelector("input[type=hidden]")).toBeDisabled()
+  })
+
+  it("drops the trailing margin when a hidden input follows the last unit", () => {
+    const { container } = render(
+      <DurationInput aria-label="SLA" name="sla" defaultValue={3600000} />
+    )
+    const unitMarks = container.querySelectorAll("[aria-hidden=true]")
+
+    expect(unitMarks[0]).toHaveClass("mr-1.5")
+    expect(unitMarks[unitMarks.length - 1]).not.toHaveClass("mr-1.5")
+  })
+
   it("submits through a hidden input when name is provided", () => {
     const { container } = render(
       <DurationInput aria-label="SLA" name="sla" defaultValue={3600000} />
