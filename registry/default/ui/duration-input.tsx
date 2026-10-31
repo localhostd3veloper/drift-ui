@@ -7,10 +7,12 @@ import {
   type DurationUnit,
   parseDurationString,
   readSegment,
+  roundToSmallestUnit,
   segmentRange,
   segmentText,
   sortUnits,
   stepSegment,
+  unitCountText,
   unitLabel,
   writeSegment,
 } from "@/registry/default/lib/duration-input"
@@ -22,6 +24,13 @@ const DEFAULT_UNITS: DurationUnit[] = ["h", "m", "s"]
 
 type TypedDigits = {
   unit: DurationUnit
+  digits: string
+  typedAtMs: number
+}
+
+type DigitEntry = {
+  base: number | null
+  draft: number
   digits: string
   typedAtMs: number
 }
@@ -64,7 +73,7 @@ function DurationInput({
   const orderedUnits = React.useMemo(() => sortUnits(units), [units])
   const segmentRefs = React.useRef<(HTMLSpanElement | null)[]>([])
   const typedDigitsRef = React.useRef<TypedDigits | null>(null)
-  const lastTypedRef = React.useRef<TypedDigits | null>(null)
+  const digitEntryRef = React.useRef<DigitEntry | null>(null)
 
   function commit(next: number | null) {
     if (next === null) {
@@ -99,22 +108,47 @@ function DurationInput({
       previous?.unit === unit &&
       typedAtMs - previous.typedAtMs < TYPEAHEAD_RESET_MS
     const combined = isContinuing ? previous.digits + digit : digit
-    const typedValue = Number(combined)
     const maxDigits = unit === "ms" ? 3 : 2
     const isComplete = combined.length >= maxDigits
 
     typedDigitsRef.current = isComplete
       ? null
       : { unit, digits: combined, typedAtMs }
-    lastTypedRef.current = { unit, digits: combined, typedAtMs }
 
-    commit(
-      writeSegment(durationValue, unit, typedValue, orderedUnits, max, min)
+    const entry = digitEntryRef.current
+    const isEntryContinuing =
+      entry !== null && typedAtMs - entry.typedAtMs < TYPEAHEAD_RESET_MS
+    const draft = writeSegment(
+      isEntryContinuing ? entry.draft : durationValue,
+      unit,
+      Number(combined),
+      orderedUnits
     )
+    digitEntryRef.current = {
+      base: isEntryContinuing ? entry.base : durationValue,
+      draft,
+      digits: (isEntryContinuing ? entry.digits : "") + digit,
+      typedAtMs,
+    }
+
+    commit(draft)
 
     if (isComplete) {
       focusSegment(index + 1)
     }
+  }
+
+  function assignDigitsToUnit(targetUnit: DurationUnit, pressedAtMs: number) {
+    const entry = digitEntryRef.current
+    typedDigitsRef.current = null
+    digitEntryRef.current = null
+
+    if (entry && pressedAtMs - entry.typedAtMs < TYPEAHEAD_RESET_MS) {
+      commit(
+        writeSegment(entry.base, targetUnit, Number(entry.digits), orderedUnits)
+      )
+    }
+    focusUnit(targetUnit)
   }
 
   function handleKeyDown(
@@ -122,7 +156,11 @@ function DurationInput({
     index: number,
     event: React.KeyboardEvent<HTMLSpanElement>
   ) {
-    if (disabled) return
+    if (disabled || event.metaKey || event.ctrlKey || event.altKey) return
+
+    if (event.key.length > 1 && event.key !== "Shift") {
+      digitEntryRef.current = null
+    }
 
     switch (event.key) {
       case "ArrowUp":
@@ -146,7 +184,13 @@ function DurationInput({
       }
       case "End": {
         event.preventDefault()
-        const { max: segMax } = segmentRange(unit, orderedUnits, max)
+        const { max: segMax } = segmentRange(
+          unit,
+          orderedUnits,
+          max,
+          min,
+          durationValue
+        )
         commit(
           writeSegment(durationValue, unit, segMax, orderedUnits, max, min)
         )
@@ -163,63 +207,39 @@ function DurationInput({
         event.preventDefault()
         if (typedDigitsRef.current) {
           typedDigitsRef.current = null
-          lastTypedRef.current = null
           commit(writeSegment(durationValue, unit, 0, orderedUnits, max, min))
         } else {
-          lastTypedRef.current = null
           commit(null)
         }
         return
       }
     }
 
-    // Direct unit shortcut key (e.g. pressing 'h', 'm', 's', 'd', 'w')
     const keyLower = event.key.toLowerCase() as DurationUnit
     if (orderedUnits.includes(keyLower)) {
       event.preventDefault()
-      const recent = typedDigitsRef.current ?? lastTypedRef.current
-      const isRecent =
-        recent && event.timeStamp - recent.typedAtMs < TYPEAHEAD_RESET_MS
-
-      if (isRecent && recent) {
-        const val = Number(recent.digits)
-        typedDigitsRef.current = null
-        lastTypedRef.current = null
-
-        if (recent.unit !== keyLower) {
-          const cleared = writeSegment(
-            durationValue,
-            recent.unit,
-            0,
-            orderedUnits,
-            max,
-            min
-          )
-          commit(writeSegment(cleared, keyLower, val, orderedUnits, max, min))
-        } else {
-          commit(
-            writeSegment(durationValue, keyLower, val, orderedUnits, max, min)
-          )
-        }
-      }
-      focusUnit(keyLower)
+      assignDigitsToUnit(keyLower, event.timeStamp)
       return
     }
 
-    // Digits entry
     if (/^\d$/.test(event.key)) {
       event.preventDefault()
       typeDigit(unit, index, event.key, event.timeStamp)
     }
   }
 
-  function handlePaste(event: React.ClipboardEvent<HTMLDivElement>) {
+  function handlePaste(
+    unit: DurationUnit,
+    event: React.ClipboardEvent<HTMLSpanElement>
+  ) {
     if (disabled) return
     const text = event.clipboardData.getData("text")
-    const parsed = parseDurationString(text, orderedUnits[0] ?? "m")
+    const parsed = parseDurationString(text, unit)
     if (parsed !== null) {
       event.preventDefault()
-      commit(parsed)
+      typedDigitsRef.current = null
+      digitEntryRef.current = null
+      commit(roundToSmallestUnit(parsed, orderedUnits))
     }
   }
 
@@ -228,7 +248,6 @@ function DurationInput({
       role="group"
       data-slot="duration-input"
       data-disabled={disabled ? "" : undefined}
-      onPaste={handlePaste}
       className={cn(
         "inline-flex h-9 w-fit items-center rounded-md border border-input bg-transparent px-2 font-mono text-sm tabular-nums shadow-xs transition-[color,box-shadow] dark:bg-input/30",
         "focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50",
@@ -241,7 +260,9 @@ function DurationInput({
         const { min: segMin, max: segMax } = segmentRange(
           unit,
           orderedUnits,
-          max
+          max,
+          min,
+          durationValue
         )
         const text = segmentText(durationValue, unit, orderedUnits)
         const currentVal =
@@ -265,12 +286,17 @@ function DurationInput({
               aria-valuenow={currentVal}
               aria-valuetext={
                 durationValue !== null
-                  ? `${currentVal ?? 0} ${unitLabel(unit)}`
+                  ? unitCountText(currentVal ?? 0, unit)
                   : "Empty"
               }
               onKeyDown={(event) => handleKeyDown(unit, index, event)}
-              onBlur={() => {
+              onPaste={(event) => handlePaste(unit, event)}
+              onBlur={(event) => {
                 typedDigitsRef.current = null
+                const nextFocus = event.relatedTarget as HTMLSpanElement | null
+                if (!segmentRefs.current.includes(nextFocus)) {
+                  digitEntryRef.current = null
+                }
               }}
               className="rounded-sm px-0.5 outline-none select-none focus:bg-accent focus:text-accent-foreground data-placeholder:text-muted-foreground"
             >
@@ -278,7 +304,10 @@ function DurationInput({
             </span>
             <span
               aria-hidden="true"
-              className="mr-1.5 text-muted-foreground select-none last:mr-0"
+              className={cn(
+                "text-muted-foreground select-none",
+                index < orderedUnits.length - 1 && "mr-1.5"
+              )}
             >
               {unit}
             </span>
@@ -289,6 +318,7 @@ function DurationInput({
         <input
           type="hidden"
           name={name}
+          disabled={disabled}
           value={
             durationValue !== null && durationValue !== undefined
               ? durationValue

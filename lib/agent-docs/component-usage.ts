@@ -96,7 +96,7 @@ export function RevisionDiff({ before, after }: { before: string; after: string 
   },
   "duration-input": {
     notes:
-      "Segmented editor for durations and time intervals stored as milliseconds. value and onValueChange take number | null. units (default ['h', 'm', 's']) configures visible segments from ['w', 'd', 'h', 'm', 's', 'ms']. Accepts typed shorthand (entering 90 in minutes or 90m normalizes to 1h 30m), unit jump keys (h, m, s, d), and pasting duration strings or ISO 8601 durations (PT1H30M). Arrow keys step values, Home/End set segment boundaries, and Backspace clears.",
+      "Segmented editor for durations and time intervals stored as milliseconds. value and onValueChange take number | null. units (default ['h', 'm', 's']) configures visible segments from ['w', 'd', 'h', 'm', 's', 'ms']. Accepts typed shorthand (entering 90 in minutes or 90m normalizes to 1h 30m), unit jump keys (h, m, s, d), and pasting duration strings or ISO 8601 durations (PT1H30M). Segments auto-advance after two digits, so values of 100 or more need the unit key (120h). A pasted bare number uses the focused segment's unit, and pasted values round to the smallest visible unit. Arrow keys step values, Home/End set segment boundaries, and Backspace clears.",
     example: `import { DurationInput } from "@/components/ui/duration-input"
 
 export function TimeoutField({

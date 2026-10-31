@@ -6,6 +6,7 @@ import {
   formatDuration,
   parseDurationString,
   readSegment,
+  roundToSmallestUnit,
   segmentRange,
   segmentText,
   stepSegment,
@@ -96,6 +97,35 @@ describe("duration-input logic", () => {
     })
   })
 
+  describe("parseDurationString on malformed input", () => {
+    it.each([
+      "P1M",
+      "P1Y2M10DT2H30M",
+      "PT-5M",
+      "1h 30",
+      "1:30m",
+      "-5m",
+      "retry after 5m or 10m",
+      "1,000ms",
+      "1,000",
+    ])("rejects %s", (input) => {
+      expect(parseDurationString(input)).toBeNull()
+    })
+
+    it("still reads a decimal comma", () => {
+      expect(parseDurationString("1,5")).toBe(90000)
+      expect(parseDurationString("1,25h")).toBe(4500000)
+    })
+  })
+
+  describe("roundToSmallestUnit", () => {
+    it("rounds to the smallest of the given units", () => {
+      expect(roundToSmallestUnit(1500, ["h", "m", "s"])).toBe(2000)
+      expect(roundToSmallestUnit(20000, ["h", "m"])).toBe(0)
+      expect(roundToSmallestUnit(1500, ["s", "ms"])).toBe(1500)
+    })
+  })
+
   describe("formatDuration", () => {
     it("formats milliseconds into readable shorthand", () => {
       expect(formatDuration(5400000, ["h", "m"])).toBe("1h 30m")
@@ -116,6 +146,21 @@ describe("duration-input logic", () => {
       expect(segmentRange("h", ["h", "m", "s"], 86400000)).toEqual({
         min: 0,
         max: 24,
+      })
+    })
+  })
+
+  describe("segmentRange on the largest unit", () => {
+    it("grows past the default cap to include the current value", () => {
+      expect(
+        segmentRange("h", ["h", "m"], undefined, 0, 1200 * 3600000)
+      ).toEqual({ min: 0, max: 1200 })
+    })
+
+    it("derives its lower bound from min", () => {
+      expect(segmentRange("h", ["h", "m"], undefined, 7200000)).toEqual({
+        min: 2,
+        max: 999,
       })
     })
   })

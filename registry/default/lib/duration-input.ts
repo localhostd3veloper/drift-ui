@@ -15,12 +15,12 @@ export const UNIT_LABELS: Record<
   DurationUnit,
   { singular: string; plural: string }
 > = {
-  w: { singular: "Weeks", plural: "Weeks" },
-  d: { singular: "Days", plural: "Days" },
-  h: { singular: "Hours", plural: "Hours" },
-  m: { singular: "Minutes", plural: "Minutes" },
-  s: { singular: "Seconds", plural: "Seconds" },
-  ms: { singular: "Milliseconds", plural: "Milliseconds" },
+  w: { singular: "Week", plural: "Weeks" },
+  d: { singular: "Day", plural: "Days" },
+  h: { singular: "Hour", plural: "Hours" },
+  m: { singular: "Minute", plural: "Minutes" },
+  s: { singular: "Second", plural: "Seconds" },
+  ms: { singular: "Millisecond", plural: "Milliseconds" },
 }
 
 export function sortUnits(units: DurationUnit[]): DurationUnit[] {
@@ -30,7 +30,12 @@ export function sortUnits(units: DurationUnit[]): DurationUnit[] {
 }
 
 export function unitLabel(unit: DurationUnit): string {
-  return UNIT_LABELS[unit]?.singular ?? unit
+  return UNIT_LABELS[unit]?.plural ?? unit
+}
+
+export function unitCountText(count: number, unit: DurationUnit): string {
+  const { singular, plural } = UNIT_LABELS[unit]
+  return `${count} ${count === 1 ? singular : plural}`
 }
 
 export function decomposeDuration(
@@ -45,19 +50,10 @@ export function decomposeDuration(
   const result = {} as Record<DurationUnit, number>
   let remainder = Math.max(0, ms)
 
-  for (let i = 0; i < sorted.length; i++) {
-    const unit = sorted[i]
+  for (const unit of sorted) {
     const unitSize = UNIT_MS[unit]
-    const isSmallest = i === sorted.length - 1
-
-    if (isSmallest) {
-      result[unit] = Math.floor(remainder / unitSize)
-      remainder = remainder % unitSize
-    } else {
-      const count = Math.floor(remainder / unitSize)
-      result[unit] = count
-      remainder = remainder % unitSize
-    }
+    result[unit] = Math.floor(remainder / unitSize)
+    remainder = remainder % unitSize
   }
 
   return result
@@ -80,7 +76,7 @@ const ISO_8601_REGEX =
   /^P(?:(\d+(?:[.,]\d+)?)W)?(?:(\d+(?:[.,]\d+)?)D)?(?:T(?:(\d+(?:[.,]\d+)?)H)?(?:(\d+(?:[.,]\d+)?)M)?(?:(\d+(?:[.,]\d+)?)S)?)?$/i
 
 const UNIT_TOKEN_REGEX =
-  /(\d+(?:[.,]\d+)?)\s*(milliseconds?|millis?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w)(?![a-zA-Z])/gi
+  /(\d+(?:\.\d+|,\d{1,2})?)\s*(milliseconds?|millis?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w)(?![a-zA-Z])/gi
 
 function normalizeUnitName(raw: string): DurationUnit | null {
   const lower = raw.toLowerCase()
@@ -128,7 +124,6 @@ export function parseDurationString(
   const trimmed = input.trim()
   if (!trimmed) return null
 
-  // ISO 8601 duration check (e.g. PT1H30M, P2DT4H, PT90M)
   const isoMatch = ISO_8601_REGEX.exec(trimmed)
   if (
     isoMatch &&
@@ -148,8 +143,8 @@ export function parseDurationString(
         seconds * UNIT_MS.s
     )
   }
+  if (/^p/i.test(trimmed)) return null
 
-  // Token regex for shorthand like "1h 30m", "90m", "2d 4h", "1.5h"
   let matched = false
   let totalMs = 0
   let match: RegExpExecArray | null
@@ -164,12 +159,11 @@ export function parseDurationString(
     }
   }
 
-  if (matched) {
+  if (matched && !trimmed.replace(UNIT_TOKEN_REGEX, "").trim()) {
     return Math.round(totalMs)
   }
 
-  // Bare number input (e.g. "90")
-  if (/^\d+(?:[.,]\d+)?$/.test(trimmed)) {
+  if (/^\d+(?:\.\d+|,\d{1,2})?$/.test(trimmed)) {
     const value = Number(trimmed.replace(",", "."))
     if (!Number.isNaN(value)) {
       return Math.round(value * UNIT_MS[fallbackUnit])
@@ -177,6 +171,11 @@ export function parseDurationString(
   }
 
   return null
+}
+
+export function roundToSmallestUnit(ms: number, units: DurationUnit[]): number {
+  const smallest = Math.min(...units.map((unit) => UNIT_MS[unit]))
+  return Math.round(ms / smallest) * smallest
 }
 
 export function formatDuration(
@@ -204,16 +203,20 @@ export function formatDuration(
 export function segmentRange(
   unit: DurationUnit,
   units: DurationUnit[],
-  max?: number
+  max?: number,
+  min: number = 0,
+  ms?: number | null
 ): { min: number; max: number } {
   const sorted = sortUnits(units)
   const unitIndex = sorted.indexOf(unit)
 
   if (unitIndex === 0) {
-    // Largest unit: bounded by max if provided, otherwise 999
     return {
-      min: 0,
-      max: max !== undefined ? Math.floor(max / UNIT_MS[unit]) : 999,
+      min: Math.floor(min / UNIT_MS[unit]),
+      max:
+        max !== undefined
+          ? Math.floor(max / UNIT_MS[unit])
+          : Math.max(999, readSegment(ms, unit, sorted)),
     }
   }
 
