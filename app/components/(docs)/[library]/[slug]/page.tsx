@@ -160,7 +160,7 @@ export default async function ComponentPage({ params }: ComponentPageProps) {
       <main className="flex max-w-4xl min-w-0 flex-col gap-16">
         <JsonLd schema={buildComponentSchema(entry, library)} />
         <ComponentHeader entry={entry} library={library} />
-        <div className="-mt-4 rise [--rise-delay:120ms]">
+        <div className="-mt-4">
           <PreviewTabs
             preview={<PreviewStage entry={entry} library={library} />}
             usage={usage}

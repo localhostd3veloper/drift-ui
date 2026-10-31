@@ -18,7 +18,7 @@ export function ComponentHeader({
   const category = findCategory(entry.category)
 
   return (
-    <header className="flex rise flex-col gap-5">
+    <header className="flex flex-col gap-5">
       <nav
         aria-label="Breadcrumb"
         className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground"

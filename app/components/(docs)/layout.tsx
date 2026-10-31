@@ -11,7 +11,7 @@ const NAV_GROUPS: NavGroup[] = CATEGORIES.map((category) => ({
   ),
 }))
 
-export default function ComponentDetailLayout({
+export default function ComponentDocsLayout({
   children,
 }: {
   children: React.ReactNode
