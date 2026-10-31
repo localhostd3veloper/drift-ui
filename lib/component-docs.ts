@@ -75,14 +75,22 @@ async function toHighlightedFile(title: string, code: string) {
   return { title, code, html: await highlight(code) }
 }
 
-export async function loadUsage(
-  entry: CatalogEntry,
-  library: PrimitiveLibrary
-) {
-  const source = await readProjectFile(previewPath(entry.slug, library))
-  const code = source.replace(/(\w+)Preview\b/g, "$1Demo")
+async function loadDemo(filePath: string, title: string) {
+  const source = await readProjectFile(filePath)
 
-  return toHighlightedFile(`${entry.slug}-demo.tsx`, code)
+  return toHighlightedFile(title, source.replace(/(\w+)Preview\b/g, "$1Demo"))
+}
+
+export function loadUsage(entry: CatalogEntry, library: PrimitiveLibrary) {
+  return loadDemo(previewPath(entry.slug, library), `${entry.slug}-demo.tsx`)
+}
+
+export function loadExample(id: string) {
+  return loadDemo(`components/preview/examples/${id}.tsx`, `${id}.tsx`)
+}
+
+export function loadUsageSnippet(entry: CatalogEntry, code: string) {
+  return toHighlightedFile(`${entry.slug}-usage.tsx`, code)
 }
 
 export function loadSources(entry: CatalogEntry) {

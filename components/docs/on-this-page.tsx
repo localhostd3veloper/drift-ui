@@ -8,7 +8,7 @@ import { cn } from "@/registry/default/lib/utils"
 
 const ACTIVE_LINE_RATIO = 0.3
 
-type PageSection = { id: string; label: string }
+type PageSection = { id: string; label: string; isNested?: boolean }
 
 function findActiveSection(sections: PageSection[]) {
   const activeLine = window.innerHeight * ACTIVE_LINE_RATIO
@@ -67,6 +67,7 @@ export function OnThisPage({
                   aria-current={isActive ? "location" : undefined}
                   className={cn(
                     "block py-1.5 pl-4 text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:text-foreground focus-visible:underline",
+                    section.isNested && "pl-7 text-[13px]",
                     isActive && "text-foreground"
                   )}
                 >
@@ -108,7 +109,10 @@ export function OnThisPageDisclosure({
           <li key={section.id}>
             <a
               href={`#${section.id}`}
-              className="block py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className={cn(
+                "block py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
+                section.isNested && "pl-4"
+              )}
             >
               {section.label}
             </a>
