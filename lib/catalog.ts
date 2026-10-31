@@ -64,6 +64,7 @@ const ENTRY_LAYOUT: {
   { slug: "multi-select", category: "inputs" },
   { slug: "number-input", category: "inputs" },
   { slug: "password-input", category: "inputs" },
+  { slug: "phone-input", category: "inputs" },
   { slug: "rating", category: "inputs" },
   { slug: "recurrence-editor", category: "inputs" },
   { slug: "shortcut-recorder", category: "inputs", stageClassName: "gap-8" },

@@ -720,6 +720,34 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       rest: "<div>",
     },
   ],
+  "phone-input": [
+    {
+      name: "PhoneInput",
+      description:
+        "A tel input with a country picker. It holds an E.164 string and shows the number without its dial code. Pass id or aria-label to label the input.",
+      props: [
+        STATE_PROPS.value("string", "phone number in E.164 format"),
+        STATE_PROPS.defaultValue("string", '""'),
+        STATE_PROPS.onValueChange(
+          "(value: string) => void",
+          'on every edit with the E.164 number, partial while typing, or "" when empty'
+        ),
+        {
+          name: "defaultCountry",
+          type: "CountryCode",
+          default: '"US"',
+          description:
+            "ISO 3166-1 alpha-2 country used until the value identifies one.",
+        },
+        {
+          name: "name",
+          type: "string",
+          description: "Submits the E.164 value through a hidden input.",
+        },
+      ],
+      rest: "<input>, except type",
+    },
+  ],
   rating: [
     {
       name: "Rating",
