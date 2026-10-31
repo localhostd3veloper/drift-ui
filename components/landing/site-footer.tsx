@@ -25,6 +25,7 @@ const COLUMNS = [
     title: "Project",
     links: [
       { href: siteConfig.repo, label: "GitHub" },
+      { href: siteConfig.discord, label: "Discord" },
       { href: "/contributors", label: "Contributors" },
       {
         href: `${siteConfig.repo}/issues/new/choose`,
@@ -74,7 +75,7 @@ export function SiteFooter() {
       </div>
       <p
         aria-hidden
-        className="-mb-[0.22em] text-center font-display text-[clamp(5rem,23vw,22rem)] leading-none font-semibold tracking-[-0.05em] text-[color-mix(in_oklab,var(--foreground)_7%,var(--background))] select-none"
+        className="mb-[-0.22em] text-center font-display text-[clamp(5rem,23vw,22rem)] leading-none font-semibold tracking-tighter text-[color-mix(in_oklab,var(--foreground)_7%,var(--background))] select-none"
       >
         drift-ui
       </p>

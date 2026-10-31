@@ -14,6 +14,7 @@ export const siteConfig = {
     "A shadcn-compatible component registry. Tags input, stepper, tree view, file dropzone and more, built on Radix or Base UI with Tailwind v4 and installed with the shadcn CLI.",
   url: resolveSiteUrl(),
   repo: "https://github.com/localhostd3veloper/drift-ui",
+  discord: "https://discord.gg/tJH3dC8Exz",
   keywords: [
     "shadcn",
     "shadcn registry",

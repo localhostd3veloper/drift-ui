@@ -1,6 +1,7 @@
 import { BlocksSection } from "@/components/landing/blocks-section"
 import { CatalogBand } from "@/components/landing/catalog-band"
 import { ClosingCta } from "@/components/landing/closing-cta"
+import { CommunitySection } from "@/components/landing/community-section"
 import { Hero } from "@/components/landing/hero"
 import { MotionProvider } from "@/components/landing/motion-provider"
 import { InstallSection } from "@/components/landing/install-section"
@@ -48,6 +49,7 @@ export default function LandingPage() {
             <Principles />
             <BlocksSection />
             <InstallSection />
+            <CommunitySection />
             <ClosingCta />
           </main>
           <SiteFooter />

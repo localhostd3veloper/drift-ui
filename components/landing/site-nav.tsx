@@ -1,10 +1,13 @@
 import Link from "next/link"
+import { StarIcon, UsersIcon } from "lucide-react"
+import { siDiscord, siGithub } from "simple-icons"
 
-import { GithubStarLink } from "@/components/landing/github-star-link"
 import { LogoMark } from "@/components/landing/logo-mark"
 import { MobileNav } from "@/components/landing/mobile-nav"
+import { NavIconLink } from "@/components/landing/nav-icon-link"
 import { ThemeScopeBadge } from "@/components/landing/theme-scope-badge"
 import { ThemeToggle } from "@/components/landing/theme-toggle"
+import { siteConfig } from "@/lib/site-config"
 
 const NAV_LINKS = [
   { href: "/components", label: "Components" },
@@ -41,7 +44,22 @@ export function SiteNav({ search }: { search?: React.ReactNode }) {
           <div className="flex items-center gap-1">
             {search}
             <ThemeScopeBadge className="mr-1 hidden sm:flex" />
-            <GithubStarLink />
+            <NavIconLink
+              href={siteConfig.discord}
+              label="Join the drift-ui Discord"
+              iconPath={siDiscord.path}
+            >
+              <UsersIcon className="size-3.5 text-brand" />
+              Come build with us on Discord
+            </NavIconLink>
+            <NavIconLink
+              href={siteConfig.repo}
+              label="Star drift-ui on GitHub"
+              iconPath={siGithub.path}
+            >
+              <StarIcon className="size-3.5 fill-current text-brand" />
+              Like drift-ui? Star it on GitHub
+            </NavIconLink>
             <ThemeToggle />
           </div>
           <MobileNav links={NAV_LINKS} className="md:hidden" />
