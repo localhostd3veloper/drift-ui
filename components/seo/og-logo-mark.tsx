@@ -2,7 +2,13 @@ export const OG_COLORS = {
   foreground: "#fafafa",
   muted: "#a1a1a1",
   drift: "#8ab4ff",
-  background: "radial-gradient(60% 90% at 50% 120%, #262626, #0a0a0a 70%)",
+  page: "#0a0a0a",
+  card: "#171717",
+  border: "#2e2e2e",
+  brandSolid: "#1e59cd",
+  clearing:
+    "radial-gradient(46% 60% at 50% 48%, #0a0a0a 55%, rgba(10, 10, 10, 0) 100%)",
+  glow: "radial-gradient(46% 62% at 50% 46%, rgba(30, 89, 205, 0.3), rgba(30, 89, 205, 0) 100%)",
 }
 
 export function OgLogoMark({ size = 64 }: { size?: number }) {
