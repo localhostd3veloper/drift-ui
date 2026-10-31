@@ -434,7 +434,7 @@ export function DashboardTour() {
   },
   "transfer-list": {
     notes:
-      "Move items between two listboxes: items: T[] with id and label, value/onValueChange or defaultValue as string[] representing target items. Supports searchable for dual filtering, showSelectAll, disabled, and custom renderItem. Keyboard navigation uses Arrow keys and Space to toggle selection, with move selected and move all buttons.",
+      "Move items between two listboxes: items: T[] with id and label, value/onValueChange or defaultValue as string[] representing target items. Ids in value that are not in items are preserved. Supports searchable for a search input per panel, showSelectAll, disabled, and custom renderItem. Select all, move selected and move all act on the items the search leaves visible. Each listbox is one tab stop: Arrow keys, Home and End move focus, Space or Enter toggles an item, Shift extends the selection, and double-click moves an item straight across.",
     example: `import { TransferList } from "@/components/ui/transfer-list"
 
 const roles = [

@@ -1132,7 +1132,8 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
           name: "items",
           type: "T[]",
           required: true,
-          description: "All items available across both lists.",
+          description:
+            "All items across both lists, each with id, label and optional description and disabled.",
         },
         STATE_PROPS.value("string[]", "keys in the selected panel"),
         STATE_PROPS.defaultValue("string[]", "[]"),
@@ -1150,7 +1151,7 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
           name: "searchable",
           type: "boolean",
           default: "false",
-          description: "Adds a search input above both panels.",
+          description: "Adds a search input to each panel.",
         },
         {
           name: "showSelectAll",
@@ -1164,12 +1165,6 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
           default: "false",
           description:
             "Disables interaction across both panels and action buttons.",
-        },
-        {
-          name: "getKey",
-          type: "(item: T) => string",
-          description:
-            "Extracts a unique string key from each item. Defaults to item.id.",
         },
         {
           name: "renderItem",

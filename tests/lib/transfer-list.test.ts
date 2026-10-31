@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest"
 
 import {
   filterTransferItems,
+  getNavigationTarget,
   getTransferAnnouncement,
-  moveAll,
   moveItems,
   partitionItems,
   selectRange,
@@ -66,19 +66,10 @@ describe("transfer-list lib", () => {
       const result = moveItems(["1", "2", "3"], ["2"], "toSource")
       expect(result).toEqual(["1", "3"])
     })
-  })
 
-  describe("moveAll", () => {
-    it("moves all non-disabled items to target", () => {
-      const result = moveAll(SAMPLE_ITEMS, ["1"], "toTarget")
-      expect(result).toEqual(["1", "2", "3"])
-      // "4" is disabled so it shouldn't be added
-    })
-
-    it("moves all non-disabled items to source", () => {
-      const result = moveAll(SAMPLE_ITEMS, ["1", "2", "4"], "toSource")
-      // "4" is disabled, so it stays in target
-      expect(result).toEqual(["4"])
+    it("keeps selected ids that are not in the moved set", () => {
+      const result = moveItems(["1", "not-loaded"], ["1"], "toSource")
+      expect(result).toEqual(["not-loaded"])
     })
   })
 
@@ -94,16 +85,40 @@ describe("transfer-list lib", () => {
       const result = selectRange(ids, "4", "2", [])
       expect(result.sort()).toEqual(["2", "3", "4"].sort())
     })
+
+    it("selects only the target when the anchor is no longer listed", () => {
+      expect(selectRange(ids, "gone", "3", ["1"])).toEqual(["1", "3"])
+    })
+  })
+
+  describe("getNavigationTarget", () => {
+    const ids = ["1", "2", "3"]
+
+    it("steps with arrow keys and stops at both ends", () => {
+      expect(getNavigationTarget(ids, "2", "ArrowDown")).toBe("3")
+      expect(getNavigationTarget(ids, "3", "ArrowDown")).toBe("3")
+      expect(getNavigationTarget(ids, "2", "ArrowUp")).toBe("1")
+      expect(getNavigationTarget(ids, "1", "ArrowUp")).toBe("1")
+    })
+
+    it("jumps with Home and End", () => {
+      expect(getNavigationTarget(ids, "2", "Home")).toBe("1")
+      expect(getNavigationTarget(ids, "2", "End")).toBe("3")
+    })
+
+    it("ignores other keys", () => {
+      expect(getNavigationTarget(ids, "2", "a")).toBeUndefined()
+    })
   })
 
   describe("getTransferAnnouncement", () => {
-    it("generates correct announcement string", () => {
-      expect(
-        getTransferAnnouncement(1, "toTarget", ["Available", "Assigned"])
-      ).toBe("Moved 1 item to Assigned.")
-      expect(
-        getTransferAnnouncement(3, "toSource", ["Available", "Assigned"])
-      ).toBe("Moved 3 items to Available.")
+    it("names a single item and counts several", () => {
+      expect(getTransferAnnouncement(["Admin"], "Assigned")).toBe(
+        "Moved Admin to Assigned."
+      )
+      expect(getTransferAnnouncement(["Admin", "Editor"], "Available")).toBe(
+        "Moved 2 items to Available."
+      )
     })
   })
 })

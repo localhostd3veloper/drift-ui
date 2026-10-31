@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
@@ -24,9 +24,7 @@ describe("TransferList", () => {
     expect(screen.getByText("Available")).toBeInTheDocument()
     expect(screen.getByText("Assigned")).toBeInTheDocument()
 
-    // Available has 1, 2, 4 (3 items)
     expect(screen.getByText("0 / 3")).toBeInTheDocument()
-    // Assigned has 3 (1 item)
     expect(screen.getByText("0 / 1")).toBeInTheDocument()
   })
 
@@ -43,12 +41,10 @@ describe("TransferList", () => {
       />
     )
 
-    // Click Alice (option in Available)
     const aliceOption = screen.getByRole("option", { name: /Alice/i })
     await user.click(aliceOption)
     expect(aliceOption).toHaveAttribute("aria-selected", "true")
 
-    // Click move to Assigned button
     const moveRightBtn = screen.getByRole("button", {
       name: "Move selected to Assigned",
     })
@@ -71,11 +67,9 @@ describe("TransferList", () => {
       />
     )
 
-    // Click Bob in Assigned
     const bobOption = screen.getByRole("option", { name: /Bob/i })
     await user.click(bobOption)
 
-    // Click move to Available button
     const moveLeftBtn = screen.getByRole("button", {
       name: "Move selected to Available",
     })
@@ -102,7 +96,6 @@ describe("TransferList", () => {
     })
     await user.click(moveAllRightBtn)
 
-    // Non-disabled: 1, 2, 3 (4 is disabled)
     expect(onValueChange).toHaveBeenCalledWith(["1", "2", "3"])
   })
 
@@ -124,8 +117,9 @@ describe("TransferList", () => {
     expect(screen.getByText("Alice")).toBeInTheDocument()
     expect(screen.queryByText("Bob")).not.toBeInTheDocument()
 
-    // Clear search
-    const clearBtn = screen.getByRole("button", { name: "Clear search" })
+    const clearBtn = screen.getByRole("button", {
+      name: "Clear search Available",
+    })
     await user.click(clearBtn)
     expect(screen.getByText("Bob")).toBeInTheDocument()
   })
@@ -183,5 +177,185 @@ describe("TransferList", () => {
     const dianaOption = screen.getByRole("option", { name: /Diana/i })
     await user.click(dianaOption)
     expect(dianaOption).toHaveAttribute("aria-selected", "false")
+  })
+
+  it("gives each listbox one tab stop and moves focus with arrow keys", async () => {
+    const user = userEvent.setup()
+    render(<TransferList items={USERS} defaultValue={["3"]} />)
+
+    const available = screen.getAllByRole("listbox")[0]
+    const tabStops = within(available)
+      .getAllByRole("option")
+      .filter((option) => option.tabIndex === 0)
+    expect(tabStops).toHaveLength(1)
+
+    screen.getByRole("option", { name: /Alice/ }).focus()
+    await user.keyboard("{ArrowDown}")
+    expect(screen.getByRole("option", { name: /Bob/ })).toHaveFocus()
+    expect(screen.getByRole("option", { name: /Bob/ })).toHaveAttribute(
+      "tabindex",
+      "0"
+    )
+
+    await user.keyboard("{Home}")
+    expect(screen.getByRole("option", { name: /Alice/ })).toHaveFocus()
+    await user.keyboard("{End}")
+    expect(screen.getByRole("option", { name: /Bob/ })).toHaveFocus()
+  })
+
+  it("extends the selection with Shift and arrow keys", async () => {
+    const user = userEvent.setup()
+    render(<TransferList items={USERS} />)
+
+    screen.getByRole("option", { name: /Alice/ }).focus()
+    await user.keyboard("{Shift>}{ArrowDown}{/Shift}")
+
+    expect(screen.getByRole("option", { name: /Alice/ })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    )
+    expect(screen.getByRole("option", { name: /Bob/ })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    )
+  })
+
+  it("skips disabled items in a Shift-click range", async () => {
+    const user = userEvent.setup()
+    const items = [...USERS, { id: "5", label: "Eve" }]
+    render(<TransferList items={items} />)
+
+    await user.click(screen.getByRole("option", { name: /Charlie/ }))
+    await user.keyboard("{Shift>}")
+    await user.click(screen.getByRole("option", { name: /Eve/ }))
+    await user.keyboard("{/Shift}")
+
+    expect(screen.getByRole("option", { name: /Diana/ })).toHaveAttribute(
+      "aria-selected",
+      "false"
+    )
+    expect(screen.getByRole("option", { name: /Eve/ })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    )
+  })
+
+  it("selects on Shift-click after the anchor item has moved away", async () => {
+    const user = userEvent.setup()
+    render(<TransferList items={USERS} />)
+
+    await user.dblClick(screen.getByRole("option", { name: /Alice/ }))
+    await user.keyboard("{Shift>}")
+    await user.click(screen.getByRole("option", { name: /Bob/ }))
+    await user.keyboard("{/Shift}")
+
+    expect(screen.getByRole("option", { name: /Bob/ })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    )
+  })
+
+  it("limits move all to the items the search leaves visible", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <TransferList
+        items={USERS}
+        searchable
+        onValueChange={onValueChange}
+        titles={["Available", "Assigned"]}
+      />
+    )
+
+    await user.type(screen.getByLabelText("Search Available"), "Bob")
+    await user.click(
+      screen.getByRole("button", { name: "Move all to Assigned" })
+    )
+
+    expect(onValueChange).toHaveBeenCalledWith(["2"])
+  })
+
+  it("does not move checked items hidden by the search", async () => {
+    const user = userEvent.setup()
+    render(
+      <TransferList
+        items={USERS}
+        searchable
+        titles={["Available", "Assigned"]}
+      />
+    )
+
+    await user.click(screen.getByRole("option", { name: /Alice/ }))
+    await user.type(screen.getByLabelText("Search Available"), "Bob")
+
+    expect(
+      screen.getByRole("button", { name: "Move selected to Assigned" })
+    ).toBeDisabled()
+  })
+
+  it("keeps ids outside items when moving everything back", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <TransferList
+        items={USERS}
+        defaultValue={["1", "not-loaded"]}
+        onValueChange={onValueChange}
+        titles={["Available", "Assigned"]}
+      />
+    )
+
+    await user.click(
+      screen.getByRole("button", { name: "Move all to Available" })
+    )
+
+    expect(onValueChange).toHaveBeenCalledWith(["not-loaded"])
+  })
+
+  it("exposes disabled items and select-all state to assistive tech", async () => {
+    const user = userEvent.setup()
+    render(<TransferList items={USERS} titles={["Available", "Assigned"]} />)
+
+    expect(screen.getByRole("option", { name: /Diana/ })).toHaveAttribute(
+      "aria-disabled",
+      "true"
+    )
+
+    const selectAll = screen.getByRole("checkbox", {
+      name: "Select all Available",
+    })
+    expect(selectAll).toHaveAttribute("aria-checked", "false")
+    await user.click(screen.getByRole("option", { name: /Alice/ }))
+    expect(selectAll).toHaveAttribute("aria-checked", "mixed")
+  })
+
+  it("announces moved items by name", async () => {
+    const user = userEvent.setup()
+    render(<TransferList items={USERS} titles={["Available", "Assigned"]} />)
+
+    await user.dblClick(screen.getByRole("option", { name: /Alice/ }))
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Moved Alice to Assigned."
+    )
+  })
+
+  it("does not submit a surrounding form on Enter in search", async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn((event: React.FormEvent) => event.preventDefault())
+    render(
+      <form onSubmit={onSubmit}>
+        <TransferList
+          items={USERS}
+          searchable
+          titles={["Available", "Assigned"]}
+        />
+        <button type="submit">Save</button>
+      </form>
+    )
+
+    await user.type(screen.getByLabelText("Search Available"), "Bob{Enter}")
+
+    expect(onSubmit).not.toHaveBeenCalled()
   })
 })

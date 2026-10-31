@@ -632,6 +632,7 @@
       "registryDependencies": [
         "utils",
         "button",
+        "input",
         "@drift-ui/use-controllable-state"
       ],
       "files": [

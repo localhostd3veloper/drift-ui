@@ -3,20 +3,18 @@ export interface TransferItem {
   label: string
   description?: string
   disabled?: boolean
-  [key: string]: unknown
 }
 
-export function partitionItems<T extends { id: string }>(
+export function partitionItems<T extends TransferItem>(
   items: readonly T[],
-  selectedIds: readonly string[],
-  getKey: (item: T) => string = (item) => item.id
+  selectedIds: readonly string[]
 ): { sourceItems: T[]; targetItems: T[] } {
   const selectedSet = new Set(selectedIds)
   const sourceItems: T[] = []
   const targetItems: T[] = []
 
   for (const item of items) {
-    if (selectedSet.has(getKey(item))) {
+    if (selectedSet.has(item.id)) {
       targetItems.push(item)
     } else {
       sourceItems.push(item)
@@ -26,27 +24,18 @@ export function partitionItems<T extends { id: string }>(
   return { sourceItems, targetItems }
 }
 
-export function filterTransferItems<
-  T extends { label?: string; description?: string },
->(
+export function filterTransferItems<T extends TransferItem>(
   items: readonly T[],
-  query: string,
-  getSearchText?: (item: T) => string
+  query: string
 ): T[] {
   const normalizedQuery = query.trim().toLowerCase()
   if (!normalizedQuery) return [...items]
 
-  return items.filter((item) => {
-    if (getSearchText) {
-      return getSearchText(item).toLowerCase().includes(normalizedQuery)
-    }
-    const label = item.label ?? ""
-    const description = item.description ?? ""
-    return (
-      label.toLowerCase().includes(normalizedQuery) ||
-      description.toLowerCase().includes(normalizedQuery)
-    )
-  })
+  return items.filter(
+    (item) =>
+      item.label.toLowerCase().includes(normalizedQuery) ||
+      item.description?.toLowerCase().includes(normalizedQuery)
+  )
 }
 
 export function moveItems(
@@ -54,47 +43,12 @@ export function moveItems(
   idsToMove: readonly string[],
   direction: "toTarget" | "toSource"
 ): string[] {
+  if (direction === "toTarget") {
+    return Array.from(new Set([...currentSelectedIds, ...idsToMove]))
+  }
+
   const moveSet = new Set(idsToMove)
-  if (direction === "toTarget") {
-    const existing = new Set(currentSelectedIds)
-    const next = [...currentSelectedIds]
-    for (const id of idsToMove) {
-      if (!existing.has(id)) {
-        next.push(id)
-      }
-    }
-    return next
-  }
-
   return currentSelectedIds.filter((id) => !moveSet.has(id))
-}
-
-export function moveAll<T extends { id: string; disabled?: boolean }>(
-  items: readonly T[],
-  currentSelectedIds: readonly string[],
-  direction: "toTarget" | "toSource",
-  getKey: (item: T) => string = (item) => item.id
-): string[] {
-  if (direction === "toTarget") {
-    const currentSet = new Set(currentSelectedIds)
-    const next = [...currentSelectedIds]
-    for (const item of items) {
-      const key = getKey(item)
-      if (!item.disabled && !currentSet.has(key)) {
-        next.push(key)
-      }
-    }
-    return next
-  }
-
-  const disabledTargetKeys = new Set(
-    items
-      .filter(
-        (item) => item.disabled && currentSelectedIds.includes(getKey(item))
-      )
-      .map(getKey)
-  )
-  return currentSelectedIds.filter((id) => disabledTargetKeys.has(id))
 }
 
 export function selectRange(
@@ -103,26 +57,44 @@ export function selectRange(
   toId: string,
   currentChecked: readonly string[]
 ): string[] {
-  const fromIndex = itemIds.indexOf(fromId)
   const toIndex = itemIds.indexOf(toId)
-  if (fromIndex === -1 || toIndex === -1) return [...currentChecked]
+  if (toIndex === -1) return [...currentChecked]
 
-  const start = Math.min(fromIndex, toIndex)
-  const end = Math.max(fromIndex, toIndex)
-  const rangeIds = itemIds.slice(start, end + 1)
+  const fromIndex = itemIds.indexOf(fromId)
+  const anchorIndex = fromIndex === -1 ? toIndex : fromIndex
+  const start = Math.min(anchorIndex, toIndex)
+  const end = Math.max(anchorIndex, toIndex)
 
-  const checkedSet = new Set(currentChecked)
-  for (const id of rangeIds) {
-    checkedSet.add(id)
+  return Array.from(
+    new Set([...currentChecked, ...itemIds.slice(start, end + 1)])
+  )
+}
+
+export function getNavigationTarget(
+  itemIds: readonly string[],
+  currentId: string,
+  key: string
+): string | undefined {
+  const index = itemIds.indexOf(currentId)
+
+  switch (key) {
+    case "ArrowDown":
+      return itemIds[Math.min(index + 1, itemIds.length - 1)]
+    case "ArrowUp":
+      return itemIds[Math.max(index - 1, 0)]
+    case "Home":
+      return itemIds[0]
+    case "End":
+      return itemIds[itemIds.length - 1]
+    default:
+      return undefined
   }
-  return Array.from(checkedSet)
 }
 
 export function getTransferAnnouncement(
-  count: number,
-  direction: "toTarget" | "toSource",
-  titles: [string, string]
+  labels: readonly string[],
+  destination: string
 ): string {
-  const destination = direction === "toTarget" ? titles[1] : titles[0]
-  return `Moved ${count} ${count === 1 ? "item" : "items"} to ${destination}.`
+  const subject = labels.length === 1 ? labels[0] : `${labels.length} items`
+  return `Moved ${subject} to ${destination}.`
 }
