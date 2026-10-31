@@ -56,6 +56,7 @@ const ENTRY_LAYOUT: {
 }[] = [
   { slug: "color-picker", category: "inputs" },
   { slug: "date-time-range", category: "inputs" },
+  { slug: "duration-input", category: "inputs", stageClassName: "gap-8" },
   { slug: "emoji-picker", category: "inputs" },
   { slug: "file-dropzone", category: "inputs" },
   { slug: "inline-edit", category: "inputs" },

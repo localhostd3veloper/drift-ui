@@ -287,6 +287,55 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       rest: "<div>",
     },
   ],
+  "duration-input": [
+    {
+      name: "DurationInput",
+      description:
+        "Segmented duration input with typed shorthand and unit navigation. The root has role=group, so pass aria-label or aria-labelledby.",
+      props: [
+        STATE_PROPS.value("number | null", "duration in milliseconds"),
+        STATE_PROPS.defaultValue("number | null", "null"),
+        STATE_PROPS.onValueChange(
+          "(value: number | null) => void",
+          "with the duration in milliseconds, or null when cleared"
+        ),
+        {
+          name: "units",
+          type: '("w" | "d" | "h" | "m" | "s" | "ms")[]',
+          default: '["h", "m", "s"]',
+          description: "Visible duration segments.",
+        },
+        {
+          name: "min",
+          type: "number",
+          default: "0",
+          description: "Minimum duration in milliseconds.",
+        },
+        {
+          name: "max",
+          type: "number",
+          description: "Maximum duration in milliseconds.",
+        },
+        {
+          name: "step",
+          type: "number",
+          default: "1",
+          description: "Amount arrow keys step the focused segment by.",
+        },
+        {
+          name: "disabled",
+          type: "boolean",
+          description: "Disables interaction across every segment.",
+        },
+        {
+          name: "name",
+          type: "string",
+          description: "Submits the milliseconds value through a hidden input.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
   "emoji-picker": [
     {
       name: "EmojiPicker",
