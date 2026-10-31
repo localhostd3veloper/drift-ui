@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og"
 
-import { OG_COLORS, OgLogoMark } from "@/components/seo/og-logo-mark"
+import { loadOgFonts, OgCommand, OgFrame } from "@/components/seo/og-frame"
+import { OG_COLORS } from "@/components/seo/og-logo-mark"
 import { CATALOG, findCategory, findEntry } from "@/lib/catalog"
 import { PRIMITIVE_LIBRARIES } from "@/lib/primitive-library"
 import { siteConfig } from "@/lib/site-config"
@@ -26,56 +27,34 @@ export default async function ComponentOpenGraphImage({
   const category = entry ? findCategory(entry.category)?.label : undefined
 
   return new ImageResponse(
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        width: "100%",
-        height: "100%",
-        padding: 80,
-        color: OG_COLORS.foreground,
-        background: OG_COLORS.background,
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-        <OgLogoMark />
-        <span style={{ fontSize: 36, letterSpacing: -1 }}>
-          {siteConfig.name}
-        </span>
-        {category && (
-          <span style={{ fontSize: 28, color: OG_COLORS.muted }}>
-            / {category}
-          </span>
-        )}
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-        <span style={{ fontSize: 96, lineHeight: 1, letterSpacing: -4 }}>
-          {name}
-        </span>
-        {entry && (
-          <span
-            style={{
-              maxWidth: 940,
-              fontSize: 34,
-              lineHeight: 1.3,
-              color: OG_COLORS.muted,
-            }}
-          >
-            {entry.description}
-          </span>
-        )}
-      </div>
+    <OgFrame breadcrumb={category}>
       <span
         style={{
-          fontSize: 26,
-          color: OG_COLORS.muted,
-          fontFamily: "monospace",
+          fontFamily: "Display",
+          fontSize: 104,
+          fontWeight: 600,
+          lineHeight: 1,
+          letterSpacing: -4,
         }}
       >
-        npx shadcn add @drift-ui/{slug}
+        {name}
       </span>
-    </div>,
-    size
+      {entry && (
+        <span
+          style={{
+            maxWidth: 940,
+            marginTop: 24,
+            marginBottom: 34,
+            fontSize: 32,
+            lineHeight: 1.3,
+            color: OG_COLORS.muted,
+          }}
+        >
+          {entry.description}
+        </span>
+      )}
+      <OgCommand command={`npx shadcn add @drift-ui/${slug}`} />
+    </OgFrame>,
+    { ...size, fonts: await loadOgFonts() }
   )
 }

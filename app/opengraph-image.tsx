@@ -1,54 +1,60 @@
 import { ImageResponse } from "next/og"
 
-import { OG_COLORS, OgLogoMark } from "@/components/seo/og-logo-mark"
+import { loadOgFonts, OgCommand, OgFrame } from "@/components/seo/og-frame"
+import { OG_COLORS } from "@/components/seo/og-logo-mark"
+import { CATALOG } from "@/lib/catalog"
 import { siteConfig } from "@/lib/site-config"
 
 export const alt = siteConfig.title
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
-export default function OpenGraphImage() {
+const COMPONENT_COUNT = CATALOG.filter(
+  (entry) => entry.category !== "primitives"
+).length
+
+export default async function OpenGraphImage() {
   return new ImageResponse(
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        width: "100%",
-        height: "100%",
-        padding: 80,
-        color: OG_COLORS.foreground,
-        background: OG_COLORS.background,
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-        <OgLogoMark />
-        <span style={{ fontSize: 36, letterSpacing: -1 }}>
-          {siteConfig.name}
-        </span>
-      </div>
+    <OgFrame>
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          fontSize: 84,
-          lineHeight: 1.02,
-          letterSpacing: -3,
+          alignItems: "center",
+          fontFamily: "Display",
+          fontSize: 118,
+          fontWeight: 600,
+          lineHeight: 1,
+          letterSpacing: -5,
         }}
       >
         <span>The components</span>
-        <span style={{ color: OG_COLORS.muted }}>shadcn left out</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 26 }}>
+          <span>shadcn left</span>
+          <span
+            style={{
+              padding: "0 18px 10px",
+              borderRadius: 20,
+              background: OG_COLORS.brandSolid,
+              transform: "rotate(7deg)",
+            }}
+          >
+            out
+          </span>
+        </div>
       </div>
       <span
         style={{
-          fontSize: 26,
+          marginTop: 30,
+          marginBottom: 34,
+          fontSize: 30,
           color: OG_COLORS.muted,
-          fontFamily: "monospace",
         }}
       >
-        npx shadcn add @drift-ui/tags-input
+        {COMPONENT_COUNT} components for the shadcn CLI, on Radix or Base UI
       </span>
-    </div>,
-    size
+      <OgCommand command="npx shadcn add @drift-ui/tags-input" />
+    </OgFrame>,
+    { ...size, fonts: await loadOgFonts() }
   )
 }

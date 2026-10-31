@@ -75,6 +75,17 @@ describe("FilterBuilder", () => {
     expect(chipTexts()).toEqual([])
   })
 
+  it("closes the add menu instantly so it cannot pull focus from the new editor", async () => {
+    const user = userEvent.setup()
+    render(<FilterBuilder fields={FIELDS} />)
+
+    await openAddMenu(user)
+
+    expect(
+      document.querySelector("[data-slot=filter-menu]")?.className
+    ).not.toMatch(/animate-out/)
+  })
+
   it("removes one filter or clears them all", async () => {
     const user = userEvent.setup()
     render(

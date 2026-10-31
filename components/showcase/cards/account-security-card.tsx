@@ -21,8 +21,8 @@ import {
 const MIN_SCORE = 3
 
 export function AccountSecurityCard() {
-  const [current, setCurrent] = React.useState("ledger-2024")
-  const [next, setNext] = React.useState("Copper-lantern")
+  const [current, setCurrent] = React.useState("")
+  const [next, setNext] = React.useState("")
   const [confirm, setConfirm] = React.useState("")
   const [isSaved, setIsSaved] = React.useState(false)
   const isMismatch = confirm.length > 0 && confirm !== next

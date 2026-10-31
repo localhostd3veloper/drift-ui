@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { useSelectedLayoutSegments } from "next/navigation"
+import { useParams } from "next/navigation"
 
 import { cn } from "@/registry/default/lib/utils"
 import { ActivePill } from "@/components/docs/active-pill"
@@ -16,7 +16,7 @@ export type NavGroup = {
 }
 
 export function useActiveComponent() {
-  const [library, slug] = useSelectedLayoutSegments()
+  const { library, slug } = useParams<{ library?: string; slug?: string }>()
 
   return {
     library: isPrimitiveLibrary(library) ? library : undefined,

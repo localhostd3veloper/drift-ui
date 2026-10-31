@@ -29,7 +29,7 @@ bun run format
 | `registry/base/ui/<name>.tsx`           | Base UI version of a file that depends on Radix         |
 | `registry.json`                         | Registry manifest read by `shadcn build`                |
 | `components/preview/<name>-preview.tsx` | Live demo and usage example on the docs page            |
-| `components/preview/examples/<name>/`   | Optional extra examples, one file each plus `index.ts`  |
+| `components/preview/examples/<name>/`   | Examples, one file each plus `index.ts`                 |
 | `components/docs/preview-registry.tsx`  | Maps slugs to previews                                  |
 | `lib/catalog.ts`                        | Categories, alphabetical within each                    |
 | `lib/agent-docs/component-usage.ts`     | Usage notes served at `/llms.txt` and `/llms-full.txt`  |
@@ -77,7 +77,7 @@ For a new component, follow every step of [Adding a component](CONTRIBUTING.md#a
 2. Entry in `registry.json` with `dependencies` and `registryDependencies` (shadcn built-ins by bare name, like `button`; `@drift-ui/` prefix only for drift-only items)
 3. `components/preview/<name>-preview.tsx`, registered in `components/docs/preview-registry.tsx`
 4. Category in `lib/catalog.ts`
-5. Usage notes in `lib/agent-docs/component-usage.ts` and prop reference in `lib/agent-docs/component-api.ts`
+5. Usage notes and snippet in `lib/agent-docs/component-usage.ts`, prop reference in `lib/agent-docs/component-api.ts`, and at least one example in `components/preview/examples/<name>/`
 6. Tests in `tests/ui/<name>.test.tsx`, plus `tests/lib/<name>.test.ts` for lib code, covering keyboard interaction
 
 Insert at the alphabetical position in `registry.json`, `lib/catalog.ts` (within the category), `component-usage.ts` and `component-api.ts`, never at the end. Appending is what makes pull requests conflict, and `tests/lib/sorted-lists.test.ts` fails if a list is out of order. If a conflict still happens, keep both entries.
