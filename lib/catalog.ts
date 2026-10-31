@@ -93,6 +93,11 @@ const ENTRY_LAYOUT: {
     category: "workflow",
     stageClassName: "flex-col flex-nowrap items-stretch",
   },
+  {
+    slug: "transfer-list",
+    category: "workflow",
+    stageClassName: "flex-col flex-nowrap items-stretch",
+  },
   { slug: "avatar", category: "primitives" },
   { slug: "badge", category: "primitives" },
   { slug: "button", category: "primitives" },

@@ -43,6 +43,7 @@ import { TagsInputPreview } from "@/components/preview/tags-input-preview"
 import { TimeFieldPreview } from "@/components/preview/time-field-preview"
 import { TimelinePreview } from "@/components/preview/timeline-preview"
 import { TourPreview } from "@/components/preview/tour-preview"
+import { TransferListPreview } from "@/components/preview/transfer-list-preview"
 import { TreeViewPreview } from "@/components/preview/tree-view-preview"
 import { VirtualListPreview } from "@/components/preview/virtual-list-preview"
 
@@ -79,6 +80,7 @@ export const PREVIEWS: Record<string, ComponentType> = {
   "time-field": TimeFieldPreview,
   timeline: TimelinePreview,
   tour: TourPreview,
+  "transfer-list": TransferListPreview,
   "tree-view": TreeViewPreview,
   "virtual-list": VirtualListPreview,
 }

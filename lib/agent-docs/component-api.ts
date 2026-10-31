@@ -1122,6 +1122,64 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       ],
     },
   ],
+  "transfer-list": [
+    {
+      name: "TransferList",
+      description:
+        "Dual-panel listbox for moving items between available and selected sets with search and multi-selection.",
+      props: [
+        {
+          name: "items",
+          type: "T[]",
+          required: true,
+          description: "All items available across both lists.",
+        },
+        STATE_PROPS.value("string[]", "keys in the selected panel"),
+        STATE_PROPS.defaultValue("string[]", "[]"),
+        STATE_PROPS.onValueChange(
+          "(value: string[]) => void",
+          "after items are moved between lists"
+        ),
+        {
+          name: "titles",
+          type: "[string, string]",
+          default: '["Available", "Selected"]',
+          description: "Headers for the source and target panels.",
+        },
+        {
+          name: "searchable",
+          type: "boolean",
+          default: "false",
+          description: "Adds a search input above both panels.",
+        },
+        {
+          name: "showSelectAll",
+          type: "boolean",
+          default: "true",
+          description: "Renders select-all checkboxes in both panel headers.",
+        },
+        {
+          name: "disabled",
+          type: "boolean",
+          default: "false",
+          description:
+            "Disables interaction across both panels and action buttons.",
+        },
+        {
+          name: "getKey",
+          type: "(item: T) => string",
+          description:
+            "Extracts a unique string key from each item. Defaults to item.id.",
+        },
+        {
+          name: "renderItem",
+          type: "(item: T) => React.ReactNode",
+          description: "Custom renderer for items inside the listboxes.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
   "tree-view": [
     {
       name: "TreeView",
