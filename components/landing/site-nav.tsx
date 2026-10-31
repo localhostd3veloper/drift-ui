@@ -11,7 +11,7 @@ const NAV_LINKS = [
   { href: "/blocks", label: "Blocks" },
   { href: "/themes", label: "Themes" },
   { href: "/#install", label: "Install" },
-  { href: "/r/registry.json", label: "Registry" },
+  { href: "/contributors", label: "Contributors" },
 ]
 
 export function SiteNav({ search }: { search?: React.ReactNode }) {
