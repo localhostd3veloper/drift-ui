@@ -16,6 +16,7 @@
     "registry/default/ui/bulk-action-bar.tsx",
     "registry/default/ui/button.tsx",
     "registry/default/ui/color-picker-controls.tsx",
+    "registry/default/ui/command.tsx",
     "registry/default/ui/dialog.tsx",
     "registry/default/ui/filter-menu.tsx",
     "registry/default/ui/label.tsx",
