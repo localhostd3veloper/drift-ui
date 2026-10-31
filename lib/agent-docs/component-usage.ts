@@ -1,13 +1,26 @@
 type ComponentUsage = {
   notes: string
   example?: string
+  baseExample?: string
 }
 
 const SAME_AS_SHADCN =
   "Identical API to the shadcn/ui component of the same name. Skip it if the project already has one."
 
 export const COMPONENT_USAGE: Record<string, ComponentUsage> = {
-  avatar: { notes: SAME_AS_SHADCN },
+  avatar: {
+    notes: SAME_AS_SHADCN,
+    example: `import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
+export function UserAvatar() {
+  return (
+    <Avatar>
+      <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+      <AvatarFallback>CN</AvatarFallback>
+    </Avatar>
+  )
+}`,
+  },
   "avatar-group": {
     notes:
       "AvatarGroup stacks AvatarGroupItem children with overlap. max shows that many avatars and turns the rest into a +N button that opens a popover listing them by name. AvatarGroupItem takes name (required, used for initials, the title tooltip and the screen reader label), src and status (online, away, busy or offline) for a presence dot. Built on the shadcn avatar and popover primitives. Pass aria-label to the group.",
@@ -23,7 +36,14 @@ export function Assignees({ users }: { users: { id: string; name: string; image?
   )
 }`,
   },
-  badge: { notes: SAME_AS_SHADCN },
+  badge: {
+    notes: SAME_AS_SHADCN,
+    example: `import { Badge } from "@/components/ui/badge"
+
+export function StatusBadge() {
+  return <Badge variant="secondary">Active</Badge>
+}`,
+  },
   "bulk-action-bar": {
     notes:
       "Floating toolbar (Radix or Base UI) that animates in when selectedCount > 0. Props: selectedCount, onClear (also bound to Escape), placement: 'viewport' (portaled, default) or 'container' (absolute inside a relative parent). Put BulkActionBarButton children inside. Requires the motion package.",
@@ -38,8 +58,33 @@ export function FileActions({ selected, onClear }: { selected: string[]; onClear
   )
 }`,
   },
-  button: { notes: SAME_AS_SHADCN },
-  card: { notes: SAME_AS_SHADCN },
+  button: {
+    notes: SAME_AS_SHADCN,
+    example: `import { Button } from "@/components/ui/button"
+
+export function SaveButton() {
+  return <Button variant="outline">Save changes</Button>
+}`,
+  },
+  card: {
+    notes: SAME_AS_SHADCN,
+    example: `import {
+  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,
+} from "@/components/ui/card"
+
+export function PlanCard() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Pro plan</CardTitle>
+        <CardDescription>For growing teams.</CardDescription>
+      </CardHeader>
+      <CardContent>$20 a month per seat.</CardContent>
+      <CardFooter>Cancel any time.</CardFooter>
+    </Card>
+  )
+}`,
+  },
   "color-picker": {
     notes:
       "Popover picker with a saturation and brightness area, hue and alpha sliders, hex input, oklch readout and the native EyeDropper where supported. Value is a hex string (#rrggbb or #rrggbbaa). Props: value/defaultValue/onValueChange, showAlpha, swatches.",
@@ -76,7 +121,49 @@ export function UserDetails() {
   )
 }`,
   },
-  dialog: { notes: SAME_AS_SHADCN },
+  dialog: {
+    notes: SAME_AS_SHADCN,
+    example: `import { Button } from "@/components/ui/button"
+import {
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
+} from "@/components/ui/dialog"
+
+export function ProfileDialog() {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Edit profile</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit profile</DialogTitle>
+          <DialogDescription>Changes apply immediately.</DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}`,
+    baseExample: `import { Button } from "@/components/ui/button"
+import {
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
+} from "@/components/ui/dialog"
+
+export function ProfileDialog() {
+  return (
+    <Dialog>
+      <DialogTrigger render={<Button variant="outline" />}>
+        Edit profile
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit profile</DialogTitle>
+          <DialogDescription>Changes apply immediately.</DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}`,
+  },
   "diff-viewer": {
     notes:
       "Compares two strings line by line with no dependencies. mode is split (default) or unified, and the component holds no mode state, so a mode switch belongs to the parent. Replaced lines that share a word get word-level highlights in ins and del elements. Runs of unchanged lines beyond contextLines (default 3) collapse behind a Show N unchanged lines button that stays in place as Hide once open, so keyboard focus stays on it. Added lines use the chart-2 token and removed lines use destructive; every changed line also has a + or - sign and screen reader text, so color is not the only signal. Past 2000 edits the middle of the text is shown as one full replacement, which keeps two unrelated large inputs from using unbounded memory. Pass aria-label to name the table.",
@@ -196,7 +283,20 @@ export function ProjectName() {
   return <InlineEdit aria-label="Project name" value={name} onSave={setName} />
 }`,
   },
-  input: { notes: SAME_AS_SHADCN },
+  input: {
+    notes: SAME_AS_SHADCN,
+    example: `import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+
+export function EmailField() {
+  return (
+    <div className="grid gap-2">
+      <Label htmlFor="email">Email</Label>
+      <Input id="email" type="email" placeholder="you@company.com" />
+    </div>
+  )
+}`,
+  },
   "json-viewer": {
     notes:
       "Read-only JSON tree built on tree-view, so arrow keys, Home, End and typeahead work. defaultExpandDepth (default 1) opens that many levels. Strings, numbers and booleans use the chart-2, chart-1 and chart-3 tokens mixed with foreground for readable contrast, and null uses muted text. The search field highlights matching keys and values and opens their parents. Each row has pointer-only copy value and copy path buttons, shown on hover or always on touch screens; from the keyboard, Ctrl or Cmd+C copies the focused value and Shift+Ctrl or Cmd+C copies its path, like users[0].name. onCopy(path, value, target) runs after a copy. Arrays over 100 items split into groups of 100 and only open branches render.",
@@ -206,7 +306,20 @@ export function WebhookPayload({ payload }: { payload: unknown }) {
   return <JsonViewer aria-label="Webhook payload" data={payload} defaultExpandDepth={2} />
 }`,
   },
-  label: { notes: SAME_AS_SHADCN },
+  label: {
+    notes: SAME_AS_SHADCN,
+    example: `import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+
+export function NameField() {
+  return (
+    <div className="grid gap-2">
+      <Label htmlFor="name">Display name</Label>
+      <Input id="name" />
+    </div>
+  )
+}`,
+  },
   "mention-textarea": {
     notes:
       "Textarea that opens a suggestion list when the caret follows a trigger character. triggers maps a character to options, for example { '@': people, '#': channels }, each option { value, label, description? }. Selecting inserts trigger + value. Value is plain text with value/defaultValue/onValueChange.",
@@ -297,7 +410,35 @@ export function ContactField() {
   )
 }`,
   },
-  popover: { notes: SAME_AS_SHADCN },
+  popover: {
+    notes: SAME_AS_SHADCN,
+    example: `import { Button } from "@/components/ui/button"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+
+export function ExportPopover() {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="outline">Export size</Button>
+      </PopoverTrigger>
+      <PopoverContent>Pixels, applied to every frame.</PopoverContent>
+    </Popover>
+  )
+}`,
+    baseExample: `import { Button } from "@/components/ui/button"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+
+export function ExportPopover() {
+  return (
+    <Popover>
+      <PopoverTrigger render={<Button variant="outline" />}>
+        Export size
+      </PopoverTrigger>
+      <PopoverContent>Pixels, applied to every frame.</PopoverContent>
+    </Popover>
+  )
+}`,
+  },
   rating: {
     notes:
       'Radio group of icons for a score. Controlled with value/onValueChange or uncontrolled with defaultValue (0 means no rating). max sets the icon count (default 5), step={0.5} allows half scores, icon swaps the default lucide Star for any SVG icon. Arrow keys change the score, Home and End jump to the ends. readOnly renders a role=img labelled like "3.5 out of 5". The fill color is the root\'s text color (text-primary), so className="text-chart-4" recolors it. Pass aria-label.',

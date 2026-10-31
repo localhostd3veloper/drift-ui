@@ -128,14 +128,15 @@ export default async function ComponentPage({ params }: ComponentPageProps) {
 
   const source = library === "base" ? toBaseUiItem(entry) : entry
   const usageEntry = COMPONENT_USAGE[entry.slug]
+  const usageExample =
+    (library === "base" && usageEntry?.baseExample) || usageEntry?.example
   const [usage, sources, snippet, examples] = await Promise.all([
     loadUsage(entry, library),
     loadSources(source),
-    usageEntry?.example && loadUsageSnippet(entry, usageEntry.example),
+    usageExample && loadUsageSnippet(entry, usageExample),
     loadExamples(entry.slug, library),
   ])
   const api = COMPONENT_API[entry.slug]
-  const notes = api ? undefined : usageEntry?.notes
   const { previous, next } = findNeighbors(entry.slug)
   const sections = [
     { id: "installation", label: "Installation" },
@@ -151,7 +152,6 @@ export default async function ComponentPage({ params }: ComponentPageProps) {
         ]
       : []),
     ...(api ? [{ id: "api", label: "API reference" }] : []),
-    ...(notes ? [{ id: "notes", label: "Notes" }] : []),
     { id: "source", label: "Source" },
   ]
 
@@ -189,13 +189,6 @@ export default async function ComponentPage({ params }: ComponentPageProps) {
         {api && (
           <DocSection id="api" title="API reference">
             <ApiReference parts={api} />
-          </DocSection>
-        )}
-        {notes && (
-          <DocSection id="notes" title="Notes">
-            <p className="max-w-[68ch] leading-relaxed text-muted-foreground">
-              {notes}
-            </p>
           </DocSection>
         )}
         <DocSection id="source" title="Source">

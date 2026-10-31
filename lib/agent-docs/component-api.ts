@@ -34,6 +34,25 @@ const STATE_PROPS = {
 }
 
 export const COMPONENT_API: Record<string, ApiPart[]> = {
+  avatar: [
+    {
+      name: "Avatar",
+      description:
+        "Same API as the shadcn/ui Avatar. Skip it if the project already has one. A circular size-8 frame. Set another size or radius with className.",
+      rest: "Avatar root",
+    },
+    {
+      name: "AvatarImage",
+      description:
+        "The image. It is hidden until it loads and if it fails. Pass src and alt.",
+      rest: "Avatar image",
+    },
+    {
+      name: "AvatarFallback",
+      description: "Shown while there is no image, usually initials.",
+      rest: "Avatar fallback",
+    },
+  ],
   "avatar-group": [
     {
       name: "AvatarGroup",
@@ -68,6 +87,34 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
         },
       ],
       rest: "<span>",
+    },
+  ],
+  badge: [
+    {
+      name: "Badge",
+      description:
+        "Same API as the shadcn/ui Badge. Skip it if the project already has one.",
+      props: [
+        {
+          name: "variant",
+          type: '"default" | "secondary" | "destructive" | "outline"',
+          default: '"default"',
+          description: "Color treatment.",
+        },
+        {
+          name: "asChild",
+          type: "boolean",
+          default: "false",
+          description:
+            "Radix: render the child element with the badge styles. In Base UI, use the render prop.",
+        },
+      ],
+      rest: "<span>",
+    },
+    {
+      name: "badgeVariants",
+      description:
+        "The class generator behind Badge, for styling your own element.",
     },
   ],
   "bulk-action-bar": [
@@ -123,6 +170,70 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
         },
       ],
       rest: "Button",
+    },
+  ],
+  button: [
+    {
+      name: "Button",
+      description:
+        "Same API as the shadcn/ui Button. Skip it if the project already has one.",
+      props: [
+        {
+          name: "variant",
+          type: '"default" | "destructive" | "outline" | "secondary" | "ghost" | "link"',
+          default: '"default"',
+          description: "Color treatment.",
+        },
+        {
+          name: "size",
+          type: '"default" | "sm" | "lg" | "icon"',
+          default: '"default"',
+          description: "Height and padding. Give icon buttons an aria-label.",
+        },
+        {
+          name: "asChild",
+          type: "boolean",
+          default: "false",
+          description:
+            "Radix: render the child element with the button styles. In Base UI, use the render prop.",
+        },
+      ],
+      rest: "<button>",
+    },
+    {
+      name: "buttonVariants",
+      description:
+        "The class generator behind Button, for styling a link or a popover trigger.",
+    },
+  ],
+  card: [
+    {
+      name: "Card",
+      description:
+        "Same API as the shadcn/ui Card. Skip it if the project already has one. Compose CardHeader, CardContent and CardFooter inside it, and leave out what you do not need.",
+      rest: "<div>",
+    },
+    {
+      name: "CardHeader",
+      description:
+        "Holds CardTitle, CardDescription and CardAction. CardAction sits at the top right.",
+      rest: "<div>",
+    },
+    {
+      name: "CardTitle, CardDescription",
+      description:
+        "The heading text and the muted line under it. Both render a div, so add a heading element if the page outline needs one.",
+      rest: "<div>",
+    },
+    {
+      name: "CardAction",
+      description: "A slot in the header for a badge or a button.",
+      rest: "<div>",
+    },
+    {
+      name: "CardContent, CardFooter",
+      description: "The body and a flex row for actions.",
+      rest: "<div>",
     },
   ],
   "color-picker": [
@@ -251,6 +362,45 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
         },
       ],
       rest: "<div>",
+    },
+  ],
+  dialog: [
+    {
+      name: "Dialog",
+      description:
+        "Same API as the shadcn/ui Dialog. Skip it if the project already has one. The root takes open, defaultOpen and onOpenChange. Compose DialogTrigger and DialogContent inside it.",
+      rest: "Dialog root",
+    },
+    {
+      name: "DialogTrigger, DialogClose",
+      description:
+        "Buttons that open and close the dialog. Radix uses asChild to render your own Button, and Base UI uses the render prop.",
+      rest: "Dialog trigger or close",
+    },
+    {
+      name: "DialogContent",
+      description:
+        "The panel, portaled above an overlay. Focus is trapped inside it, and Escape closes it.",
+      props: [
+        {
+          name: "showCloseButton",
+          type: "boolean",
+          default: "true",
+          description: "Show the X button in the corner.",
+        },
+      ],
+      rest: "Dialog content",
+    },
+    {
+      name: "DialogHeader, DialogFooter",
+      description: "Layout for the title block and the action row.",
+      rest: "<div>",
+    },
+    {
+      name: "DialogTitle, DialogDescription",
+      description:
+        "Named by screen readers when the dialog opens. Always include a title.",
+      rest: "Dialog title or description",
     },
   ],
   "diff-viewer": [
@@ -516,6 +666,14 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
       rest: "<div>",
     },
   ],
+  input: [
+    {
+      name: "Input",
+      description:
+        "Same API as the shadcn/ui Input. Skip it if the project already has one. It has no props of its own. Pair it with Label, and set aria-invalid for the destructive border.",
+      rest: "<input>",
+    },
+  ],
   "json-viewer": [
     {
       name: "JsonViewer",
@@ -541,6 +699,14 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
         },
       ],
       rest: "<div>",
+    },
+  ],
+  label: [
+    {
+      name: "Label",
+      description:
+        "Same API as the shadcn/ui Label. Skip it if the project already has one. Point htmlFor at a field id. It dims when the field inside its group is disabled.",
+      rest: "<label>",
     },
   ],
   "mention-textarea": [
@@ -891,6 +1057,45 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
           description: "Emoji flag, or your replacement.",
         },
       ],
+    },
+  ],
+  popover: [
+    {
+      name: "Popover",
+      description:
+        "Same API as the shadcn/ui Popover. Skip it if the project already has one. The root takes open, defaultOpen and onOpenChange.",
+      rest: "Popover root",
+    },
+    {
+      name: "PopoverTrigger",
+      description:
+        "Toggles the popover. Radix uses asChild to render your own Button, and Base UI uses the render prop.",
+      rest: "Popover trigger",
+    },
+    {
+      name: "PopoverContent",
+      description:
+        "The floating panel, portaled and flipped when there is no room. Set the width with className. side also works here.",
+      props: [
+        {
+          name: "align",
+          type: '"start" | "center" | "end"',
+          default: '"center"',
+          description: "Alignment against the trigger.",
+        },
+        {
+          name: "sideOffset",
+          type: "number",
+          default: "4",
+          description: "Gap to the trigger in pixels.",
+        },
+      ],
+      rest: "Popover content",
+    },
+    {
+      name: "PopoverAnchor",
+      description:
+        "Radix only. Positions the panel against another element. In Base UI, pass anchor to PopoverContent.",
     },
   ],
   rating: [

@@ -4,12 +4,8 @@ import { describe, expect, it } from "vitest"
 import { COMPONENT_API } from "@/lib/agent-docs/component-api"
 import { CATALOG } from "@/lib/catalog"
 
-const DRIFT_COMPONENTS = CATALOG.filter(
-  (entry) => entry.category !== "primitives"
-)
-
 describe("component API reference", () => {
-  it.each(DRIFT_COMPONENTS.map((entry) => entry.slug))("%s has one", (slug) => {
+  it.each(CATALOG.map((entry) => entry.slug))("%s has one", (slug) => {
     expect(COMPONENT_API[slug]?.length).toBeGreaterThan(0)
   })
 

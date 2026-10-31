@@ -2,7 +2,16 @@ import { readdirSync, readFileSync } from "node:fs"
 import { describe, expect, it } from "vitest"
 
 const BASE_UI_PREVIEW_DIR = "components/preview/base"
-const DIFFERENT_BY_API = new Set(["dialog-preview.tsx", "popover-preview.tsx"])
+const DIFFERENT_BY_API = new Set([
+  "dialog-preview.tsx",
+  "popover-preview.tsx",
+  "examples/badge/as-link.tsx",
+  "examples/button/as-link.tsx",
+  "examples/dialog/confirm.tsx",
+  "examples/dialog/controlled.tsx",
+  "examples/popover/help.tsx",
+  "examples/popover/placement.tsx",
+])
 
 function readPreview(path: string) {
   return readFileSync(path, "utf8")
@@ -20,9 +29,10 @@ function readPreview(path: string) {
 
 describe("Base UI previews", () => {
   it.each(
-    readdirSync(BASE_UI_PREVIEW_DIR).filter(
-      (file) => !DIFFERENT_BY_API.has(file)
-    )
+    readdirSync(BASE_UI_PREVIEW_DIR, {
+      recursive: true,
+      encoding: "utf8",
+    }).filter((file) => file.endsWith(".tsx") && !DIFFERENT_BY_API.has(file))
   )("%s matches its Radix preview apart from imports", (file) => {
     expect(readPreview(`${BASE_UI_PREVIEW_DIR}/${file}`)).toBe(
       readPreview(`components/preview/${file}`)
