@@ -18,9 +18,6 @@ export function DurationInputPreview() {
           onValueChange={setTimeout}
           units={["h", "m", "s"]}
         />
-        <p className="text-xs text-muted-foreground">
-          Type or paste shorthand like 90m or 1h 30m.
-        </p>
       </div>
       <div className="flex flex-col gap-2">
         <Label>Service SLA window</Label>
@@ -30,6 +27,9 @@ export function DurationInputPreview() {
           units={["d", "h", "m"]}
         />
       </div>
+      <p className="w-full text-center text-xs text-muted-foreground">
+        Type or paste shorthand like 90m or 1h 30m.
+      </p>
     </>
   )
 }
