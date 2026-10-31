@@ -33,7 +33,9 @@ export function StepperPreview() {
             <StepperItem key={step.title} step={index}>
               <StepperTrigger>
                 <StepperIndicator />
-                <StepperTitle>{step.title}</StepperTitle>
+                <StepperTitle className="@max-sm:hidden">
+                  {step.title}
+                </StepperTitle>
               </StepperTrigger>
               <StepperSeparator />
             </StepperItem>

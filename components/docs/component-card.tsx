@@ -19,18 +19,14 @@ export function ComponentCard({
   className?: string
 }) {
   return (
-    <article className={cn("group relative flex flex-col gap-4", className)}>
-      <div className="@container relative flex h-64 items-center justify-center overflow-hidden rounded-[1.75rem] border bg-[radial-gradient(80%_70%_at_50%_0%,color-mix(in_oklab,var(--foreground)_5%,transparent),transparent)] transition-[border-color,background-color] duration-300 group-hover:border-foreground/20 group-hover:bg-muted/30">
-        <div className="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.035] motion-reduce:transition-none">
-          <div
-            inert
-            className="w-[32rem] shrink-0 scale-50 select-none @xs:scale-[0.56] @sm:scale-[0.66] @md:scale-[0.76] @lg:scale-[0.86]"
-          >
-            {card.thumbnail}
-          </div>
-        </div>
+    <article className={cn("group relative flex flex-col gap-3", className)}>
+      <div
+        inert
+        className="@container flex min-h-36 items-center overflow-hidden rounded-[1.75rem] border bg-[radial-gradient(80%_70%_at_50%_0%,color-mix(in_oklab,var(--foreground)_5%,transparent),transparent)] p-6 transition-[border-color,background-color] duration-300 select-none group-hover:border-foreground/20 group-hover:bg-muted/30"
+      >
+        {card.thumbnail}
       </div>
-      <div className="flex flex-col gap-1.5 px-1">
+      <div className="flex flex-col gap-1 px-1">
         <div className="flex items-center justify-between gap-4">
           <h3 className="font-medium">
             <Link
