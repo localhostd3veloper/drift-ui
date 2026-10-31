@@ -66,6 +66,11 @@
         "number": 34,
         "title": "feat(landing): drive the page from the catalog",
         "mergedAt": "2026-10-31T16:17:52Z"
+      },
+      {
+        "number": 35,
+        "title": "ci: build the site on every PR",
+        "mergedAt": "2026-10-31T16:46:43Z"
       }
     ]
   },
