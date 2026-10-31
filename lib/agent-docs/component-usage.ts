@@ -455,6 +455,28 @@ export function DashboardTour() {
   )
 }`,
   },
+  "transfer-list": {
+    notes:
+      "Move items between two listboxes: items: T[] with id and label, value/onValueChange or defaultValue as string[] representing target items. Ids in value that are not in items are preserved. Supports searchable for a search input per panel, showSelectAll, disabled, and custom renderItem. Select all, move selected and move all act on the items the search leaves visible. Each listbox is one tab stop: Arrow keys, Home and End move focus, Space or Enter toggles an item, Shift extends the selection, and double-click moves an item straight across.",
+    example: `import { TransferList } from "@/components/ui/transfer-list"
+
+const roles = [
+  { id: "read", label: "Read" },
+  { id: "write", label: "Write" },
+  { id: "admin", label: "Admin" },
+]
+
+export function PermissionsField() {
+  return (
+    <TransferList
+      items={roles}
+      defaultValue={["read"]}
+      titles={["Available", "Assigned"]}
+      searchable
+    />
+  )
+}`,
+  },
   "tree-view": {
     notes:
       "WAI-ARIA tree driven by an items array of TreeNode { id, label, icon?, children?, isBranch?, disabled?, textValue? }. expanded/onExpandedChange and selected/onSelectedChange are optional controlled props. A node with isBranch: true and children undefined renders a loading row while expanded, so load children in onExpandedChange and update items. Always pass aria-label.",
