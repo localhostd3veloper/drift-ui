@@ -2,13 +2,17 @@ import { readdirSync } from "node:fs"
 import { render } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
-import { PREVIEWS } from "@/components/docs/preview-registry"
+import { BASE_UI_PREVIEWS, PREVIEWS } from "@/components/docs/preview-registry"
 import { PasswordInputSpecimen } from "@/components/landing/specimens/password-input-specimen"
 import { AccountSecurityCard } from "@/components/showcase/cards/account-security-card"
 import { CATALOG } from "@/lib/catalog"
 import type { ComponentExample } from "@/lib/component-docs"
 
 const FOLDERS = readdirSync("components/preview/examples")
+const LIBRARY_PREVIEWS =
+  process.env.UI_PRIMITIVES === "base"
+    ? { ...PREVIEWS, ...BASE_UI_PREVIEWS }
+    : PREVIEWS
 
 const EXAMPLES = (
   await Promise.all(
@@ -40,7 +44,7 @@ describe("component examples", () => {
     )
   })
 
-  it.each(Object.entries(PREVIEWS))(
+  it.each(Object.entries(LIBRARY_PREVIEWS))(
     "%s preview gives browsers no password to save",
     (_, Preview) => {
       expectNoPrefilledPasswords(render(<Preview />).container)
