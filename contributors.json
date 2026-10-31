@@ -61,6 +61,11 @@
         "number": 29,
         "title": "feat(diff-viewer): add diff viewer component",
         "mergedAt": "2026-10-30T18:11:03Z"
+      },
+      {
+        "number": 34,
+        "title": "feat(landing): drive the page from the catalog",
+        "mergedAt": "2026-10-31T16:17:52Z"
       }
     ]
   },
