@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "drift-ui",
-  "homepage": "https://drift-ui-dev.vercel.app",
+  "homepage": "https://drift-ui.dev",
   "items": [
     {
       "name": "avatar",

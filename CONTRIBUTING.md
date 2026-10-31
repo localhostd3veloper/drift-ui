@@ -82,7 +82,7 @@ Use the component name as the scope when the change is limited to one component.
 
 ## Contributors hall of fame
 
-When your pull request merges into `main`, the `Record contributor` workflow adds you to [`contributors.json`](contributors.json) with the components you touched, and you appear on [/contributors](https://drift-ui-dev.vercel.app/contributors). To show your name and website instead of your GitHub handle, open a pull request that sets `name` and `website` on your own entry. Leave the other fields to the workflow.
+When your pull request merges into `main`, the `Record contributor` workflow adds you to [`contributors.json`](contributors.json) with the components you touched, and you appear on [/contributors](https://drift-ui.dev/contributors). To show your name and website instead of your GitHub handle, open a pull request that sets `name` and `website` on your own entry. Leave the other fields to the workflow.
 
 ## Reporting bugs and requesting components
 
