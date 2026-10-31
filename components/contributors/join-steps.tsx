@@ -28,24 +28,23 @@ const STEPS = [
 
 export function JoinSteps() {
   return (
-    <ol className="grid gap-4 md:grid-cols-3">
-      {STEPS.map((step, index) => (
+    <ol className="flex flex-col gap-8">
+      {STEPS.map((step) => (
         <li
           key={step.title}
-          className="flex flex-col gap-3 rounded-2xl border p-6"
+          className="grid gap-3 border-t pt-6 md:grid-cols-12 md:gap-6"
         >
-          <span className="font-mono text-xs text-muted-foreground">
-            0{index + 1}
-          </span>
-          <h3 className="text-lg font-medium tracking-tight">{step.title}</h3>
-          <p className="text-sm leading-relaxed text-muted-foreground">
+          <h3 className="font-display text-3xl font-medium tracking-tight md:col-span-5 md:text-4xl">
+            {step.title}
+          </h3>
+          <p className="max-w-[52ch] leading-relaxed text-muted-foreground md:col-span-5">
             {step.body}
           </p>
           <a
             href={step.link.href}
             target="_blank"
             rel="noreferrer"
-            className="mt-auto w-fit text-sm font-medium text-brand underline-offset-4 hover:underline"
+            className="w-fit text-sm font-medium text-brand underline-offset-4 hover:underline md:col-span-2 md:justify-self-end"
           >
             {step.link.label}
           </a>

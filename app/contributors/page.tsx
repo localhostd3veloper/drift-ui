@@ -1,11 +1,12 @@
 import type { Metadata } from "next"
 
-import { ContributorCard } from "@/components/contributors/contributor-card"
+import { ContributorWall } from "@/components/contributors/contributor-wall"
 import { JoinSteps } from "@/components/contributors/join-steps"
 import { MaintainerCard } from "@/components/contributors/maintainer-card"
+import { RepoStats } from "@/components/contributors/repo-stats"
 import { SiteFooter } from "@/components/landing/site-footer"
 import { SiteNav } from "@/components/landing/site-nav"
-import { fetchCommunity, MAINTAINERS } from "@/lib/contributors"
+import { fetchCommunity, fetchRepoStats, MAINTAINERS } from "@/lib/contributors"
 import { createPageMetadata } from "@/lib/page-metadata"
 
 export const metadata: Metadata = createPageMetadata({
@@ -17,74 +18,61 @@ export const metadata: Metadata = createPageMetadata({
 
 function SectionTitle({ title, lead }: { title: string; lead: string }) {
   return (
-    <div className="flex flex-col gap-2">
-      <h2 className="text-2xl font-medium tracking-tight md:text-3xl">
+    <div className="flex flex-col gap-3">
+      <h2 className="font-display text-5xl leading-none font-medium tracking-tighter md:text-7xl">
         {title}
       </h2>
-      <p className="max-w-[60ch] text-muted-foreground">{lead}</p>
+      <p className="max-w-[46ch] text-lg leading-relaxed text-muted-foreground">
+        {lead}
+      </p>
     </div>
   )
 }
 
 export default async function ContributorsPage() {
-  const community = await fetchCommunity()
+  const [community, repoStats] = await Promise.all([
+    fetchCommunity(),
+    fetchRepoStats(),
+  ])
 
   return (
     <div className="flex min-h-dvh flex-col bg-background text-foreground">
       <SiteNav />
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-20 px-4 pt-16 pb-24 md:px-10 md:pt-24">
-        <header className="flex flex-col gap-6">
-          <span className="rise font-mono text-xs tracking-widest text-brand uppercase">
-            Hall of fame
-          </span>
-          <h1 className="max-w-3xl rise text-5xl leading-[1.02] font-medium tracking-tight [--rise-delay:80ms] md:text-6xl">
-            The people
-            <br />
-            <span className="text-muted-foreground">
-              who build <span className="whitespace-nowrap">drift-ui.</span>
-            </span>
+      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-28 px-4 pt-12 pb-28 md:gap-40 md:px-10 md:pt-16">
+        <header className="flex flex-col gap-8 md:gap-10">
+          <h1 className="rise font-display text-[38vw] leading-[0.86] font-medium tracking-tighter sm:text-[19.5vw] xl:text-[16rem]">
+            <span className="block sm:inline">Hall of</span>{" "}
+            <span className="text-brand">Fame</span>
           </h1>
-          <p className="max-w-[52ch] rise text-lg leading-relaxed text-muted-foreground [--rise-delay:160ms]">
-            {MAINTAINERS.length + community.length} people. Every merged pull
-            request puts its author on this page.
-          </p>
+          <div className="flex rise flex-col gap-6 border-t pt-6 [--rise-delay:120ms] lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+            <p className="max-w-[44ch] text-lg leading-relaxed text-muted-foreground">
+              The people who build drift-ui. Every merged pull request puts its
+              author on this page.
+            </p>
+            {repoStats && <RepoStats counts={repoStats} />}
+          </div>
         </header>
 
-        <section className="flex reveal flex-col gap-8">
-          <SectionTitle
-            title="Maintainers"
-            lead="They review pull requests, triage issues and keep the registry shipping."
-          />
-          <div className="grid gap-4 md:grid-cols-2">
+        <section className="grid reveal gap-10 md:grid-cols-12 md:gap-6">
+          <div className="self-start md:sticky md:top-24 md:col-span-4">
+            <SectionTitle
+              title="Maintainers"
+              lead="They review pull requests, triage issues and keep the registry shipping."
+            />
+          </div>
+          <div className="grid gap-10 sm:grid-cols-2 sm:gap-6 md:col-span-8">
             {MAINTAINERS.map((maintainer) => (
               <MaintainerCard key={maintainer.login} maintainer={maintainer} />
             ))}
           </div>
         </section>
 
-        <section className="flex reveal flex-col gap-8">
-          <SectionTitle
-            title="Contributors"
-            lead="Ranked by merged pull requests."
-          />
-          {community.length > 0 ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {community.map((contributor) => (
-                <ContributorCard
-                  key={contributor.login}
-                  contributor={contributor}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className="rounded-2xl border border-dashed p-8 text-center text-muted-foreground">
-              No community pull requests merged yet. The first name here could
-              be yours.
-            </p>
-          )}
+        <section className="flex reveal flex-col gap-10">
+          <SectionTitle title="The wall" lead="Ranked by commits on main." />
+          <ContributorWall community={community} />
         </section>
 
-        <section className="flex reveal flex-col gap-8">
+        <section id="join" className="flex reveal scroll-mt-24 flex-col gap-10">
           <SectionTitle
             title="Get on this page"
             lead="Three steps from an open issue to your name on the wall."

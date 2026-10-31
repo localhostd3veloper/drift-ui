@@ -14,33 +14,34 @@ export function MaintainerCard({ maintainer }: { maintainer: Maintainer }) {
   ]
 
   return (
-    <article className="flex flex-col gap-6 rounded-[1.75rem] border bg-[radial-gradient(80%_70%_at_50%_0%,color-mix(in_oklab,var(--foreground)_5%,transparent),transparent)] p-6 md:p-8">
-      <div className="flex items-center gap-4">
-        <ContributorAvatar login={maintainer.login} sizePx={64} />
-        <div className="flex flex-col gap-1">
-          <h3 className="text-xl font-medium tracking-tight">
-            {maintainer.name}
-          </h3>
-          <span className="font-mono text-xs tracking-widest text-brand uppercase">
-            Maintainer
-          </span>
-        </div>
+    <article className="group flex flex-col gap-5">
+      <div className="overflow-hidden rounded-2xl border">
+        <ContributorAvatar
+          login={maintainer.login}
+          sizePx={460}
+          className="aspect-square h-auto w-full rounded-none border-0 grayscale transition-[filter,scale] duration-500 group-hover:scale-[1.03] group-hover:grayscale-0"
+        />
       </div>
-      <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
-        {links.map((link) => (
-          <li key={link.href}>
-            <a
-              href={link.href}
-              target="_blank"
-              rel="noreferrer"
-              className="group inline-flex items-center gap-1 transition-colors hover:text-foreground"
-            >
-              {link.label}
-              <ArrowUpRightIcon className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </a>
-          </li>
-        ))}
-      </ul>
+      <div className="flex flex-col gap-2">
+        <h3 className="font-display text-3xl leading-tight font-medium tracking-tight">
+          {maintainer.name}
+        </h3>
+        <ul className="flex flex-col items-start gap-1 text-sm text-muted-foreground">
+          {links.map((link) => (
+            <li key={link.href}>
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noreferrer"
+                className="group/link inline-flex items-center gap-1 transition-colors hover:text-foreground"
+              >
+                {link.label}
+                <ArrowUpRightIcon className="size-3.5 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </article>
   )
 }

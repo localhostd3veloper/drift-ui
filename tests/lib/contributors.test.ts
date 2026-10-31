@@ -3,6 +3,8 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 
 import {
   fetchCommunity,
+  fetchRepoStats,
+  openSeatsAfter,
   rankCommunity,
   type GitHubContributor,
 } from "@/lib/contributors"
@@ -60,6 +62,19 @@ describe("rankCommunity", () => {
   })
 })
 
+describe("openSeatsAfter", () => {
+  it.each([
+    [0, 5],
+    [3, 2],
+    [5, 0],
+    [6, 3],
+    [9, 0],
+    [10, 3],
+  ])("after %i taken seats leaves %i open", (taken, open) => {
+    expect(openSeatsAfter(taken)).toBe(open)
+  })
+})
+
 describe("fetchCommunity", () => {
   afterEach(() => {
     vi.unstubAllGlobals()
@@ -114,5 +129,35 @@ describe("fetchCommunity", () => {
     respondWith(403)
 
     await expect(fetchCommunity()).rejects.toThrow("403")
+  })
+})
+
+describe("fetchRepoStats", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
+  })
+
+  it("reads the repository counts", async () => {
+    respondWith(200, {
+      stargazers_count: 12,
+      forks_count: 3,
+      subscribers_count: 2,
+      open_issues_count: 7,
+    })
+
+    await expect(fetchRepoStats()).resolves.toEqual({
+      stars: 12,
+      forks: 3,
+      watchers: 2,
+      openIssues: 7,
+    })
+  })
+
+  it("renders without stats when GitHub is unreachable", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {})
+    respondWith(403)
+
+    await expect(fetchRepoStats()).resolves.toBeNull()
   })
 })
