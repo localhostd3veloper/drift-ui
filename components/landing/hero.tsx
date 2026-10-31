@@ -6,6 +6,11 @@ import { CopyCommand } from "@/components/landing/copy-command"
 import { DriftStage } from "@/components/landing/drift-desk"
 import { DriftWord } from "@/components/landing/drift-word"
 import { SlotPattern } from "@/components/landing/slot-pattern"
+import { CATALOG } from "@/lib/catalog"
+
+const COMPONENT_COUNT = CATALOG.filter(
+  (entry) => entry.category !== "primitives"
+).length
 
 export function Hero() {
   return (
@@ -21,8 +26,8 @@ export function Hero() {
             </span>
           </h1>
           <p className="mt-8 max-w-[38ch] rise text-lg leading-relaxed text-muted-foreground [--rise-delay:120ms] md:text-xl">
-            Tags input, tree view, stepper and 13 more. Built on Radix or Base
-            UI, styled by the tokens you already have.
+            {COMPONENT_COUNT} components you install with the shadcn CLI. Built
+            on Radix or Base UI, styled by the tokens you already have.
           </p>
           <div className="mt-10 flex rise flex-col items-center gap-3 [--rise-delay:200ms] sm:flex-row">
             <Button asChild size="lg" className="h-11 px-5 active:scale-[0.98]">

@@ -1,12 +1,11 @@
 import { BlocksSection } from "@/components/landing/blocks-section"
+import { CatalogBand } from "@/components/landing/catalog-band"
 import { ClosingCta } from "@/components/landing/closing-cta"
-import { ComponentIndex } from "@/components/landing/component-index"
-import { GapMap } from "@/components/landing/gap-map"
 import { Hero } from "@/components/landing/hero"
 import { MotionProvider } from "@/components/landing/motion-provider"
 import { InstallSection } from "@/components/landing/install-section"
-import { MoreComponentsSection } from "@/components/landing/more-components-section"
 import { Principles } from "@/components/landing/principles/principles"
+import { RealScreens } from "@/components/landing/real-screens"
 import { SiteFooter } from "@/components/landing/site-footer"
 import { SiteNav } from "@/components/landing/site-nav"
 import { SmoothScroll } from "@/components/landing/smooth-scroll"
@@ -44,9 +43,8 @@ export default function LandingPage() {
           <main>
             <Hero />
             <StackStrip />
-            <GapMap />
-            <ComponentIndex />
-            <MoreComponentsSection />
+            <RealScreens />
+            <CatalogBand />
             <Principles />
             <BlocksSection />
             <InstallSection />
