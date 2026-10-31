@@ -94,6 +94,29 @@ export function RevisionDiff({ before, after }: { before: string; after: string 
   )
 }`,
   },
+  "duration-input": {
+    notes:
+      "Segmented editor for durations and time intervals stored as milliseconds. value and onValueChange take number | null. units (default ['h', 'm', 's']) configures visible segments from ['w', 'd', 'h', 'm', 's', 'ms']. Accepts typed shorthand (entering 90 in minutes or 90m normalizes to 1h 30m), unit jump keys (h, m, s, d), and pasting duration strings or ISO 8601 durations (PT1H30M). Arrow keys step values, Home/End set segment boundaries, and Backspace clears.",
+    example: `import { DurationInput } from "@/components/ui/duration-input"
+
+export function TimeoutField({
+  value,
+  onChange,
+}: {
+  value: number | null
+  onChange: (value: number | null) => void
+}) {
+  return (
+    <DurationInput
+      aria-label="Execution timeout"
+      value={value}
+      onValueChange={onChange}
+      units={["h", "m", "s"]}
+      max={86_400_000}
+    />
+  )
+}`,
+  },
   "emoji-picker": {
     notes:
       "An inline panel: it has no trigger, so wrap it in a Popover for a reaction button, and override the border with className if the panel doubles it. onSelect(emoji) receives the emoji string, with the skin tone applied. Emoji data comes from emojibase-data through a dynamic import on first mount (about 100 KB gzipped) and is cached for later mounts. Emoji newer than Emoji 15 are left out so older systems do not show empty boxes. Recent emoji and the skin tone persist in localStorage under drift-ui:emoji-picker; recents appear on the next mount, so the grid never shifts under the pointer. skinTone (0 to 5, 0 is the default yellow) with onSkinToneChange makes the tone controlled, and defaultSkinTone sets it until the user picks one. Keyboard: ArrowDown leaves the search field for the grid, arrow keys move between emoji, ArrowUp from the top row returns to search, Home and End go to the row ends, Ctrl or Cmd with Home or End go to the grid ends, PageUp and PageDown jump between categories, Enter or Space selects, and Enter in the search field selects the first result. Category icons are pointer shortcuts, hidden from the keyboard and screen readers because PageUp and PageDown do the same job.",
