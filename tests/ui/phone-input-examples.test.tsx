@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it } from "vitest"
 
-import { PhoneInputFormPreview } from "@/components/preview/examples/phone-input-form"
+import { PhoneInputFormPreview } from "@/components/preview/examples/phone-input/form"
 
 describe("PhoneInput examples", () => {
   it("submits E.164 in the form example", async () => {

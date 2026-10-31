@@ -12,7 +12,6 @@ import {
   OnThisPageDisclosure,
 } from "@/components/docs/on-this-page"
 import { Pager } from "@/components/docs/pager"
-import { EXAMPLES } from "@/components/docs/preview-registry"
 import { PreviewStage } from "@/components/docs/preview-stage"
 import { PreviewTabs } from "@/components/docs/preview-tabs"
 import { SourceFiles } from "@/components/docs/source-files"
@@ -30,7 +29,7 @@ import {
 } from "@/lib/catalog"
 import {
   listInstallPaths,
-  loadExample,
+  loadExamples,
   loadSources,
   loadUsage,
   loadUsageSnippet,
@@ -129,12 +128,11 @@ export default async function ComponentPage({ params }: ComponentPageProps) {
 
   const source = library === "base" ? toBaseUiItem(entry) : entry
   const usageEntry = COMPONENT_USAGE[entry.slug]
-  const examples = EXAMPLES[entry.slug] ?? []
-  const [usage, sources, snippet, exampleUsages] = await Promise.all([
+  const [usage, sources, snippet, examples] = await Promise.all([
     loadUsage(entry, library),
     loadSources(source),
     usageEntry?.example && loadUsageSnippet(entry, usageEntry.example),
-    Promise.all(examples.map(({ id }) => loadExample(id))),
+    loadExamples(entry.slug, library),
   ])
   const api = COMPONENT_API[entry.slug]
   const notes = api ? undefined : usageEntry?.notes
@@ -185,7 +183,7 @@ export default async function ComponentPage({ params }: ComponentPageProps) {
         )}
         {examples.length > 0 && (
           <DocSection id="examples" title="Examples">
-            <ComponentExamples examples={examples} usages={exampleUsages} />
+            <ComponentExamples examples={examples} />
           </DocSection>
         )}
         {api && (
