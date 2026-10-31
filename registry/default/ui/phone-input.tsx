@@ -15,7 +15,10 @@ import {
   formatInsertedPhone,
   formatPhoneInput,
   formatPhoneValue,
-  PHONE_COUNTRIES,
+  isAllowedNumber,
+  resolveCountries,
+  type PhoneCountry,
+  type PhoneCountryOption,
 } from "@/registry/default/lib/phone-input"
 import { cn } from "@/registry/default/lib/utils"
 import {
@@ -36,10 +39,12 @@ function scrollOptionIntoList(option: HTMLElement | null) {
 }
 
 function CountryPicker({
+  countries,
   country,
   disabled,
   onSelect,
 }: {
+  countries: PhoneCountry[]
   country: CountryCode
   disabled?: boolean
   onSelect: (country: CountryCode) => void
@@ -49,15 +54,18 @@ function CountryPicker({
   const [query, setQuery] = React.useState("")
   const [highlightedIndex, setHighlightedIndex] = React.useState(0)
 
-  const current = PHONE_COUNTRIES.find((option) => option.code === country)
-  const matches = filterCountries(PHONE_COUNTRIES, query)
+  const current = countries.find((option) => option.code === country)
+  const matches = filterCountries(countries, query)
 
   function handleOpenChange(nextOpen: boolean) {
     setIsOpen(nextOpen)
     if (!nextOpen) return
     setQuery("")
     setHighlightedIndex(
-      PHONE_COUNTRIES.findIndex((option) => option.code === country)
+      Math.max(
+        0,
+        countries.findIndex((option) => option.code === country)
+      )
     )
   }
 
@@ -168,18 +176,7 @@ function CountryPicker({
   )
 }
 
-function PhoneInput({
-  value,
-  defaultValue = "",
-  onValueChange,
-  defaultCountry = "US",
-  name,
-  disabled,
-  autoComplete = "tel",
-  className,
-  ref,
-  ...props
-}: Omit<
+type PhoneInputProps = Omit<
   React.ComponentProps<"input">,
   "value" | "defaultValue" | "onChange" | "type"
 > & {
@@ -187,7 +184,24 @@ function PhoneInput({
   defaultValue?: string
   onValueChange?: (value: string) => void
   defaultCountry?: CountryCode
-}) {
+  countries?: PhoneCountryOption[]
+  excludedCountries?: CountryCode[]
+}
+
+function PhoneInput({
+  value,
+  defaultValue = "",
+  onValueChange,
+  defaultCountry = "US",
+  countries,
+  excludedCountries,
+  name,
+  disabled,
+  autoComplete = "tel",
+  className,
+  ref,
+  ...props
+}: PhoneInputProps) {
   const inputRef = React.useRef<HTMLInputElement>(null)
   React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement)
 
@@ -198,8 +212,10 @@ function PhoneInput({
   })
   const [selectedCountry, setSelectedCountry] = React.useState(defaultCountry)
   const [edit, setEdit] = React.useState({ text: "", caret: 0 })
+  const [announcement, setAnnouncement] = React.useState("")
 
-  const country = countryForValue(phone, selectedCountry)
+  const allowedCountries = resolveCountries(countries, excludedCountries)
+  const country = countryForValue(phone, selectedCountry, allowedCountries)
   const display =
     formatPhoneInput(edit.text, country).value === phone
       ? edit.text
@@ -224,8 +240,15 @@ function PhoneInput({
     const isWholeInsert =
       !inputType || /^insert(From|Replacement)/.test(inputType)
     const next = isWholeInsert
-      ? formatInsertedPhone(text, country)
+      ? formatInsertedPhone(text, country, allowedCountries)
       : { ...formatPhoneInput(text, country), country }
+    const isDeletion = inputType?.startsWith("delete")
+    if (!isDeletion && !isAllowedNumber(next.value, allowedCountries)) {
+      setEdit({ text: display, caret: display.length })
+      setAnnouncement("Numbers from this country are not accepted")
+      return
+    }
+    setAnnouncement("")
     setSelectedCountry(next.country)
     setEdit({
       text: next.display,
@@ -258,6 +281,7 @@ function PhoneInput({
       )}
     >
       <CountryPicker
+        countries={allowedCountries}
         country={country}
         disabled={disabled}
         onSelect={handleCountrySelect}
@@ -276,8 +300,16 @@ function PhoneInput({
       {name && (
         <input type="hidden" name={name} disabled={disabled} value={phone} />
       )}
+      <span role="status" aria-live="polite" className="sr-only">
+        {announcement}
+      </span>
     </div>
   )
 }
 
-export { PhoneInput }
+export {
+  PhoneInput,
+  type PhoneCountry,
+  type PhoneCountryOption,
+  type PhoneInputProps,
+}

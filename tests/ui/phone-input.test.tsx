@@ -77,7 +77,7 @@ describe("PhoneInput", () => {
     await user.clear(field())
     await user.type(field(), "+442079460958")
 
-    expect(screen.getByRole("status")).toHaveTextContent("+442079460958")
+    expect(document.querySelector("output")).toHaveTextContent("+442079460958")
     expect(countryButton()).toHaveAccessibleName("Country: United Kingdom, +44")
   })
 
@@ -303,6 +303,107 @@ describe("PhoneInput", () => {
     await user.keyboard("{Escape}")
 
     await waitFor(() => expect(countryButton()).toHaveFocus())
+  })
+
+  it("lists only the given countries, in the given order", async () => {
+    const user = userEvent.setup()
+    render(<PhoneInput aria-label="Phone" countries={["IN", "US", "GB"]} />)
+
+    await openPicker(user)
+
+    expect(
+      screen.getAllByRole("option").map((option) => option.textContent)
+    ).toEqual(["🇮🇳India+91", "🇺🇸United States+1", "🇬🇧United Kingdom+44"])
+  })
+
+  it("leaves excluded countries out of the list", async () => {
+    const user = userEvent.setup()
+    render(<PhoneInput aria-label="Phone" excludedCountries={["DE"]} />)
+
+    await openPicker(user)
+
+    expect(screen.queryByRole("option", { name: /Germany/ })).toBeNull()
+    expect(screen.getByRole("option", { name: /France/ })).toBeInTheDocument()
+  })
+
+  it("shows custom names and flags", async () => {
+    const user = userEvent.setup()
+    render(
+      <PhoneInput
+        aria-label="Phone"
+        countries={[
+          { code: "DE", name: "Deutschland", flag: <svg data-testid="de" /> },
+        ]}
+      />
+    )
+
+    expect(countryButton()).toHaveAccessibleName("Country: Deutschland, +49")
+    await openPicker(user)
+    await user.keyboard("deutsch")
+
+    expect(
+      screen.getByRole("option", { name: /Deutschland/ })
+    ).toBeInTheDocument()
+    expect(screen.getAllByTestId("de")).toHaveLength(2)
+  })
+
+  it("starts on the first allowed country when defaultCountry is left out", () => {
+    render(<PhoneInput aria-label="Phone" countries={["IN", "GB"]} />)
+
+    expect(countryButton()).toHaveAccessibleName("Country: India, +91")
+  })
+
+  it("rejects a pasted number outside the list and announces it", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <PhoneInput
+        aria-label="Phone"
+        countries={["US", "IN"]}
+        defaultValue="+14155550123"
+        onValueChange={onValueChange}
+      />
+    )
+
+    await user.click(field())
+    field().select()
+    await user.paste("+442079460958")
+
+    expect(field()).toHaveValue("(415) 555-0123")
+    expect(onValueChange).not.toHaveBeenCalled()
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Numbers from this country are not accepted"
+    )
+  })
+
+  it("clears the announcement on the next accepted edit", async () => {
+    const user = userEvent.setup()
+    render(<PhoneInput aria-label="Phone" countries={["US"]} />)
+
+    await user.click(field())
+    await user.paste("+442079460958")
+    await user.keyboard("4")
+
+    expect(field()).toHaveValue("4")
+    expect(screen.getByRole("status")).toBeEmptyDOMElement()
+  })
+
+  it("lets a disallowed value set from outside be deleted", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <PhoneInput
+        aria-label="Phone"
+        countries={["US"]}
+        defaultValue="+442079460958"
+        onValueChange={onValueChange}
+      />
+    )
+
+    await user.click(field())
+    await user.keyboard("{End}{Backspace}")
+
+    expect(onValueChange).toHaveBeenCalledOnce()
   })
 
   it("submits E.164 through a hidden input when named", () => {

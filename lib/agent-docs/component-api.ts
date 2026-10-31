@@ -724,28 +724,173 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
     {
       name: "PhoneInput",
       description:
-        "A tel input with a country picker. It holds an E.164 string and shows the number without its dial code. Pass id or aria-label to label the input.",
+        "A tel input with a searchable country picker. It holds an E.164 string and shows the number without its dial code, so +917424855888 reads 74248 55888 beside a +91 button. Label it with a Label and id, or with aria-label. In the picker, arrow keys move through the list, Enter selects without submitting the form, and Escape closes it and returns focus to the country button.",
       props: [
         STATE_PROPS.value("string", "phone number in E.164 format"),
         STATE_PROPS.defaultValue("string", '""'),
         STATE_PROPS.onValueChange(
           "(value: string) => void",
-          'on every edit with the E.164 number, partial while typing, or "" when empty'
+          'on every accepted edit with the E.164 number, or "" when empty. The number is partial while typing, such as "+1415"'
         ),
         {
           name: "defaultCountry",
           type: "CountryCode",
           default: '"US"',
           description:
-            "ISO 3166-1 alpha-2 country used until the value identifies one.",
+            "ISO 3166-1 alpha-2 country used until the value identifies one. Falls back to the first listed country when it is not in countries.",
+        },
+        {
+          name: "countries",
+          type: "PhoneCountryOption[]",
+          default: "every country",
+          description:
+            "The countries to offer, in display order. Pass codes, or objects that rename a country or replace its flag.",
+        },
+        {
+          name: "excludedCountries",
+          type: "CountryCode[]",
+          description:
+            "Countries to remove. Applies on top of countries, and wins if a code is in both.",
         },
         {
           name: "name",
           type: "string",
-          description: "Submits the E.164 value through a hidden input.",
+          description:
+            "Submits the E.164 value through a hidden input. The visible field has no name, so forms never receive the formatted text.",
+        },
+        {
+          name: "disabled",
+          type: "boolean",
+          description: "Disables the field and the country button.",
+        },
+        {
+          name: "placeholder",
+          type: "string",
+          description: "Text shown in the field while it is empty.",
+        },
+        {
+          name: "autoComplete",
+          type: "string",
+          default: '"tel"',
+          description:
+            "Browser autofill hint. Autofilled numbers are handled like a paste.",
+        },
+        {
+          name: "aria-invalid",
+          type: "boolean",
+          description:
+            "Draws the destructive border and ring around the whole field, country button included.",
+        },
+        {
+          name: "ref",
+          type: "React.Ref<HTMLInputElement>",
+          description: "Points at the tel input.",
+        },
+        {
+          name: "className",
+          type: "string",
+          description:
+            "Goes on the outer field. Inner parts carry the data-slot values phone-input-country, phone-input-field, phone-input-search and phone-input-list.",
         },
       ],
       rest: "<input>, except type",
+    },
+    {
+      name: "Country restrictions",
+      description:
+        "countries and excludedCountries limit what the field accepts as well as what the picker lists. A typed or pasted number from a country outside the list is ignored, onValueChange does not fire, and a polite live region announces it. Calling codes shared by several countries are checked on the complete number, so with US only, +1 416 can be typed until the last digit, where it is blocked as Canadian. Deleting is always allowed. A disallowed value passed through props still displays, in international format.",
+    },
+    {
+      name: "PhoneCountryOption",
+      signature: [
+        "type PhoneCountryOption =",
+        "  | CountryCode",
+        "  | { code: CountryCode; name?: string; flag?: React.ReactNode }",
+      ].join("\n"),
+      description:
+        "One entry in countries. Fields you leave out keep their defaults, and the dial code always comes from the code. Import the type from @/components/ui/phone-input, and CountryCode from libphonenumber-js.",
+      props: [
+        {
+          name: "code",
+          type: "CountryCode",
+          required: true,
+          description: 'ISO 3166-1 alpha-2 code, such as "IN".',
+        },
+        {
+          name: "name",
+          type: "string",
+          description:
+            "Label in the list and the country button's accessible name, and what search matches. Defaults to the English name from Intl.DisplayNames, so pass this to translate.",
+        },
+        {
+          name: "flag",
+          type: "React.ReactNode",
+          description:
+            "Replaces the emoji flag, hidden from assistive technology. Windows browsers show emoji flags as two letters, so pass an image or SVG if that matters to you.",
+        },
+      ],
+    },
+    {
+      name: "isValidPhoneNumber",
+      signature: "isValidPhoneNumber(value: string): boolean",
+      description:
+        "From libphonenumber-js, which this component installs. PhoneInput does not validate: value is partial while typing, so call this on submit or to set aria-invalid.",
+    },
+    {
+      name: "formatPhoneValue",
+      signature:
+        "formatPhoneValue(value: string, country: CountryCode): string",
+      description:
+        "From @/lib/phone-input. Formats a saved E.164 number the way the field shows it, without the dial code, for read-only screens.",
+    },
+    {
+      name: "resolveCountries",
+      signature: [
+        "resolveCountries(",
+        "  countries?: PhoneCountryOption[],",
+        "  excludedCountries?: CountryCode[]",
+        "): PhoneCountry[]",
+      ].join("\n"),
+      description:
+        "From @/lib/phone-input. Returns the list PhoneInput would show, for building your own country menu. PHONE_COUNTRIES from the same file holds every country.",
+    },
+    {
+      name: "filterCountries",
+      signature:
+        "filterCountries(countries: PhoneCountry[], query: string): PhoneCountry[]",
+      description:
+        "From @/lib/phone-input. The picker's search: names ignoring case and accents, exact country codes, and dial code prefixes with or without the plus.",
+    },
+    {
+      name: "PhoneCountry",
+      description:
+        "A resolved country, as returned by resolveCountries and PHONE_COUNTRIES.",
+      props: [
+        {
+          name: "code",
+          type: "CountryCode",
+          required: true,
+          description: 'ISO 3166-1 alpha-2 code, such as "IN".',
+        },
+        {
+          name: "name",
+          type: "string",
+          required: true,
+          description: "Display name.",
+        },
+        {
+          name: "dialCode",
+          type: "string",
+          required: true,
+          description: 'Calling code with its plus, such as "+91".',
+        },
+        {
+          name: "flag",
+          type: "React.ReactNode",
+          required: true,
+          description: "Emoji flag, or your replacement.",
+        },
+      ],
     },
   ],
   rating: [

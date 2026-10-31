@@ -6,13 +6,18 @@ import {
   type CountryCode,
 } from "libphonenumber-js"
 import metadata from "libphonenumber-js/min/metadata"
+import type { ReactNode } from "react"
 
 export type PhoneCountry = {
   code: CountryCode
   name: string
   dialCode: string
-  flag: string
+  flag: ReactNode
 }
+
+export type PhoneCountryOption =
+  | CountryCode
+  | (Pick<PhoneCountry, "code"> & Partial<Pick<PhoneCountry, "name" | "flag">>)
 
 const REGIONAL_INDICATOR_OFFSET = 0x1f1a5
 
@@ -47,6 +52,20 @@ export const PHONE_COUNTRIES: PhoneCountry[] = getCountries()
     flag: countryFlag(code),
   }))
   .sort((a, b) => a.name.localeCompare(b.name))
+
+export function resolveCountries(
+  countries?: PhoneCountryOption[],
+  excludedCountries: CountryCode[] = []
+) {
+  const chosen =
+    countries?.flatMap((option) => {
+      const { code, ...overrides } =
+        typeof option === "string" ? { code: option } : option
+      const country = PHONE_COUNTRIES.find((entry) => entry.code === code)
+      return country ? [{ ...country, ...overrides }] : []
+    }) ?? PHONE_COUNTRIES
+  return chosen.filter(({ code }) => !excludedCountries.includes(code))
+}
 
 export function filterCountries(countries: PhoneCountry[], query: string) {
   const needle = foldText(query.trim())
@@ -111,22 +130,53 @@ export function formatPhoneValue(value: string, country: CountryCode) {
   return formatPhoneInput(national, country).display
 }
 
-export function countryForValue(value: string, selected: CountryCode) {
-  if (!value) return selected
+function includesCountry(countries: PhoneCountry[], country: string) {
+  return countries.some(({ code }) => code === country)
+}
+
+export function countryForValue(
+  value: string,
+  selected: CountryCode,
+  countries = PHONE_COUNTRIES
+) {
+  const fallback = includesCountry(countries, selected)
+    ? selected
+    : (countries[0]?.code ?? selected)
+  if (!value) return fallback
   const typer = new AsYouType()
   typer.input(value)
   const detected = typer.getCountry()
-  if (detected) return detected
+  if (detected && includesCountry(countries, detected)) return detected
   const callingCode = typer.getCallingCode()
-  if (!callingCode || callingCode === getCountryCallingCode(selected)) {
-    return selected
+  if (!callingCode || callingCode === getCountryCallingCode(fallback)) {
+    return fallback
   }
-  return metadata.country_calling_codes[callingCode]?.[0] ?? selected
+  const candidates = metadata.country_calling_codes[callingCode] ?? []
+  return (
+    candidates.find((candidate) => includesCountry(countries, candidate)) ??
+    fallback
+  )
 }
 
-export function formatInsertedPhone(text: string, country: CountryCode) {
+export function isAllowedNumber(value: string, countries: PhoneCountry[]) {
+  const typer = new AsYouType()
+  typer.input(value)
+  const detected = typer.getCountry()
+  if (detected) return includesCountry(countries, detected)
+  const callingCode = typer.getCallingCode()
+  return (
+    !callingCode ||
+    countries.some(({ dialCode }) => dialCode === `+${callingCode}`)
+  )
+}
+
+export function formatInsertedPhone(
+  text: string,
+  country: CountryCode,
+  countries = PHONE_COUNTRIES
+) {
   const { display, value } = formatPhoneInput(text, country)
-  const insertedCountry = countryForValue(value, country)
+  const insertedCountry = countryForValue(value, country, countries)
   return {
     value,
     country: insertedCountry,

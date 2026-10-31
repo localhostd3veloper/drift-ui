@@ -10,7 +10,9 @@ import {
   formatInsertedPhone,
   formatPhoneInput,
   formatPhoneValue,
+  isAllowedNumber,
   PHONE_COUNTRIES,
+  resolveCountries,
 } from "@/registry/default/lib/phone-input"
 
 function codesFor(query: string) {
@@ -32,6 +34,70 @@ describe("PHONE_COUNTRIES", () => {
 
   it("builds flags from regional indicators", () => {
     expect(countryFlag("GB")).toBe("🇬🇧")
+  })
+})
+
+describe("resolveCountries", () => {
+  it("returns every country by default", () => {
+    expect(resolveCountries()).toEqual(PHONE_COUNTRIES)
+  })
+
+  it("keeps the given codes in the given order", () => {
+    expect(
+      resolveCountries(["US", "IN", "CA"]).map(({ code }) => code)
+    ).toEqual(["US", "IN", "CA"])
+  })
+
+  it("applies custom names and flags over the defaults", () => {
+    expect(
+      resolveCountries([{ code: "DE", name: "Deutschland", flag: "DE" }])
+    ).toEqual([
+      { code: "DE", name: "Deutschland", dialCode: "+49", flag: "DE" },
+    ])
+  })
+
+  it("keeps defaults for fields a custom entry leaves out", () => {
+    expect(
+      resolveCountries([{ code: "DE", name: "Deutschland" }])[0].flag
+    ).toBe("🇩🇪")
+  })
+
+  it("removes excluded countries from either list", () => {
+    const codes = resolveCountries(undefined, ["US"]).map(({ code }) => code)
+    expect(codes).not.toContain("US")
+    expect(codes).toContain("CA")
+    expect(
+      resolveCountries(["US", "CA"], ["US"]).map(({ code }) => code)
+    ).toEqual(["CA"])
+  })
+
+  it("drops codes the metadata does not know", () => {
+    expect(
+      resolveCountries(["ZZ" as "US", "US"]).map(({ code }) => code)
+    ).toEqual(["US"])
+  })
+})
+
+describe("isAllowedNumber", () => {
+  const usAndIndia = resolveCountries(["US", "IN"])
+
+  it("accepts an empty value and an unfinished calling code", () => {
+    expect(isAllowedNumber("", usAndIndia)).toBe(true)
+    expect(isAllowedNumber("+4", usAndIndia)).toBe(true)
+  })
+
+  it("rejects a calling code outside the list", () => {
+    expect(isAllowedNumber("+44", usAndIndia)).toBe(false)
+    expect(isAllowedNumber("+91", usAndIndia)).toBe(true)
+  })
+
+  it("rejects a complete number from a country sharing a calling code", () => {
+    expect(isAllowedNumber("+14165550123", usAndIndia)).toBe(false)
+    expect(isAllowedNumber("+14155550123", usAndIndia)).toBe(true)
+  })
+
+  it("accepts US toll-free numbers", () => {
+    expect(isAllowedNumber("+18005550199", usAndIndia)).toBe(true)
   })
 })
 
@@ -183,6 +249,20 @@ describe("countryForValue", () => {
   it("uses the main country of a partial calling code", () => {
     expect(countryForValue("+1", "FR")).toBe("US")
     expect(countryForValue("+44207", "US")).toBe("GB")
+  })
+
+  it("falls back to the first allowed country", () => {
+    expect(countryForValue("", "US", resolveCountries(["IN", "GB"]))).toBe("IN")
+  })
+
+  it("picks an allowed country for a shared calling code", () => {
+    const countries = resolveCountries(["IN", "CA"])
+    expect(countryForValue("+1", "IN", countries)).toBe("CA")
+  })
+
+  it("ignores a detected country outside the list", () => {
+    const countries = resolveCountries(["IN"])
+    expect(countryForValue("+442079460958", "IN", countries)).toBe("IN")
   })
 
   it("keeps the selection for an unknown calling code", () => {
