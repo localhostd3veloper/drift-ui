@@ -640,7 +640,7 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
     {
       name: "ImageCropper",
       description:
-        "An image cropping widget supporting pan, zoom, rotation, fixed or free aspect ratio, and Blob export.",
+        "An image cropping widget supporting pan, zoom, rotation, fixed aspect ratios, and Blob export.",
       props: [
         {
           name: "src",
@@ -653,7 +653,7 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
           type: "number | null",
           default: "1",
           description:
-            "Aspect ratio (width / height). Null allows unconstrained cropping.",
+            "Aspect ratio (width / height) such as 1 (square), 16/9 (widescreen), or 4/3 (photo).",
         },
         {
           name: "cropShape",
@@ -726,7 +726,12 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
           name: "onCropComplete",
           type: "(blob: Blob, pixelCrop: PixelCrop) => void",
           description:
-            "Called with the cropped image Blob and natural pixel crop dimensions.",
+            "Called with the cropped image Blob and natural pixel crop dimensions when Apply is clicked or Enter is pressed.",
+        },
+        {
+          name: "onCropError",
+          type: "(error: Error) => void",
+          description: "Called when image loading or canvas export fails.",
         },
         {
           name: "outputType",

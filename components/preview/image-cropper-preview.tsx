@@ -6,11 +6,24 @@ import { ImageCropper } from "@/registry/default/ui/image-cropper"
 
 export function ImageCropperPreview() {
   const [croppedUrl, setCroppedUrl] = React.useState<string | null>(null)
+  const prevUrlRef = React.useRef<string | null>(null)
 
-  function handleCropComplete(blob: Blob) {
+  const handleCropComplete = React.useCallback((blob: Blob) => {
+    if (prevUrlRef.current) {
+      URL.revokeObjectURL(prevUrlRef.current)
+    }
     const url = URL.createObjectURL(blob)
+    prevUrlRef.current = url
     setCroppedUrl(url)
-  }
+  }, [])
+
+  React.useEffect(() => {
+    return () => {
+      if (prevUrlRef.current) {
+        URL.revokeObjectURL(prevUrlRef.current)
+      }
+    }
+  }, [])
 
   return (
     <div className="flex w-full max-w-sm flex-col gap-4">

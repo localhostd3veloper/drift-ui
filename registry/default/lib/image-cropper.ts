@@ -62,27 +62,29 @@ export function computeCropSize(
 
 export function computeInitialRenderSize(
   naturalSize: Size,
-  cropSize: Size
+  cropSize: Size,
+  rotation: number = 0
 ): Size {
   if (naturalSize.width <= 0 || naturalSize.height <= 0) {
     return { width: cropSize.width, height: cropSize.height }
   }
 
-  const cropAspect = cropSize.width / cropSize.height
-  const naturalAspect = naturalSize.width / naturalSize.height
+  const rad = (rotation * Math.PI) / 180
+  const cos = Math.abs(Math.cos(rad))
+  const sin = Math.abs(Math.sin(rad))
 
-  let width: number
-  let height: number
+  const requiredWidth = cropSize.width * cos + cropSize.height * sin
+  const requiredHeight = cropSize.height * cos + cropSize.width * sin
 
-  if (naturalAspect >= cropAspect) {
-    height = cropSize.height
-    width = height * naturalAspect
-  } else {
-    width = cropSize.width
-    height = width / naturalAspect
+  const scale = Math.max(
+    requiredWidth / naturalSize.width,
+    requiredHeight / naturalSize.height
+  )
+
+  return {
+    width: Math.max(1, Math.round(naturalSize.width * scale)),
+    height: Math.max(1, Math.round(naturalSize.height * scale)),
   }
-
-  return { width, height }
 }
 
 export function getRotatedSize(size: Size, rotation: number): Size {
@@ -251,45 +253,22 @@ export function canvasToBlob(
   type: string = "image/png",
   quality: number = 0.92
 ): Promise<Blob> {
-  return new Promise((resolve) => {
-    let resolved = false
-
-    if (typeof canvas.toBlob === "function") {
-      try {
-        canvas.toBlob(
-          (blob) => {
-            if (!resolved) {
-              resolved = true
-              if (blob) resolve(blob)
-              else resolve(new Blob([], { type }))
-            }
-          },
-          type,
-          quality
-        )
-      } catch {
-        // Fallback below
-      }
+  return new Promise((resolve, reject) => {
+    if (typeof canvas.toBlob !== "function") {
+      reject(new Error("canvas.toBlob is not supported in this environment"))
+      return
     }
 
-    setTimeout(() => {
-      if (!resolved) {
-        resolved = true
-        try {
-          const dataUrl = canvas.toDataURL(type, quality)
-          const [header, base64] = dataUrl.split(",")
-          const mime = header?.match(/:(.*?);/)?.[1] || type
-          const binStr = base64 ? atob(base64) : ""
-          const len = binStr.length
-          const u8arr = new Uint8Array(len)
-          for (let i = 0; i < len; i++) {
-            u8arr[i] = binStr.charCodeAt(i)
-          }
-          resolve(new Blob([u8arr], { type: mime }))
-        } catch {
-          resolve(new Blob(["mock-crop-blob"], { type }))
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          resolve(blob)
+        } else {
+          reject(new Error("Failed to create blob from canvas"))
         }
-      }
-    }, 20)
+      },
+      type,
+      quality
+    )
   })
 }

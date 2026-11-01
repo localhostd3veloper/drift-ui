@@ -1,6 +1,6 @@
 import { ImageCropperAvatarPreview } from "@/components/preview/examples/image-cropper/avatar"
 import { ImageCropperBannerPreview } from "@/components/preview/examples/image-cropper/banner"
-import { ImageCropperFreePreview } from "@/components/preview/examples/image-cropper/free"
+import { ImageCropperLandscapePreview } from "@/components/preview/examples/image-cropper/landscape"
 import type { ComponentExample } from "@/lib/component-docs"
 
 export const examples: ComponentExample[] = [
@@ -19,10 +19,10 @@ export const examples: ComponentExample[] = [
     Preview: ImageCropperBannerPreview,
   },
   {
-    id: "free",
-    title: "Free aspect ratio",
+    id: "landscape",
+    title: "4:3 landscape framing",
     description:
-      "Unconstrained crop window allowing flexible cropping across any dimension.",
-    Preview: ImageCropperFreePreview,
+      "Standard 4:3 photo aspect ratio for photography and card assets.",
+    Preview: ImageCropperLandscapePreview,
   },
 ]

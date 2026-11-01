@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
 import {
   canvasToBlob,
@@ -47,6 +47,30 @@ describe("image-cropper pure logic", () => {
       const render = computeInitialRenderSize(natural, crop)
       expect(render.width).toBe(200)
       expect(render.height).toBe(400)
+    })
+
+    it("scales image to cover crop box when rotated 90 degrees", () => {
+      // 1200x800 image with 16:9 crop (e.g. 320x180)
+      const natural = { width: 1200, height: 800 }
+      const crop = { width: 320, height: 180 }
+      const render = computeInitialRenderSize(natural, crop, 90)
+
+      // At 90 deg, rotated width is render.height and rotated height is render.width
+      const rotated = getRotatedSize(render, 90)
+      expect(rotated.width).toBeGreaterThanOrEqual(crop.width)
+      expect(rotated.height).toBeGreaterThanOrEqual(crop.height)
+    })
+
+    it("scales image to cover crop box at arbitrary rotations", () => {
+      const natural = { width: 1000, height: 600 }
+      const crop = { width: 300, height: 200 }
+
+      for (const angle of [0, 45, 90, 180, 270]) {
+        const render = computeInitialRenderSize(natural, crop, angle)
+        const rotated = getRotatedSize(render, angle)
+        expect(rotated.width).toBeGreaterThanOrEqual(crop.width - 1)
+        expect(rotated.height).toBeGreaterThanOrEqual(crop.height - 1)
+      }
     })
   })
 
@@ -102,7 +126,6 @@ describe("image-cropper pure logic", () => {
         2,
         0
       )
-      // 200 * 2 = 400. (400 - 200) / 2 = 100
       expect(maxPanX).toBe(100)
       expect(maxPanY).toBe(100)
 
@@ -164,21 +187,39 @@ describe("image-cropper pure logic", () => {
         0
       )
 
-      // Panning -50 on viewport with scale 2 shifts natural x by +100
       expect(pixelCrop.x).toBe(300)
       expect(pixelCrop.y).toBe(100)
     })
   })
 
   describe("canvasToBlob", () => {
-    it("resolves to a Blob with specified MIME type", async () => {
+    it("resolves to a Blob when canvas.toBlob succeeds", async () => {
       const canvas = document.createElement("canvas")
-      canvas.width = 50
-      canvas.height = 50
+      const mockBlob = new Blob(["test"], { type: "image/png" })
+      canvas.toBlob = vi.fn((callback) => {
+        callback(mockBlob)
+      })
 
       const blob = await canvasToBlob(canvas, "image/png")
-      expect(blob).toBeInstanceOf(Blob)
-      expect(blob.type).toBe("image/png")
+      expect(blob).toBe(mockBlob)
+    })
+
+    it("rejects when canvas.toBlob returns null", async () => {
+      const canvas = document.createElement("canvas")
+      canvas.toBlob = vi.fn((callback) => {
+        callback(null)
+      })
+
+      await expect(canvasToBlob(canvas, "image/png")).rejects.toThrow(
+        "Failed to create blob from canvas"
+      )
+    })
+
+    it("rejects when toBlob is not supported", async () => {
+      const fakeCanvas = {} as HTMLCanvasElement
+      await expect(canvasToBlob(fakeCanvas, "image/png")).rejects.toThrow(
+        "canvas.toBlob is not supported in this environment"
+      )
     })
   })
 })

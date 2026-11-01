@@ -44,6 +44,7 @@ interface ImageCropperProps extends Omit<
   defaultCrop?: Point
   onCropChange?: (crop: Point) => void
   onCropComplete?: (blob: Blob, pixelCrop: PixelCrop) => void
+  onCropError?: (error: Error) => void
   outputType?: "image/png" | "image/jpeg" | "image/webp"
   outputQuality?: number
   showControls?: boolean
@@ -67,6 +68,7 @@ function ImageCropper({
   defaultCrop = { x: 0, y: 0 },
   onCropChange,
   onCropComplete,
+  onCropError,
   outputType = "image/png",
   outputQuality = 0.92,
   showControls = true,
@@ -96,38 +98,46 @@ function ImageCropper({
 
   const containerRef = React.useRef<HTMLDivElement>(null)
   const imageRef = React.useRef<HTMLImageElement>(null)
+  const instructionsId = React.useId()
+
   const [containerSize, setContainerSize] = React.useState<Size>({
     width: 320,
     height: 320,
   })
   const [naturalSize, setNaturalSize] = React.useState<Size>({
-    width: 100,
-    height: 100,
+    width: 0,
+    height: 0,
   })
   const [isDragging, setIsDragging] = React.useState(false)
+  const [statusAnnouncement, setStatusAnnouncement] = React.useState("")
+  const [objectUrl, setObjectUrl] = React.useState<string | null>(null)
+
+  const activePointers = React.useRef<Map<number, Point>>(new Map())
+  const pinchStart = React.useRef<{ distance: number; zoom: number } | null>(
+    null
+  )
   const dragStart = React.useRef<{ pointer: Point; crop: Point }>({
     pointer: { x: 0, y: 0 },
     crop: { x: 0, y: 0 },
   })
 
-  const imageSrc = React.useMemo(() => {
-    if (typeof src === "string") return src
+  React.useEffect(() => {
     if (
       typeof window !== "undefined" &&
-      (src instanceof File || src instanceof Blob)
+      typeof src !== "string" &&
+      src instanceof Blob
     ) {
-      return URL.createObjectURL(src)
-    }
-    return ""
-  }, [src])
-
-  React.useEffect(() => {
-    return () => {
-      if (typeof src !== "string" && imageSrc) {
-        URL.revokeObjectURL(imageSrc)
+      const url = URL.createObjectURL(src)
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setObjectUrl(url)
+      return () => {
+        URL.revokeObjectURL(url)
       }
     }
-  }, [src, imageSrc])
+    setObjectUrl(null)
+  }, [src])
+
+  const imageSrc = typeof src === "string" ? src : (objectUrl ?? "")
 
   React.useEffect(() => {
     const el = containerRef.current
@@ -154,46 +164,66 @@ function ImageCropper({
   }, [containerSize.width, containerSize.height, aspect])
 
   const imageRenderSize = React.useMemo(() => {
-    return computeInitialRenderSize(naturalSize, cropSize)
-  }, [naturalSize, cropSize])
+    return computeInitialRenderSize(naturalSize, cropSize, rotation)
+  }, [naturalSize, cropSize, rotation])
+
+  const updateZoom = React.useCallback(
+    (targetZoom: number) => {
+      const clampedZoom = Math.min(maxZoom, Math.max(minZoom, targetZoom))
+      const roundedZoom = Number(clampedZoom.toFixed(2))
+      setZoom(roundedZoom)
+      const nextCrop = clampCrop(
+        crop,
+        imageRenderSize,
+        cropSize,
+        roundedZoom,
+        rotation
+      )
+      setCrop(nextCrop)
+      setStatusAnnouncement(`Zoom ${Math.round(roundedZoom * 100)}%`)
+    },
+    [
+      maxZoom,
+      minZoom,
+      crop,
+      imageRenderSize,
+      cropSize,
+      rotation,
+      setZoom,
+      setCrop,
+    ]
+  )
 
   const commitCrop = React.useCallback(async () => {
-    const natural =
-      naturalSize.width > 0
-        ? naturalSize
-        : {
-            width: imageRef.current?.naturalWidth || 100,
-            height: imageRef.current?.naturalHeight || 100,
-          }
-    const currentCropSize =
-      cropSize.width > 0 ? cropSize : { width: 100, height: 100 }
+    if (
+      naturalSize.width <= 0 ||
+      naturalSize.height <= 0 ||
+      !imageRef.current
+    ) {
+      return
+    }
 
     const pixelCrop = computePixelCrop(
       crop,
       imageRenderSize,
-      currentCropSize,
-      natural,
+      cropSize,
+      naturalSize,
       zoom,
       rotation
     )
 
     try {
-      if (imageRef.current) {
-        const canvas = drawCroppedImageToCanvas(
-          imageRef.current,
-          natural,
-          pixelCrop,
-          rotation
-        )
-        const blob = await canvasToBlob(canvas, outputType, outputQuality)
-        onCropComplete?.(blob, pixelCrop)
-      } else {
-        const blob = new Blob(["mock-crop-blob"], { type: outputType })
-        onCropComplete?.(blob, pixelCrop)
-      }
-    } catch {
-      const blob = new Blob(["mock-crop-blob"], { type: outputType })
+      const canvas = drawCroppedImageToCanvas(
+        imageRef.current,
+        naturalSize,
+        pixelCrop,
+        rotation
+      )
+      const blob = await canvasToBlob(canvas, outputType, outputQuality)
       onCropComplete?.(blob, pixelCrop)
+      setStatusAnnouncement("Crop applied")
+    } catch (err) {
+      onCropError?.(err instanceof Error ? err : new Error(String(err)))
     }
   }, [
     crop,
@@ -205,85 +235,117 @@ function ImageCropper({
     outputType,
     outputQuality,
     onCropComplete,
+    onCropError,
   ])
 
   function handleImageLoad(event: React.SyntheticEvent<HTMLImageElement>) {
     const img = event.currentTarget
-    const nextNatural = {
-      width: img.naturalWidth || img.width || 100,
-      height: img.naturalHeight || img.height || 100,
-    }
-    setNaturalSize(nextNatural)
+    setNaturalSize({
+      width: img.naturalWidth || img.width,
+      height: img.naturalHeight || img.height,
+    })
   }
 
-  React.useEffect(() => {
-    if (naturalSize.width > 0 && naturalSize.height > 0) {
-      commitCrop()
-    }
-  }, [commitCrop, naturalSize.width, naturalSize.height])
+  function handleImageError() {
+    onCropError?.(new Error("Failed to load image source"))
+  }
 
   function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
     if (disabled || event.button !== 0) return
     event.currentTarget.setPointerCapture(event.pointerId)
-    setIsDragging(true)
-    dragStart.current = {
-      pointer: { x: event.clientX, y: event.clientY },
-      crop: { ...crop },
+    activePointers.current.set(event.pointerId, {
+      x: event.clientX,
+      y: event.clientY,
+    })
+
+    if (activePointers.current.size === 1) {
+      setIsDragging(true)
+      dragStart.current = {
+        pointer: { x: event.clientX, y: event.clientY },
+        crop: { ...crop },
+      }
+    } else if (activePointers.current.size === 2) {
+      setIsDragging(false)
+      const pts = Array.from(activePointers.current.values())
+      const distance = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y)
+      pinchStart.current = { distance, zoom }
     }
   }
 
   function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
-    if (!isDragging || disabled) return
-    const dx = event.clientX - dragStart.current.pointer.x
-    const dy = event.clientY - dragStart.current.pointer.y
+    if (disabled || !activePointers.current.has(event.pointerId)) return
+    activePointers.current.set(event.pointerId, {
+      x: event.clientX,
+      y: event.clientY,
+    })
 
-    const nextCrop = clampCrop(
-      {
-        x: dragStart.current.crop.x + dx,
-        y: dragStart.current.crop.y + dy,
-      },
-      imageRenderSize,
-      cropSize,
-      zoom,
-      rotation
-    )
-
-    setCrop(nextCrop)
-  }
-
-  function handlePointerUp(event: React.PointerEvent<HTMLDivElement>) {
-    if (!isDragging) return
-    setIsDragging(false)
-    try {
-      event.currentTarget.releasePointerCapture(event.pointerId)
-    } catch {
-      // Ignored
+    if (activePointers.current.size === 2 && pinchStart.current) {
+      const pts = Array.from(activePointers.current.values())
+      const currentDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y)
+      if (pinchStart.current.distance > 0) {
+        const factor = currentDist / pinchStart.current.distance
+        updateZoom(pinchStart.current.zoom * factor)
+      }
+      return
     }
-    commitCrop()
-  }
 
-  function handleWheel(event: React.WheelEvent<HTMLDivElement>) {
-    if (disabled) return
-    event.preventDefault()
-    const step = event.deltaY < 0 ? 0.1 : -0.1
-    const nextZoom = Math.min(maxZoom, Math.max(minZoom, zoom + step))
-    if (nextZoom !== zoom) {
+    if (isDragging && activePointers.current.size === 1) {
+      const dx = event.clientX - dragStart.current.pointer.x
+      const dy = event.clientY - dragStart.current.pointer.y
+
       const nextCrop = clampCrop(
-        crop,
+        {
+          x: dragStart.current.crop.x + dx,
+          y: dragStart.current.crop.y + dy,
+        },
         imageRenderSize,
         cropSize,
-        nextZoom,
+        zoom,
         rotation
       )
-      setZoom(Number(nextZoom.toFixed(2)))
+
       setCrop(nextCrop)
     }
   }
 
+  function handlePointerUp(event: React.PointerEvent<HTMLDivElement>) {
+    activePointers.current.delete(event.pointerId)
+    try {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    } catch {}
+
+    if (activePointers.current.size === 0) {
+      setIsDragging(false)
+      pinchStart.current = null
+    } else if (activePointers.current.size === 1) {
+      pinchStart.current = null
+      const remaining = Array.from(activePointers.current.values())[0]
+      dragStart.current = {
+        pointer: { x: remaining.x, y: remaining.y },
+        crop: { ...crop },
+      }
+      setIsDragging(true)
+    }
+  }
+
+  React.useEffect(() => {
+    const el = containerRef.current
+    if (!el || disabled) return
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      const step = e.deltaY < 0 ? 0.1 : -0.1
+      updateZoom(zoom + step)
+    }
+
+    el.addEventListener("wheel", onWheel, { passive: false })
+    return () => el.removeEventListener("wheel", onWheel)
+  }, [disabled, zoom, updateZoom])
+
   function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
     if (disabled) return
 
-    const step = event.shiftKey ? 20 : 5
+    const step = event.shiftKey ? 50 : 5
     let dx = 0
     let dy = 0
 
@@ -291,15 +353,17 @@ function ImageCropper({
     else if (event.key === "ArrowRight") dx = step
     else if (event.key === "ArrowUp") dy = -step
     else if (event.key === "ArrowDown") dy = step
-    else if (event.key === "+" || event.key === "=") {
+    else if (event.key === "+" || event.key === "=" || event.key === "]") {
       event.preventDefault()
-      const nextZoom = Math.min(maxZoom, zoom + 0.1)
-      setZoom(Number(nextZoom.toFixed(2)))
+      updateZoom(zoom + 0.1)
       return
-    } else if (event.key === "-" || event.key === "_") {
+    } else if (event.key === "-" || event.key === "_" || event.key === "[") {
       event.preventDefault()
-      const nextZoom = Math.max(minZoom, zoom - 0.1)
-      setZoom(Number(nextZoom.toFixed(2)))
+      updateZoom(zoom - 0.1)
+      return
+    } else if (event.key === "r" || event.key === "R") {
+      event.preventDefault()
+      handleRotate(90)
       return
     } else if (event.key === "Enter") {
       event.preventDefault()
@@ -318,20 +382,29 @@ function ImageCropper({
       rotation
     )
     setCrop(nextCrop)
+    setStatusAnnouncement(
+      `Position ${Math.round(nextCrop.x)}, ${Math.round(nextCrop.y)}`
+    )
   }
 
   function handleRotate(delta: number) {
     if (disabled) return
     const nextRotation = (((rotation + delta) % 360) + 360) % 360
     setRotation(nextRotation)
+    const nextRenderSize = computeInitialRenderSize(
+      naturalSize,
+      cropSize,
+      nextRotation
+    )
     const nextCrop = clampCrop(
       crop,
-      imageRenderSize,
+      nextRenderSize,
       cropSize,
       zoom,
       nextRotation
     )
     setCrop(nextCrop)
+    setStatusAnnouncement(`Rotated to ${nextRotation} degrees`)
   }
 
   return (
@@ -344,16 +417,24 @@ function ImageCropper({
       )}
       {...props}
     >
+      <div id={instructionsId} className="sr-only">
+        Use arrow keys to pan (hold Shift for 10x larger steps), plus and minus
+        or bracket keys to zoom, R to rotate, and Enter to apply crop.
+      </div>
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {statusAnnouncement}
+      </div>
+
       <div
         ref={containerRef}
         role="region"
         aria-label={ariaLabel}
+        aria-describedby={instructionsId}
         tabIndex={disabled ? -1 : 0}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        onWheel={handleWheel}
         onKeyDown={handleKeyDown}
         className={cn(
           "relative flex h-72 w-full touch-none items-center justify-center overflow-hidden rounded-md bg-black/90 outline-none select-none sm:h-80",
@@ -361,14 +442,15 @@ function ImageCropper({
           "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         )}
       >
-        {/* Natural image positioned and transformed */}
         {imageSrc && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             ref={imageRef}
             src={imageSrc}
             alt="Source preview"
+            crossOrigin="anonymous"
             onLoad={handleImageLoad}
+            onError={handleImageError}
             style={{
               width: imageRenderSize.width || "auto",
               height: imageRenderSize.height || "auto",
@@ -379,7 +461,6 @@ function ImageCropper({
           />
         )}
 
-        {/* Viewfinder overlay */}
         <div
           data-slot="crop-area"
           style={{
@@ -392,7 +473,6 @@ function ImageCropper({
             cropShape === "round" ? "rounded-full" : "rounded-xs"
           )}
         >
-          {/* Rule of thirds grid lines */}
           {showGrid && cropShape === "rect" && (
             <div className="absolute inset-0 grid grid-cols-3 grid-rows-3">
               <div className="border-r border-b border-white/30" />
@@ -401,38 +481,34 @@ function ImageCropper({
               <div className="border-r border-b border-white/30" />
               <div className="border-r border-b border-white/30" />
               <div className="border-b border-white/30" />
-              <div className="border-r border-white/30" />
-              <div className="border-r border-white/30" />
+              <div className="border-r border-b border-white/30" />
+              <div className="border-r border-b border-white/30" />
               <div />
             </div>
           )}
         </div>
       </div>
 
-      {/* Controls Bar */}
       {showControls && (
         <div
           data-slot="crop-controls"
           className="flex flex-wrap items-center justify-between gap-3 pt-1"
         >
-          {/* Zoom controls */}
           <div className="flex min-w-44 flex-1 items-center gap-2">
             <ZoomOutIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
             <input
               type="range"
-              aria-label="Zoom"
+              aria-label="Zoom level"
+              aria-valuemin={minZoom}
+              aria-valuemax={maxZoom}
+              aria-valuenow={zoom}
+              aria-valuetext={`${Math.round(zoom * 100)}%`}
               min={minZoom}
               max={maxZoom}
               step={0.05}
               disabled={disabled}
               value={zoom}
-              onChange={(e) => {
-                const nextZoom = parseFloat(e.target.value)
-                setZoom(nextZoom)
-                setCrop(
-                  clampCrop(crop, imageRenderSize, cropSize, nextZoom, rotation)
-                )
-              }}
+              onChange={(e) => updateZoom(parseFloat(e.target.value))}
               className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-secondary accent-primary"
             />
             <ZoomInIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -441,7 +517,6 @@ function ImageCropper({
             </span>
           </div>
 
-          {/* Rotate & Action controls */}
           <div className="flex items-center gap-1.5">
             <Button
               type="button"
