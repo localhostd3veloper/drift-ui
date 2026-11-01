@@ -4,13 +4,13 @@ import { useRef } from "react"
 import Link from "next/link"
 import { ArrowRightIcon } from "lucide-react"
 import {
-  motion,
   useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
   type MotionValue,
 } from "motion/react"
+import * as m from "motion/react-m"
 
 import { Button } from "@/registry/default/ui/button"
 import { CopyCommand } from "@/components/landing/copy-command"
@@ -46,7 +46,7 @@ function AssemblingMark({ progress }: { progress: MotionValue<number> }) {
         strokeWidth="0.5"
         strokeDasharray="1.2 1.2"
       />
-      <motion.rect
+      <m.rect
         x="18"
         y="10"
         width="12"

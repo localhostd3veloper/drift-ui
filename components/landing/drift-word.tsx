@@ -1,10 +1,10 @@
 "use client"
 
-import { motion } from "motion/react"
+import * as m from "motion/react-m"
 
 export function DriftWord({ children }: { children: React.ReactNode }) {
   return (
-    <motion.span
+    <m.span
       drag
       dragSnapToOrigin
       dragElastic={0.4}
@@ -16,6 +16,6 @@ export function DriftWord({ children }: { children: React.ReactNode }) {
       className="inline-block cursor-grab touch-none rounded-[0.16em] bg-brand-solid px-[0.12em] pb-[0.06em] text-brand-solid-foreground shadow-[0_0.2em_0.5em_-0.2em] shadow-brand-solid/60 select-none active:cursor-grabbing"
     >
       {children}
-    </motion.span>
+    </m.span>
   )
 }

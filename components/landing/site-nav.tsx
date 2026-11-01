@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { StarIcon, UsersIcon } from "lucide-react"
+import { DownloadIcon, StarIcon, UsersIcon } from "lucide-react"
 import { siDiscord, siGithub } from "simple-icons"
 
 import { LogoMark } from "@/components/landing/logo-mark"
@@ -8,14 +8,19 @@ import { NavIconLink } from "@/components/landing/nav-icon-link"
 import { ThemeScopeBadge } from "@/components/landing/theme-scope-badge"
 import { ThemeToggle } from "@/components/landing/theme-toggle"
 import { siteConfig } from "@/lib/site-config"
+import { Button } from "@/registry/default/ui/button"
 
-const NAV_LINKS = [
+const DESKTOP_LINKS = [
   { href: "/components", label: "Components" },
   { href: "/blocks", label: "Blocks" },
   { href: "/themes", label: "Themes" },
+  { href: "/resources", label: "Resources" },
+]
+
+const MOBILE_LINKS = [
+  ...DESKTOP_LINKS,
   { href: "/#install", label: "Install" },
   { href: "/contributors", label: "Contributors" },
-  { href: "/resources", label: "Resources" },
 ]
 
 export function SiteNav({ search }: { search?: React.ReactNode }) {
@@ -32,7 +37,7 @@ export function SiteNav({ search }: { search?: React.ReactNode }) {
         </Link>
         <div className="flex items-center gap-1 md:gap-6">
           <ul className="hidden items-center gap-6 text-sm text-muted-foreground lg:flex">
-            {NAV_LINKS.map((link) => (
+            {DESKTOP_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
@@ -64,8 +69,14 @@ export function SiteNav({ search }: { search?: React.ReactNode }) {
               Like drift-ui? Star it on GitHub
             </NavIconLink>
             <ThemeToggle />
+            <Button asChild className="ml-2 hidden sm:inline-flex">
+              <Link href="/#install" prefetch={false}>
+                <DownloadIcon />
+                Install
+              </Link>
+            </Button>
           </div>
-          <MobileNav links={NAV_LINKS} className="lg:hidden" />
+          <MobileNav links={MOBILE_LINKS} className="lg:hidden" />
         </div>
       </nav>
     </header>

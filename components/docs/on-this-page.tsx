@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { ArrowUpRightIcon, ChevronDownIcon } from "lucide-react"
-import { motion } from "motion/react"
+import * as m from "motion/react-m"
 
 import { cn } from "@/registry/default/lib/utils"
 
@@ -55,7 +55,7 @@ export function OnThisPage({
             return (
               <li key={section.id} className="relative">
                 {isActive && (
-                  <motion.span
+                  <m.span
                     aria-hidden
                     layoutId="on-this-page-marker"
                     transition={{ type: "spring", stiffness: 480, damping: 38 }}

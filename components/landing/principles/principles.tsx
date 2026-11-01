@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "motion/react"
+import * as m from "motion/react-m"
 import { Tabs } from "radix-ui"
 
 import { SectionHeading } from "@/components/landing/section-heading"
@@ -67,7 +67,7 @@ export function Principles() {
             value={id}
             className="mt-4 flex min-h-[32rem] items-center justify-center rounded-3xl border bg-[radial-gradient(var(--border)_1px,transparent_1px)] bg-[size:20px_20px] p-5 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 md:p-14"
           >
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{
@@ -78,7 +78,7 @@ export function Principles() {
               className="w-full max-w-2xl min-w-0"
             >
               <Demo />
-            </motion.div>
+            </m.div>
           </Tabs.Content>
         ))}
       </Tabs.Root>

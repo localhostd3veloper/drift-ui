@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "motion/react"
+import * as m from "motion/react-m"
 
 import { cn } from "@/registry/default/lib/utils"
 
@@ -12,7 +12,7 @@ export function ActivePill({
   className?: string
 }) {
   return (
-    <motion.span
+    <m.span
       aria-hidden
       layoutId={layoutId}
       transition={{ type: "spring", stiffness: 480, damping: 38 }}
