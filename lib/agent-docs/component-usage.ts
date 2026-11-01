@@ -322,7 +322,7 @@ export function NameField() {
   },
   "masked-input": {
     notes:
-      "MaskedInput and CurrencyInput format typed input while storing unmasked or numeric values. MaskedInput takes mask (tokens: # digit, a letter, * any, with \\ escaping) and stores raw unmasked characters in value/onValueChange or defaultValue. Caret position does not jump when inserting or deleting characters over fixed mask delimiters. CurrencyInput accepts currency and locale to format currency with Intl.NumberFormat live while storing integer cents (number | null) in value/onValueChange. Supports min and max clamping (enforced on blur and capping max during input), and name submits the raw value or cents via a hidden input.",
+      "MaskedInput and CurrencyInput format typed input while storing unmasked or numeric values. MaskedInput takes mask (tokens: # digit, a or A letter, * alphanumeric) and stores raw unmasked characters in value/onValueChange or defaultValue. Caret position does not jump when inserting or deleting characters over fixed mask delimiters. CurrencyInput accepts currency and locale to format currency with Intl.NumberFormat live while storing integer cents (number | null) in value/onValueChange. Supports min and max clamping (enforced on blur and capping max during input), and name submits the raw value or cents via a hidden input.",
     example: `import { CurrencyInput, MaskedInput } from "@/components/ui/masked-input"
 import { Label } from "@/components/ui/label"
 

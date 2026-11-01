@@ -8,10 +8,10 @@ import {
   calculateCurrencyCaretPosition,
   calculateMaskCaretPosition,
   DEFAULT_MASK_DEFINITIONS,
+  deleteCurrencyDigitPastFormatting,
+  deleteTokenPastFormatting,
   formatCurrency,
   formatCurrencyLive,
-  getCurrencyInfo,
-  isMaskToken,
   parseCurrency,
   unmaskValue,
 } from "@/registry/default/lib/masked-input"
@@ -37,7 +37,7 @@ function MaskedInput({
   name,
   disabled,
   className,
-  onKeyDown,
+  ref,
   ...props
 }: MaskedInputProps) {
   const { value: rawValue, setValue: setRawValue } = useControllableState({
@@ -50,19 +50,46 @@ function MaskedInput({
   })
 
   const inputRef = React.useRef<HTMLInputElement | null>(null)
+  React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement)
+
+  const [edit, setEdit] = React.useState<{
+    text: string
+    caret: number
+  } | null>(null)
+
   const formattedValue = React.useMemo(
     () => applyMask(rawValue ?? "", mask, definitions).formatted,
     [rawValue, mask, definitions]
   )
 
-  function commit(nextRaw: string) {
-    setRawValue(nextRaw)
-  }
+  const display =
+    edit !== null &&
+    unmaskValue(edit.text, mask, definitions) === (rawValue ?? "")
+      ? edit.text
+      : formattedValue
+
+  React.useLayoutEffect(() => {
+    const input = inputRef.current
+    if (input && document.activeElement === input && edit !== null) {
+      input.setSelectionRange(edit.caret, edit.caret)
+    }
+  }, [edit])
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const rawInput = event.target.value
-    const rawCursorPos = event.target.selectionEnd ?? rawInput.length
-    const unmasked = unmaskValue(rawInput, mask, definitions)
+    const { value: rawInput, selectionStart } = event.target
+    const { inputType } = (event.nativeEvent as InputEvent) || {}
+    const isForward = inputType === "deleteContentForward"
+
+    const { text, caret } = deleteTokenPastFormatting(
+      display,
+      rawInput,
+      selectionStart ?? rawInput.length,
+      isForward,
+      mask,
+      definitions
+    )
+
+    const unmasked = unmaskValue(text, mask, definitions)
     const { formatted: nextFormatted, raw: nextRaw } = applyMask(
       unmasked,
       mask,
@@ -71,96 +98,41 @@ function MaskedInput({
 
     const nextCursor = calculateMaskCaretPosition({
       nextFormatted,
-      rawInput,
-      rawCursorPos,
+      rawInput: text,
+      rawCursorPos: caret,
       mask,
       definitions,
     })
 
-    commit(nextRaw)
-
-    requestAnimationFrame(() => {
-      inputRef.current?.setSelectionRange(nextCursor, nextCursor)
-    })
-  }
-
-  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    onKeyDown?.(event)
-    if (event.defaultPrevented) return
-
-    if (event.key === "Backspace") {
-      const input = event.currentTarget
-      const start = input.selectionStart ?? 0
-      const end = input.selectionEnd ?? 0
-
-      if (start === end && start > 0) {
-        const maskCharBefore = mask[start - 1]
-
-        if (maskCharBefore && !isMaskToken(maskCharBefore, definitions)) {
-          event.preventDefault()
-          let deleteIdx = start - 1
-          while (
-            deleteIdx >= 0 &&
-            mask[deleteIdx] &&
-            !isMaskToken(mask[deleteIdx], definitions)
-          ) {
-            deleteIdx--
-          }
-
-          if (deleteIdx >= 0) {
-            const before = unmaskValue(
-              formattedValue.slice(0, deleteIdx),
-              mask,
-              definitions
-            )
-            const after = unmaskValue(
-              formattedValue.slice(deleteIdx + 1),
-              mask,
-              definitions
-            )
-            const newRaw = before + after
-            const { formatted: nextFormatted, raw: nextCleanRaw } = applyMask(
-              newRaw,
-              mask,
-              definitions
-            )
-            const nextCursor = calculateMaskCaretPosition({
-              nextFormatted,
-              rawInput: formattedValue.slice(0, deleteIdx),
-              rawCursorPos: deleteIdx,
-              mask,
-              definitions,
-            })
-
-            commit(nextCleanRaw)
-            requestAnimationFrame(() => {
-              input.setSelectionRange(nextCursor, nextCursor)
-            })
-          }
-        }
-      }
-    }
+    setEdit({ text: nextFormatted, caret: nextCursor })
+    setRawValue(nextRaw)
   }
 
   return (
     <>
       <input
+        {...props}
         ref={inputRef}
         type="text"
         data-slot="masked-input"
         disabled={disabled}
-        value={formattedValue}
+        value={display}
         onChange={handleChange}
-        onKeyDown={handleKeyDown}
         className={cn(
           "h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30",
           "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
           "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
           className
         )}
-        {...props}
       />
-      {name && <input type="hidden" name={name} value={rawValue ?? ""} />}
+      {name && (
+        <input
+          type="hidden"
+          name={name}
+          disabled={disabled}
+          value={rawValue ?? ""}
+        />
+      )}
     </>
   )
 }
@@ -189,7 +161,8 @@ function CurrencyInput({
   name,
   disabled,
   className,
-  onKeyDown,
+  onBlur,
+  ref,
   ...props
 }: CurrencyInputProps) {
   const { value: centsValue, setValue: setCentsValue } = useControllableState<
@@ -204,40 +177,47 @@ function CurrencyInput({
   })
 
   const inputRef = React.useRef<HTMLInputElement | null>(null)
-  const [draft, setDraft] = React.useState<string | null>(null)
+  React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement)
 
-  const displayedText =
-    draft ??
-    (centsValue !== null && centsValue !== undefined
-      ? formatCurrency(centsValue, locale, currency)
-      : "")
+  const [edit, setEdit] = React.useState<{
+    text: string
+    caret: number
+  } | null>(null)
 
-  function commit(nextCents: number | null) {
-    if (nextCents === null) {
-      setDraft(null)
-      setCentsValue(null)
-      return
+  const display =
+    edit !== null && parseCurrency(edit.text, locale, currency) === centsValue
+      ? edit.text
+      : centsValue !== null && centsValue !== undefined
+        ? formatCurrency(centsValue, locale, currency)
+        : ""
+
+  React.useLayoutEffect(() => {
+    const input = inputRef.current
+    if (input && document.activeElement === input && edit !== null) {
+      input.setSelectionRange(edit.caret, edit.caret)
     }
-    const clamped = Math.min(
-      max ?? Infinity,
-      Math.max(min ?? -Infinity, nextCents)
-    )
-    setDraft(null)
-    setCentsValue(clamped)
-  }
+  }, [edit])
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const rawInput = event.target.value
-    const rawCursorPos = event.target.selectionEnd ?? rawInput.length
+    const { value: rawInput, selectionStart } = event.target
+    const { inputType } = (event.nativeEvent as InputEvent) || {}
+    const isForward = inputType === "deleteContentForward"
 
-    if (!rawInput.trim()) {
-      setDraft(null)
+    const { text, caret } = deleteCurrencyDigitPastFormatting(
+      display,
+      rawInput,
+      selectionStart ?? rawInput.length,
+      isForward,
+      locale
+    )
+
+    if (!text.trim()) {
+      setEdit(null)
       setCentsValue(null)
-      onValueChange?.(null, "")
       return
     }
 
-    const { formatted, cents } = formatCurrencyLive(rawInput, locale, currency)
+    const { formatted, cents } = formatCurrencyLive(text, locale, currency)
 
     let finalCents = cents
     let finalFormatted = formatted
@@ -247,25 +227,20 @@ function CurrencyInput({
       finalFormatted = formatCurrency(max, locale, currency)
     }
 
-    setDraft(finalFormatted)
-    setCentsValue(finalCents)
-    onValueChange?.(finalCents, finalFormatted)
-
     const nextCursor = calculateCurrencyCaretPosition({
       nextFormatted: finalFormatted,
-      rawInput,
-      rawCursorPos,
+      rawInput: text,
+      rawCursorPos: caret,
       locale,
       currency,
     })
 
-    requestAnimationFrame(() => {
-      inputRef.current?.setSelectionRange(nextCursor, nextCursor)
-    })
+    setEdit({ text: finalFormatted, caret: nextCursor })
+    setCentsValue(finalCents)
   }
 
   function handleBlur(event: React.FocusEvent<HTMLInputElement>) {
-    setDraft(null)
+    setEdit(null)
     if (centsValue !== null) {
       const clamped = Math.min(
         max ?? Infinity,
@@ -273,70 +248,35 @@ function CurrencyInput({
       )
       if (clamped !== centsValue) {
         setCentsValue(clamped)
-        onValueChange?.(clamped, formatCurrency(clamped, locale, currency))
       }
     }
-    props.onBlur?.(event)
-  }
-
-  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    onKeyDown?.(event)
-    if (event.defaultPrevented) return
-
-    if (event.key === "Backspace") {
-      const input = event.currentTarget
-      const start = input.selectionStart ?? 0
-      const end = input.selectionEnd ?? 0
-      const { group } = getCurrencyInfo(locale, currency)
-
-      if (start === end && start > 0 && displayedText[start - 1] === group) {
-        event.preventDefault()
-        const before = displayedText.slice(0, start - 2)
-        const after = displayedText.slice(start)
-        const combined = before + after
-        const parsed = parseCurrency(combined, locale, currency)
-
-        commit(parsed)
-        const nextFormatted = formatCurrency(parsed, locale, currency)
-        const nextCursor = calculateCurrencyCaretPosition({
-          nextFormatted,
-          rawInput: before,
-          rawCursorPos: start - 2,
-          locale,
-          currency,
-        })
-
-        requestAnimationFrame(() => {
-          input.setSelectionRange(nextCursor, nextCursor)
-        })
-      }
-    }
+    onBlur?.(event)
   }
 
   return (
     <>
       <input
+        {...props}
         ref={inputRef}
         type="text"
         inputMode="decimal"
         data-slot="currency-input"
         disabled={disabled}
-        value={displayedText}
+        value={display}
         onChange={handleChange}
         onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
         className={cn(
           "h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30",
           "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
           "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
           className
         )}
-        {...props}
       />
       {name && (
         <input
           type="hidden"
           name={name}
+          disabled={disabled}
           value={
             centsValue !== null && centsValue !== undefined ? centsValue : ""
           }

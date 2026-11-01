@@ -720,7 +720,7 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
           type: "string",
           required: true,
           description:
-            "Mask pattern with # (digit), a (letter), * (any character), and \\ for escaping literal characters.",
+            "Mask pattern where # matches digits, a or A matches letters, and * matches alphanumeric characters.",
         },
         {
           name: "definitions",

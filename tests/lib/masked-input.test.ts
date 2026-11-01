@@ -5,6 +5,7 @@ import {
   calculateCurrencyCaretPosition,
   calculateMaskCaretPosition,
   formatCurrency,
+  formatCurrencyLive,
   getCurrencyInfo,
   parseCurrency,
   unmaskValue,
@@ -44,6 +45,20 @@ describe("masked-input logic", () => {
       expect(applyMask("", "####").formatted).toBe("")
       expect(unmaskValue("", "####")).toBe("")
     })
+    it("does not get swallowed by literal digits in mask prefix and allows clearing", () => {
+      const mask = "+1 (###) ###-####"
+      // User types 1 into empty field
+      expect(unmaskValue("1", mask)).toBe("1")
+      expect(applyMask("1", mask).formatted).toBe("+1 (1")
+
+      // User types 5 into empty field
+      expect(unmaskValue("5", mask)).toBe("5")
+      expect(applyMask("5", mask).formatted).toBe("+1 (5")
+
+      // User backspaces the only digit 5, leaving "+1 ("
+      expect(unmaskValue("+1 (", mask)).toBe("")
+      expect(applyMask("", mask).formatted).toBe("")
+    })
   })
 
   describe("calculateMaskCaretPosition", () => {
@@ -80,6 +95,41 @@ describe("masked-input logic", () => {
         mask,
       })
       expect(pos).toBe(2)
+    })
+
+    it("keeps caret in place when a key is rejected instead of jumping to 0", () => {
+      const cardMask = "#### ####"
+      // User types '1', '2', then 'x' at caret 2 -> rawInput is "12x", caret at 3
+      const pos = calculateMaskCaretPosition({
+        nextFormatted: "12",
+        rawInput: "12x",
+        rawCursorPos: 3,
+        mask: cardMask,
+      })
+      expect(pos).toBe(2) // Stays at 2, does NOT jump to 0
+    })
+
+    it("clamps caret to end when typing into a full mask", () => {
+      const fullMask = "#### ####"
+      const pos = calculateMaskCaretPosition({
+        nextFormatted: "1234 5678",
+        rawInput: "1234 56789",
+        rawCursorPos: 10,
+        mask: fullMask,
+      })
+      expect(pos).toBe(9) // End of field, does NOT jump to 0
+    })
+
+    it("does not advance caret on a rejected key inside a full field", () => {
+      const cardMask = "#### #### #### ####"
+      // User at index 7 (after '6') types 'x' in full field "1234 5678 1234 5678"
+      const pos = calculateMaskCaretPosition({
+        nextFormatted: "1234 5678 1234 5678",
+        rawInput: "1234 56x78 1234 5678",
+        rawCursorPos: 8,
+        mask: cardMask,
+      })
+      expect(pos).toBe(7) // Stays at 7, does NOT move to 8
     })
   })
 
@@ -118,6 +168,28 @@ describe("masked-input logic", () => {
       expect(parseCurrency("1.250,50 €", "de-DE", "EUR")).toBe(125050)
       expect(parseCurrency("¥1,250", "ja-JP", "JPY")).toBe(1250)
       expect(parseCurrency("", "en-US", "USD")).toBeNull()
+    })
+
+    it("handles non-Latin numerals in locales like ar-EG", () => {
+      // 1234.56 EGP in ar-EG with Arabic-Indic digits
+      const formatted = formatCurrency(123456, "ar-EG", "EGP")
+      expect(parseCurrency(formatted, "ar-EG", "EGP")).toBe(123456)
+
+      const live = formatCurrencyLive("١٢٣٤٫٥٦", "ar-EG", "EGP")
+      expect(live.cents).toBe(123456)
+    })
+
+    it("handles negative currency values and preserves minus sign", () => {
+      expect(parseCurrency("-$12.50", "en-US", "USD")).toBe(-1250)
+      const live = formatCurrencyLive("-12.50", "en-US", "USD")
+      expect(live.cents).toBe(-1250)
+      expect(live.formatted).toBe("-$12.50")
+    })
+
+    it("clamps digits to safe integer limits", () => {
+      const live = formatCurrencyLive("12345678901234567890", "en-US", "USD")
+      expect(Number.isSafeInteger(live.cents!)).toBe(true)
+      expect(String(live.cents)).not.toContain("e+")
     })
 
     it("calculates caret position during currency formatting shifts", () => {

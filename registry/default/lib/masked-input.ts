@@ -1,5 +1,6 @@
 export const DEFAULT_MASK_DEFINITIONS: Record<string, RegExp> = {
   "#": /\d/,
+  a: /[a-zA-Z]/,
   A: /[a-zA-Z]/,
   "*": /[a-zA-Z0-9]/,
 }
@@ -11,45 +12,81 @@ export function isMaskToken(
   return char in definitions
 }
 
+export interface UnmaskResult {
+  raw: string
+  tokensBeforeCursor: number
+}
+
+/**
+ * Unmasks a value against a mask pattern, returning the raw unmasked tokens
+ * and tracking how many accepted tokens occurred strictly before cursorPos.
+ */
+export function unmaskWithDetails(
+  value: string,
+  mask: string,
+  cursorPos?: number,
+  definitions = DEFAULT_MASK_DEFINITIONS
+): UnmaskResult {
+  if (!value) return { raw: "", tokensBeforeCursor: 0 }
+
+  let raw = ""
+  let tokensBeforeCursor = 0
+  let valueIdx = 0
+  let maskIdx = 0
+
+  while (maskIdx < mask.length && valueIdx < value.length) {
+    const maskChar = mask[maskIdx]
+    const tokenRegex = definitions[maskChar]
+
+    if (tokenRegex) {
+      let found = false
+      while (valueIdx < value.length) {
+        const char = value[valueIdx]
+        const currentIndex = valueIdx
+        valueIdx++
+        if (tokenRegex.test(char)) {
+          raw += char
+          if (cursorPos !== undefined && currentIndex < cursorPos) {
+            tokensBeforeCursor++
+          }
+          found = true
+          break
+        }
+      }
+      if (!found) break
+      maskIdx++
+    } else {
+      let literalSegment = ""
+      let lookahead = maskIdx
+      while (lookahead < mask.length && !definitions[mask[lookahead]]) {
+        literalSegment += mask[lookahead]
+        lookahead++
+      }
+
+      if (value[valueIdx] === literalSegment[0]) {
+        let matched = 0
+        while (
+          matched < literalSegment.length &&
+          valueIdx < value.length &&
+          value[valueIdx] === literalSegment[matched]
+        ) {
+          matched++
+          valueIdx++
+        }
+      }
+      maskIdx = lookahead
+    }
+  }
+
+  return { raw, tokensBeforeCursor }
+}
+
 export function unmaskValue(
   value: string,
   mask: string,
   definitions = DEFAULT_MASK_DEFINITIONS
 ): string {
-  if (!value) return ""
-
-  let raw = ""
-  let valueIdx = 0
-
-  for (let m = 0; m < mask.length && valueIdx < value.length; m++) {
-    const maskChar = mask[m]
-    const tokenRegex = definitions[maskChar]
-
-    if (tokenRegex) {
-      while (valueIdx < value.length) {
-        const char = value[valueIdx++]
-        if (tokenRegex.test(char)) {
-          raw += char
-          break
-        }
-      }
-    } else {
-      if (value[valueIdx] === maskChar) {
-        valueIdx++
-      }
-    }
-  }
-
-  if (!raw) {
-    for (let i = 0; i < value.length; i++) {
-      const char = value[i]
-      if (Object.values(definitions).some((regex) => regex.test(char))) {
-        raw += char
-      }
-    }
-  }
-
-  return raw
+  return unmaskWithDetails(value, mask, undefined, definitions).raw
 }
 
 export function applyMask(
@@ -94,6 +131,49 @@ export function applyMask(
   return { formatted, raw: cleanRaw }
 }
 
+export function deleteTokenPastFormatting(
+  previous: string,
+  text: string,
+  caret: number,
+  isForward: boolean,
+  mask: string,
+  definitions = DEFAULT_MASK_DEFINITIONS
+): { text: string; caret: number } {
+  const previousRaw = unmaskValue(previous, mask, definitions)
+  const textRaw = unmaskValue(text, mask, definitions)
+  const removedFormatting =
+    previous.length - text.length === 1 && previousRaw === textRaw
+
+  if (!removedFormatting) return { text, caret }
+
+  if (isForward) {
+    for (let i = caret; i < text.length; i++) {
+      const char = text[i]
+      if (Object.values(definitions).some((regex) => regex.test(char))) {
+        return {
+          text: text.slice(0, i) + text.slice(i + 1),
+          caret,
+        }
+      }
+    }
+  } else {
+    const rawBefore = unmaskValue(text.slice(0, caret), mask, definitions)
+    if (rawBefore.length === 0) return { text, caret }
+
+    for (let i = caret - 1; i >= 0; i--) {
+      const char = text[i]
+      if (Object.values(definitions).some((regex) => regex.test(char))) {
+        return {
+          text: text.slice(0, i) + text.slice(i + 1),
+          caret: i,
+        }
+      }
+    }
+  }
+
+  return { text, caret }
+}
+
 export function calculateMaskCaretPosition({
   nextFormatted,
   rawInput,
@@ -107,15 +187,14 @@ export function calculateMaskCaretPosition({
   mask: string
   definitions?: Record<string, RegExp>
 }): number {
-  let rawCharsBefore = 0
-  for (let i = 0; i < Math.min(rawCursorPos, rawInput.length); i++) {
-    const char = rawInput[i]
-    if (Object.values(definitions).some((regex) => regex.test(char))) {
-      rawCharsBefore++
-    }
-  }
+  const { tokensBeforeCursor } = unmaskWithDetails(
+    rawInput,
+    mask,
+    rawCursorPos,
+    definitions
+  )
 
-  if (rawCharsBefore === 0) {
+  if (tokensBeforeCursor === 0) {
     let idx = 0
     while (idx < nextFormatted.length && !isMaskToken(mask[idx], definitions)) {
       idx++
@@ -123,13 +202,13 @@ export function calculateMaskCaretPosition({
     return idx
   }
 
-  let rawCount = 0
-  let caretIndex = 0
+  let tokenCount = 0
+  let caretIndex = nextFormatted.length
 
   for (let i = 0; i < nextFormatted.length; i++) {
     if (isMaskToken(mask[i], definitions)) {
-      rawCount++
-      if (rawCount === rawCharsBefore) {
+      tokenCount++
+      if (tokenCount === tokensBeforeCursor) {
         caretIndex = i + 1
         break
       }
@@ -146,6 +225,23 @@ export function calculateMaskCaretPosition({
   return Math.min(caretIndex, nextFormatted.length)
 }
 
+export function getLocaleDigitMap(locale: string = "en-US"): {
+  toStandard: Record<string, string>
+  isDigit: (char: string) => boolean
+} {
+  const formatter = new Intl.NumberFormat(locale, { useGrouping: false })
+  const toStandard: Record<string, string> = {}
+  for (let i = 0; i <= 9; i++) {
+    const loc = formatter.format(i)
+    toStandard[loc] = String(i)
+    toStandard[String(i)] = String(i)
+  }
+  return {
+    toStandard,
+    isDigit: (char: string) => char in toStandard,
+  }
+}
+
 export function getCurrencyInfo(
   locale: string = "en-US",
   currency: string = "USD"
@@ -155,15 +251,41 @@ export function getCurrencyInfo(
     currency,
   })
   const fractionDigits = formatter.resolvedOptions().maximumFractionDigits ?? 2
-  const parts = formatter.formatToParts(123456.78)
+  const sampleParts = formatter.formatToParts(123456.78)
 
-  const decimal = parts.find((p) => p.type === "decimal")?.value ?? "."
-  const group = parts.find((p) => p.type === "group")?.value ?? ","
+  const decimal = sampleParts.find((p) => p.type === "decimal")?.value ?? "."
+  const group = sampleParts.find((p) => p.type === "group")?.value ?? ","
   const currencySymbol =
-    parts.find((p) => p.type === "currency")?.value ?? currency
+    sampleParts.find((p) => p.type === "currency")?.value ?? currency
 
-  const firstPart = parts[0]?.type
-  const isPrefix = firstPart === "currency"
+  const firstNumIdx = sampleParts.findIndex((p) => p.type === "integer")
+  const lastNumIdx = sampleParts.findLastIndex(
+    (p) => p.type === "fraction" || p.type === "integer"
+  )
+
+  const prefix = sampleParts
+    .slice(0, firstNumIdx !== -1 ? firstNumIdx : 0)
+    .map((p) => p.value)
+    .join("")
+  const suffix = sampleParts
+    .slice(lastNumIdx !== -1 ? lastNumIdx + 1 : sampleParts.length)
+    .map((p) => p.value)
+    .join("")
+
+  const negParts = formatter.formatToParts(-123456.78)
+  const negFirstNumIdx = negParts.findIndex((p) => p.type === "integer")
+  const negLastNumIdx = negParts.findLastIndex(
+    (p) => p.type === "fraction" || p.type === "integer"
+  )
+
+  const negPrefix = negParts
+    .slice(0, negFirstNumIdx !== -1 ? negFirstNumIdx : 0)
+    .map((p) => p.value)
+    .join("")
+  const negSuffix = negParts
+    .slice(negLastNumIdx !== -1 ? negLastNumIdx + 1 : negParts.length)
+    .map((p) => p.value)
+    .join("")
 
   return {
     formatter,
@@ -171,7 +293,10 @@ export function getCurrencyInfo(
     decimal,
     group,
     currencySymbol,
-    isPrefix,
+    prefix,
+    suffix,
+    negPrefix,
+    negSuffix,
   }
 }
 
@@ -196,31 +321,45 @@ export function parseCurrency(
   locale: string = "en-US",
   currency: string = "USD"
 ): number | null {
-  const { fractionDigits, decimal, group } = getCurrencyInfo(locale, currency)
+  if (!text || !text.trim()) return null
 
-  const clean = text
-    .split(group)
-    .join("")
-    .replace(/[^\d.-]/g, (match) => (match === decimal ? "." : ""))
-    .trim()
+  const { fractionDigits, decimal } = getCurrencyInfo(locale, currency)
+  const { toStandard, isDigit } = getLocaleDigitMap(locale)
 
-  if (!clean || clean === "-" || clean === ".") return null
+  let isNegative = false
+  let intDigits = ""
+  let fracDigits = ""
+  let foundDecimal = false
 
-  const isNegative = clean.startsWith("-")
-  const unsigned = clean.replace(/-/g, "")
-
-  const [intPart = "0", fracPart = ""] = unsigned.split(".")
-  const intVal = Number(intPart) || 0
-
-  if (fractionDigits === 0) {
-    const total = intVal
-    return isNegative ? -total : total
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i]
+    if (char === "-") {
+      isNegative = true
+    } else if (char === decimal && fractionDigits > 0) {
+      foundDecimal = true
+    } else if (isDigit(char)) {
+      const standardChar = toStandard[char]
+      if (foundDecimal) {
+        if (fracDigits.length < fractionDigits) {
+          fracDigits += standardChar
+        }
+      } else {
+        const maxIntDigits = Math.max(1, 15 - fractionDigits)
+        if (intDigits.length < maxIntDigits) {
+          intDigits += standardChar
+        }
+      }
+    }
   }
 
-  const paddedFrac = fracPart
+  if (!intDigits && !fracDigits) return null
+
+  const intVal = intDigits ? Number(intDigits) : 0
+  const paddedFrac = fracDigits
     .padEnd(fractionDigits, "0")
     .slice(0, fractionDigits)
-  const total = intVal * Math.pow(10, fractionDigits) + Number(paddedFrac)
+  const fracVal = fractionDigits > 0 ? Number(paddedFrac) : 0
+  const total = intVal * Math.pow(10, fractionDigits) + fracVal
 
   return isNegative ? -total : total
 }
@@ -230,32 +369,38 @@ export function formatCurrencyLive(
   locale: string = "en-US",
   currency: string = "USD"
 ): { formatted: string; cents: number | null } {
-  const { fractionDigits, decimal, currencySymbol, isPrefix } = getCurrencyInfo(
-    locale,
-    currency
-  )
+  if (!input || !input.trim()) {
+    return { formatted: "", cents: null }
+  }
 
+  const { fractionDigits, decimal, prefix, suffix, negPrefix, negSuffix } =
+    getCurrencyInfo(locale, currency)
+  const { toStandard, isDigit } = getLocaleDigitMap(locale)
+
+  let isNegative = false
   let intDigits = ""
   let fracDigits = ""
   let foundDecimal = false
 
-  const cleanInput = input
-    .replace(new RegExp(`\\${currencySymbol}`, "g"), "")
-    .trim()
-
-  for (let i = 0; i < cleanInput.length; i++) {
-    const char = cleanInput[i]
-    if (char === decimal && fractionDigits > 0) {
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i]
+    if (char === "-") {
+      isNegative = true
+    } else if (char === decimal && fractionDigits > 0) {
       if (!foundDecimal) {
         foundDecimal = true
       }
-    } else if (/\d/.test(char)) {
+    } else if (isDigit(char)) {
+      const standardChar = toStandard[char]
       if (foundDecimal) {
         if (fracDigits.length < fractionDigits) {
-          fracDigits += char
+          fracDigits += standardChar
         }
       } else {
-        intDigits += char
+        const maxIntDigits = Math.max(1, 15 - fractionDigits)
+        if (intDigits.length < maxIntDigits) {
+          intDigits += standardChar
+        }
       }
     }
   }
@@ -273,22 +418,66 @@ export function formatCurrencyLive(
 
   let body = displayInt
   if (foundDecimal) {
-    body += decimal + fracDigits
+    let displayFrac = ""
+    const locFormatter = new Intl.NumberFormat(locale, { useGrouping: false })
+    for (const c of fracDigits) {
+      displayFrac += locFormatter.format(Number(c))
+    }
+    body += decimal + displayFrac
   }
 
-  const formatted = isPrefix
-    ? `${currencySymbol}${body}`
-    : `${body} ${currencySymbol}`
+  const activePrefix = isNegative ? negPrefix : prefix
+  const activeSuffix = isNegative ? negSuffix : suffix
+  const formatted = `${activePrefix}${body}${activeSuffix}`
 
   const paddedFrac = fracDigits
     .padEnd(fractionDigits, "0")
     .slice(0, fractionDigits)
-  const cents =
-    fractionDigits > 0
-      ? intNumber * Math.pow(10, fractionDigits) + Number(paddedFrac)
-      : intNumber
+  const fracVal = fractionDigits > 0 ? Number(paddedFrac) : 0
+  const total = intNumber * Math.pow(10, fractionDigits) + fracVal
+  const cents = isNegative ? -total : total
 
   return { formatted, cents }
+}
+
+export function deleteCurrencyDigitPastFormatting(
+  previous: string,
+  text: string,
+  caret: number,
+  isForward: boolean,
+  locale: string = "en-US"
+): { text: string; caret: number } {
+  const { isDigit } = getLocaleDigitMap(locale)
+
+  const prevDigits = Array.from(previous).filter(isDigit).join("")
+  const textDigits = Array.from(text).filter(isDigit).join("")
+
+  const removedFormatting =
+    previous.length - text.length === 1 && prevDigits === textDigits
+
+  if (!removedFormatting) return { text, caret }
+
+  if (isForward) {
+    for (let i = caret; i < text.length; i++) {
+      if (isDigit(text[i])) {
+        return {
+          text: text.slice(0, i) + text.slice(i + 1),
+          caret,
+        }
+      }
+    }
+  } else {
+    for (let i = caret - 1; i >= 0; i--) {
+      if (isDigit(text[i])) {
+        return {
+          text: text.slice(0, i) + text.slice(i + 1),
+          caret: i,
+        }
+      }
+    }
+  }
+
+  return { text, caret }
 }
 
 export function calculateCurrencyCaretPosition({
@@ -305,79 +494,49 @@ export function calculateCurrencyCaretPosition({
   currency?: string
 }): number {
   const { decimal } = getCurrencyInfo(locale, currency)
+  const { isDigit } = getLocaleDigitMap(locale)
 
   const rawDecimalIdx = rawInput.indexOf(decimal)
-  const isBeforeOrAtDecimal =
-    rawDecimalIdx === -1 || rawCursorPos <= rawDecimalIdx
+  const isPastDecimal = rawDecimalIdx !== -1 && rawCursorPos > rawDecimalIdx
 
-  if (isBeforeOrAtDecimal) {
-    let intDigitsBefore = 0
-    for (let i = 0; i < Math.min(rawCursorPos, rawInput.length); i++) {
-      if (/\d/.test(rawInput[i])) {
-        intDigitsBefore++
-      }
-    }
-
-    if (intDigitsBefore === 0) {
-      let idx = 0
-      while (idx < nextFormatted.length && !/\d/.test(nextFormatted[idx])) {
-        idx++
-      }
-      return idx
-    }
-
-    let count = 0
-    let caretIndex = nextFormatted.length
-    const nextDecimalIdx = nextFormatted.indexOf(decimal)
-    const intLimit =
-      nextDecimalIdx !== -1 ? nextDecimalIdx : nextFormatted.length
-
-    for (let i = 0; i < intLimit; i++) {
-      if (/\d/.test(nextFormatted[i])) {
-        count++
-        if (count === intDigitsBefore) {
-          caretIndex = i + 1
-          break
-        }
-      }
-    }
-
-    return caretIndex
-  }
-
-  // Cursor is after decimal in rawInput
-  const nextDecimalIdx = nextFormatted.indexOf(decimal)
-  if (nextDecimalIdx === -1) {
-    return nextFormatted.length
-  }
-
-  let fracDigitsBefore = 0
-  for (
-    let i = rawDecimalIdx + 1;
-    i < Math.min(rawCursorPos, rawInput.length);
-    i++
-  ) {
-    if (/\d/.test(rawInput[i])) {
-      fracDigitsBefore++
+  let digitsBefore = 0
+  for (let i = 0; i < Math.min(rawCursorPos, rawInput.length); i++) {
+    if (isDigit(rawInput[i])) {
+      digitsBefore++
     }
   }
 
-  if (fracDigitsBefore === 0) {
-    return nextDecimalIdx + 1
+  if (digitsBefore === 0) {
+    if (isPastDecimal) {
+      const nextDec = nextFormatted.indexOf(decimal)
+      return nextDec !== -1 ? nextDec + 1 : nextFormatted.length
+    }
+    let idx = 0
+    while (idx < nextFormatted.length && !isDigit(nextFormatted[idx])) {
+      idx++
+    }
+    return idx
   }
 
-  let fracCount = 0
+  let count = 0
   let caretIndex = nextFormatted.length
 
-  for (let i = nextDecimalIdx + 1; i < nextFormatted.length; i++) {
-    if (/\d/.test(nextFormatted[i])) {
-      fracCount++
-      if (fracCount === fracDigitsBefore) {
+  for (let i = 0; i < nextFormatted.length; i++) {
+    if (isDigit(nextFormatted[i])) {
+      count++
+      if (count === digitsBefore) {
         caretIndex = i + 1
         break
       }
     }
   }
 
-  return caretIndex
+  if (isPastDecimal) {
+    const nextDec = nextFormatted.indexOf(decimal)
+    if (nextDec !== -1 && caretIndex <= nextDec) {
+      caretIndex = nextDec + 1
+    }
+  }
+
+  return Math.min(caretIndex, nextFormatted.length)
 }
