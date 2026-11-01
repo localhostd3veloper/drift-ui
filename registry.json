@@ -486,6 +486,29 @@
       ]
     },
     {
+      "name": "shortcut-cheatsheet",
+      "type": "registry:ui",
+      "title": "Shortcut Cheatsheet",
+      "description": "A searchable overlay that lists keyboard shortcuts by section, opened with a key.",
+      "registryDependencies": [
+        "dialog",
+        "input",
+        "utils",
+        "@drift-ui/shortcut-recorder",
+        "@drift-ui/use-controllable-state"
+      ],
+      "files": [
+        {
+          "path": "registry/default/ui/shortcut-cheatsheet.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/default/lib/shortcut-cheatsheet.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "shortcut-recorder",
       "type": "registry:ui",
       "title": "Shortcut Recorder",

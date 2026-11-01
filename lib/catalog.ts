@@ -91,6 +91,7 @@ const ENTRY_LAYOUT: {
     category: "workflow",
     stageClassName: "flex-col flex-nowrap items-stretch justify-start",
   },
+  { slug: "shortcut-cheatsheet", category: "workflow" },
   {
     slug: "tour",
     category: "workflow",
