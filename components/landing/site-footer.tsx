@@ -44,6 +44,7 @@ export function SiteFooter() {
         <div className="flex flex-col gap-3">
           <Link
             href="/"
+            prefetch={false}
             className="flex w-fit items-center gap-2.5 font-display text-lg font-semibold tracking-tight"
           >
             <LogoMark />
@@ -63,6 +64,7 @@ export function SiteFooter() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
+                      prefetch={false}
                       className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
                       {link.label}

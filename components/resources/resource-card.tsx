@@ -36,6 +36,7 @@ export function ResourceFeature({ resource }: { resource: Resource }) {
   return (
     <Link
       href={resourcePath(resource.slug)}
+      prefetch={false}
       className="group grid items-center gap-6 rounded-2xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 lg:grid-cols-12 lg:gap-10"
     >
       {resource.image && (
@@ -47,6 +48,7 @@ export function ResourceFeature({ resource }: { resource: Resource }) {
             height={840}
             sizes="(min-width: 1024px) 58vw, 100vw"
             priority
+            fetchPriority="high"
             className="w-full transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transform-none"
           />
         </span>
@@ -72,6 +74,7 @@ export function ResourceRow({ resource }: { resource: Resource }) {
   return (
     <Link
       href={resourcePath(resource.slug)}
+      prefetch={false}
       className="group grid grid-cols-[minmax(0,1fr)_6.5rem] items-start gap-x-4 gap-y-3 py-6 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-inset sm:grid-cols-[minmax(0,1fr)_11rem] sm:gap-x-6 lg:grid-cols-12 lg:items-center lg:gap-8 lg:py-8"
     >
       {resource.image && (

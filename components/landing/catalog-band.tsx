@@ -60,6 +60,7 @@ export function CatalogBand() {
                   <li>
                     <Link
                       href="/components"
+                      prefetch={false}
                       className="rounded-sm text-brand transition-colors outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
                     >
                       and {row.remaining} more
@@ -73,6 +74,7 @@ export function CatalogBand() {
       </dl>
       <Link
         href="/components"
+        prefetch={false}
         className="group mt-8 flex w-fit items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         Browse all components

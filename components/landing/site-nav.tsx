@@ -24,6 +24,7 @@ export function SiteNav({ search }: { search?: React.ReactNode }) {
       <nav className="relative mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-10">
         <Link
           href="/"
+          prefetch={false}
           className="flex shrink-0 items-center gap-2.5 font-display text-lg font-semibold tracking-tight"
         >
           <LogoMark />
@@ -35,6 +36,7 @@ export function SiteNav({ search }: { search?: React.ReactNode }) {
               <li key={link.href}>
                 <Link
                   href={link.href}
+                  prefetch={false}
                   className="transition-colors hover:text-foreground"
                 >
                   {link.label}
