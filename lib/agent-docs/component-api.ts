@@ -1180,6 +1180,53 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
         "Import from @/lib/recurrence to read, write, summarize or expand a rule outside the editor.",
     },
   ],
+  "shortcut-cheatsheet": [
+    {
+      name: "ShortcutCheatsheet",
+      description:
+        "A dialog that lists shortcuts by section with a search field. It renders no button of its own: press the trigger, or set open from your own control.",
+      props: [
+        {
+          name: "sections",
+          type: "{ title: string; shortcuts: { keys: string; label: string }[] }[]",
+          required: true,
+          description:
+            'Shortcuts by section. keys uses the ShortcutRecorder format, such as "Mod+K".',
+        },
+        {
+          name: "trigger",
+          type: "string",
+          default: '"?"',
+          description:
+            'A character, or a shortcut string such as "Mod+/", that opens the cheatsheet from anywhere on the page except text fields. An empty string turns it off.',
+        },
+        {
+          name: "open",
+          type: "boolean",
+          description: "Controlled open state.",
+        },
+        {
+          name: "defaultOpen",
+          type: "boolean",
+          default: "false",
+          description: "Initial open state when uncontrolled.",
+        },
+        {
+          name: "onOpenChange",
+          type: "(open: boolean) => void",
+          description: "Called when the cheatsheet opens or closes.",
+        },
+      ],
+      rest: "DialogContent",
+    },
+    {
+      name: "filterSections, matchesTrigger",
+      signature:
+        "filterSections(sections: CheatsheetSection[], query: string): CheatsheetSection[]; matchesTrigger(event: KeyboardEvent, trigger: string, isMac: boolean): boolean",
+      description:
+        "Import from @/lib/shortcut-cheatsheet to reuse the search or the trigger check outside the dialog.",
+    },
+  ],
   "shortcut-recorder": [
     {
       name: "ShortcutRecorder",

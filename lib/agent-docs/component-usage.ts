@@ -466,6 +466,36 @@ export function StandupRepeat({ start }: { start: Date }) {
   return <RecurrenceEditor aria-label="Repeat" value={rule} onValueChange={setRule} start={start} showPreview={3} />
 }`,
   },
+  "shortcut-cheatsheet": {
+    notes:
+      "Mount it once near the app root. Pressing trigger opens a dialog listing sections of shortcuts, with focus in a search field that matches shortcut labels and section titles. keys uses the same format as ShortcutRecorder ('Mod+K', not 'mod+k'), so recorded bindings can be passed straight into sections and render with the same platform symbols. trigger is '?' by default and also takes a shortcut string such as 'Mod+/'. It is ignored in inputs, textareas, selects and contenteditable elements, and an empty string turns it off. Control open and onOpenChange to open it from a button or menu item, since mouse and touch users have no key to press. If two cheatsheets share a page, give them different triggers. Escape closes it and clears the search. Installs dialog, input and shortcut-recorder.",
+    example: `"use client"
+
+import { useState } from "react"
+import { ShortcutCheatsheet } from "@/components/ui/shortcut-cheatsheet"
+import { Button } from "@/components/ui/button"
+
+const sections = [
+  {
+    title: "Navigation",
+    shortcuts: [
+      { keys: "Mod+K", label: "Search" },
+      { keys: "G", label: "Go to inbox" },
+    ],
+  },
+]
+
+export function HelpMenu() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <Button variant="ghost" onClick={() => setOpen(true)}>Keyboard shortcuts</Button>
+      <ShortcutCheatsheet sections={sections} open={open} onOpenChange={setOpen} />
+    </>
+  )
+}`,
+  },
   "shortcut-recorder": {
     notes:
       "Click to record, then press a combination. Stores a portable string such as 'Mod+Shift+K' where Mod is Cmd on macOS and Ctrl elsewhere. requireModifier defaults to true. ShortcutKeys renders a stored shortcut as kbd elements; matchesShortcut(event, shortcut, isMac) from @/lib/shortcut checks key events.",

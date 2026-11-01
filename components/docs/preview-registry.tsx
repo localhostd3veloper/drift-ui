@@ -38,6 +38,7 @@ import { PopoverPreview } from "@/components/preview/popover-preview"
 import { PhoneInputPreview } from "@/components/preview/phone-input-preview"
 import { RatingPreview } from "@/components/preview/rating-preview"
 import { RecurrenceEditorPreview } from "@/components/preview/recurrence-editor-preview"
+import { ShortcutCheatsheetPreview } from "@/components/preview/shortcut-cheatsheet-preview"
 import { ShortcutRecorderPreview } from "@/components/preview/shortcut-recorder-preview"
 import { SignaturePadPreview } from "@/components/preview/signature-pad-preview"
 import { SortableListPreview } from "@/components/preview/sortable-list-preview"
@@ -78,6 +79,7 @@ export const PREVIEWS: Record<string, ComponentType> = {
   "phone-input": PhoneInputPreview,
   rating: RatingPreview,
   "recurrence-editor": RecurrenceEditorPreview,
+  "shortcut-cheatsheet": ShortcutCheatsheetPreview,
   "shortcut-recorder": ShortcutRecorderPreview,
   "signature-pad": SignaturePadPreview,
   "sortable-list": SortableListPreview,
