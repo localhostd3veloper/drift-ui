@@ -276,6 +276,28 @@
       ]
     },
     {
+      "name": "image-cropper",
+      "type": "registry:ui",
+      "title": "Image Cropper",
+      "description": "Pan, zoom, and rotate images with fixed or free aspect ratio and blob output.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "utils",
+        "button",
+        "@drift-ui/use-controllable-state"
+      ],
+      "files": [
+        {
+          "path": "registry/default/ui/image-cropper.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/default/lib/image-cropper.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "inline-edit",
       "type": "registry:ui",
       "title": "Inline Edit",
