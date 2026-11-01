@@ -74,12 +74,10 @@ export function SiteFooter() {
           ))}
         </div>
       </div>
-      <p
+      <div
         aria-hidden
-        className="mb-[-0.22em] text-center font-display text-[clamp(5rem,23vw,22rem)] leading-none font-semibold tracking-tighter text-[color-mix(in_oklab,var(--foreground)_7%,var(--background))] select-none"
-      >
-        drift-ui
-      </p>
+        className="mb-[-0.22em] text-center font-display text-[clamp(5rem,23vw,22rem)] leading-none font-semibold tracking-tighter text-[color-mix(in_oklab,var(--foreground)_7%,var(--background))] before:content-['drift-ui']"
+      />
     </footer>
   )
 }
