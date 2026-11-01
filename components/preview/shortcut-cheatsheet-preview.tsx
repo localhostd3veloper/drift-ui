@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation"
 
 import { Button } from "@/registry/default/ui/button"
 import { ShortcutCheatsheet } from "@/registry/default/ui/shortcut-cheatsheet"
@@ -28,16 +29,20 @@ const SECTIONS = [
 
 export function ShortcutCheatsheetPreview() {
   const [open, setOpen] = React.useState(false)
+  const isDocsPage = usePathname()?.endsWith("/shortcut-cheatsheet")
 
   return (
     <div className="flex flex-col items-center gap-3">
       <Button variant="outline" onClick={() => setOpen(true)}>
         Keyboard shortcuts
       </Button>
-      <p className="flex items-center gap-2 text-sm text-muted-foreground">
-        Or press <ShortcutKeys shortcut="?" />
-      </p>
+      {isDocsPage && (
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          Or press <ShortcutKeys shortcut="?" />
+        </p>
+      )}
       <ShortcutCheatsheet
+        trigger={isDocsPage ? "?" : ""}
         sections={SECTIONS}
         open={open}
         onOpenChange={setOpen}

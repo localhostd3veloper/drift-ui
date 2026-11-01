@@ -17,7 +17,7 @@ import {
   DialogTitle,
 } from "@/registry/default/ui/dialog"
 import { Input } from "@/registry/default/ui/input"
-import { ShortcutKeys, useIsMac } from "@/registry/default/ui/shortcut-recorder"
+import { ShortcutKeys } from "@/registry/default/ui/shortcut-recorder"
 
 function ShortcutCheatsheet({
   sections,
@@ -34,7 +34,6 @@ function ShortcutCheatsheet({
   defaultOpen?: boolean
   onOpenChange?: (open: boolean) => void
 }) {
-  const isMac = useIsMac()
   const { value: isOpen, setValue: setIsOpen } = useControllableState({
     value: open,
     defaultValue: defaultOpen,
@@ -43,6 +42,7 @@ function ShortcutCheatsheet({
 
   React.useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
+      const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.userAgent)
       if (event.defaultPrevented || !matchesTrigger(event, trigger, isMac))
         return
       event.preventDefault()
@@ -51,13 +51,13 @@ function ShortcutCheatsheet({
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [trigger, isMac, setIsOpen])
+  }, [trigger, setIsOpen])
 
   React.useEffect(() => {
     if (!isOpen) return
     const opener = document.activeElement
     return () => {
-      if (opener instanceof HTMLElement) opener.focus()
+      if (opener instanceof HTMLElement) opener.focus({ preventScroll: true })
     }
   }, [isOpen])
 
@@ -100,6 +100,9 @@ function ShortcutCheatsheetResults({
         placeholder="Search shortcuts"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.repeat && !query) event.preventDefault()
+        }}
       />
       <div
         role="region"
@@ -108,15 +111,15 @@ function ShortcutCheatsheetResults({
         data-slot="shortcut-cheatsheet-sections"
         className="flex max-h-[60vh] flex-col gap-5 overflow-y-auto rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
       >
-        {visibleSections.map((section) => (
-          <section key={section.title}>
+        {visibleSections.map((section, sectionIndex) => (
+          <section key={`${section.title}-${sectionIndex}`}>
             <h3 className="mb-1 text-xs font-medium text-muted-foreground">
               {section.title}
             </h3>
             <dl>
-              {section.shortcuts.map((shortcut) => (
+              {section.shortcuts.map((shortcut, shortcutIndex) => (
                 <div
-                  key={shortcut.label}
+                  key={`${shortcut.label}-${shortcutIndex}`}
                   className="flex items-center justify-between gap-4 py-1 text-sm"
                 >
                   <dt>{shortcut.label}</dt>

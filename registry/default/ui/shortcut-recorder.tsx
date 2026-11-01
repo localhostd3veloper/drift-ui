@@ -172,4 +172,4 @@ function ShortcutRecorderDisplay({
   return <span className="text-muted-foreground">{placeholder}</span>
 }
 
-export { ShortcutKeys, ShortcutRecorder, useIsMac }
+export { ShortcutKeys, ShortcutRecorder }

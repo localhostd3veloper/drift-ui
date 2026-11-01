@@ -1198,7 +1198,7 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
           type: "string",
           default: '"?"',
           description:
-            'A character, or a shortcut string such as "Mod+/", that opens the cheatsheet from anywhere on the page except text fields. An empty string turns it off.',
+            'A character, or a shortcut string such as "Mod+/", that opens the cheatsheet from anywhere on the page except text fields. An uppercase letter reads as a shortcut, so "G" is the G key without Shift. An empty string turns it off.',
         },
         {
           name: "open",

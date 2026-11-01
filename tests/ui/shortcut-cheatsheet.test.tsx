@@ -1,9 +1,16 @@
 import * as React from "react"
-import { render, screen, waitFor } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
+import { ShortcutCheatsheetPreview } from "@/components/preview/shortcut-cheatsheet-preview"
 import { ShortcutCheatsheet } from "@/registry/default/ui/shortcut-cheatsheet"
+
+const pathname = vi.hoisted(() => ({ current: "" }))
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => pathname.current,
+}))
 
 const SECTIONS = [
   {
@@ -146,6 +153,115 @@ describe("ShortcutCheatsheet", () => {
     await waitFor(() => expect(opener).toHaveFocus())
   })
 
+  it("returns focus without scrolling the page", async () => {
+    const user = userEvent.setup()
+    render(
+      <>
+        <button>Help</button>
+        <ShortcutCheatsheet sections={SECTIONS} />
+      </>
+    )
+    const opener = screen.getByRole("button", { name: "Help" })
+    opener.focus()
+    const focus = vi.spyOn(opener, "focus")
+
+    await user.keyboard("?")
+    await waitFor(() => expect(searchField()).toHaveFocus())
+    await user.keyboard("{Escape}")
+
+    await waitFor(() => expect(opener).toHaveFocus())
+    expect(focus).toHaveBeenCalled()
+    for (const [options] of focus.mock.calls)
+      expect(options).toMatchObject({ preventScroll: true })
+  })
+
+  it("lets the caller pick the focus target when the opener unmounts", async () => {
+    const user = userEvent.setup()
+    function Menu() {
+      const [open, setOpen] = React.useState(false)
+      const [isMenuOpen, setIsMenuOpen] = React.useState(true)
+      const menuButton = React.useRef<HTMLButtonElement>(null)
+      const returnFocus =
+        process.env.UI_PRIMITIVES === "base"
+          ? { finalFocus: menuButton }
+          : {
+              onCloseAutoFocus: (event: Event) => {
+                event.preventDefault()
+                menuButton.current?.focus()
+              },
+            }
+      return (
+        <>
+          <button ref={menuButton}>Menu</button>
+          {isMenuOpen && (
+            <button
+              onClick={() => {
+                setOpen(true)
+                setTimeout(() => setIsMenuOpen(false))
+              }}
+            >
+              Keyboard shortcuts
+            </button>
+          )}
+          <ShortcutCheatsheet
+            sections={SECTIONS}
+            open={open}
+            onOpenChange={setOpen}
+            {...returnFocus}
+          />
+        </>
+      )
+    }
+    render(<Menu />)
+
+    await user.click(screen.getByRole("button", { name: "Keyboard shortcuts" }))
+    await waitFor(() => expect(searchField()).toHaveFocus())
+    await user.keyboard("{Escape}")
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Menu" })).toHaveFocus()
+    )
+  })
+
+  it("drops a key still held from opening, but keeps typed repeats", () => {
+    render(<ShortcutCheatsheet sections={SECTIONS} defaultOpen />)
+
+    expect(fireEvent.keyDown(searchField(), { key: "?", repeat: true })).toBe(
+      false
+    )
+
+    fireEvent.change(searchField(), { target: { value: "i" } })
+    expect(fireEvent.keyDown(searchField(), { key: "i", repeat: true })).toBe(
+      true
+    )
+  })
+
+  it("renders shortcuts that share a label or a section title", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {})
+    render(
+      <ShortcutCheatsheet
+        defaultOpen
+        sections={[
+          {
+            title: "Navigation",
+            shortcuts: [
+              { keys: "Mod+K", label: "Search" },
+              { keys: "/", label: "Search" },
+            ],
+          },
+          {
+            title: "Navigation",
+            shortcuts: [{ keys: "G", label: "Go to inbox" }],
+          },
+        ]}
+      />
+    )
+
+    expect(screen.getAllByText("Search")).toHaveLength(2)
+    expect(error).not.toHaveBeenCalled()
+    error.mockRestore()
+  })
+
   it("lets the parent control open", async () => {
     const user = userEvent.setup()
     const onOpenChange = vi.fn()
@@ -197,4 +313,30 @@ describe("ShortcutCheatsheet", () => {
       "shortcut-cheatsheet"
     )
   })
+})
+
+describe("ShortcutCheatsheetPreview", () => {
+  it("opens on ? on its docs page", async () => {
+    pathname.current = "/components/radix/shortcut-cheatsheet"
+    const user = userEvent.setup()
+    render(<ShortcutCheatsheetPreview />)
+
+    await user.keyboard("?")
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument()
+  })
+
+  it.each(["/components", "/themes"])(
+    "leaves ? alone as a thumbnail on %s",
+    async (path) => {
+      pathname.current = path
+      const user = userEvent.setup()
+      render(<ShortcutCheatsheetPreview />)
+
+      await user.keyboard("?")
+
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+      expect(screen.queryByText("Or press")).not.toBeInTheDocument()
+    }
+  )
 })
