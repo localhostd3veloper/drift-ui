@@ -13,8 +13,12 @@ import {
 } from "@/components/docs/on-this-page"
 import { SiteFooter } from "@/components/landing/site-footer"
 import { SiteNav } from "@/components/landing/site-nav"
+import { ContributorAvatar } from "@/components/contributors/contributor-avatar"
 import { Tldr } from "@/components/resources/article-blocks"
-import { ResourceMeta } from "@/components/resources/resource-card"
+import {
+  ResourceMeta,
+  ResourceTagLinks,
+} from "@/components/resources/resource-card"
 import { JsonLd } from "@/components/seo/json-ld"
 import { createPageMetadata } from "@/lib/page-metadata"
 import {
@@ -58,7 +62,7 @@ export async function generateMetadata({
 
 function buildArticleSchema(resource: Resource) {
   const url = new URL(resourcePath(resource.slug), siteConfig.url).toString()
-  const organization = {
+  const publisher = {
     "@type": "Organization",
     "@id": `${siteConfig.url}/#organization`,
     name: siteConfig.name,
@@ -75,8 +79,14 @@ function buildArticleSchema(resource: Resource) {
     mainEntityOfPage: url,
     image:
       resource.image && new URL(resource.image.src, siteConfig.url).toString(),
-    author: organization,
-    publisher: organization,
+    keywords: resource.tags,
+    author: {
+      "@type": "Person",
+      name: resource.author.name,
+      url: resource.author.website,
+      sameAs: `https://github.com/${resource.author.login}`,
+    },
+    publisher,
     inLanguage: "en",
   }
 }
@@ -98,46 +108,67 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
     <div className="flex min-h-dvh flex-col bg-background text-foreground">
       <JsonLd schema={buildArticleSchema(resource)} />
       <SiteNav />
-      <main className="flex-1 px-4 pt-6 pb-24 md:px-10 md:pt-10">
+      <main className="flex-1 pb-24">
+        <header className="dark bg-background text-foreground">
+          <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,44rem)] justify-center gap-x-12 gap-y-2 px-4 pt-6 md:px-10 xl:h-[clamp(28rem,100dvh-12rem,38rem)] xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center xl:pt-0">
+            <div className="flex min-w-0 flex-col gap-5">
+              <Link
+                href="/resources"
+                className="flex h-11 w-fit items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ArrowLeftIcon className="size-3.5" />
+                Resources
+              </Link>
+              <ResourceMeta
+                resource={resource}
+                author={
+                  <a
+                    href={`https://github.com/${resource.author.login}`}
+                    className="flex min-h-6 items-center gap-2 text-foreground transition-colors hover:text-brand"
+                  >
+                    <ContributorAvatar
+                      login={resource.author.login}
+                      sizePx={24}
+                    />
+                    {resource.author.name}
+                  </a>
+                }
+                className="rise"
+              />
+              <h1 className="rise font-display text-[clamp(2.5rem,3.4vw,3rem)] leading-[1.02] font-semibold tracking-[-0.04em] text-balance [--rise-delay:80ms]">
+                {resource.title.replaceAll("drift-ui", "drift\u2011ui")}
+              </h1>
+              <p className="rise text-lg leading-relaxed text-muted-foreground [--rise-delay:160ms]">
+                {resource.description}
+              </p>
+              <ResourceTagLinks
+                tags={resource.tags}
+                className="rise [--rise-delay:240ms]"
+              />
+            </div>
+            {resource.image && (
+              <div className="relative mx-auto aspect-103/100 w-full max-w-lg mask-x-from-95% mask-b-from-92% xl:w-[calc(1.03*clamp(28rem,100dvh-12rem,38rem))] xl:max-w-none">
+                <Image
+                  src={resource.image.src}
+                  alt={resource.image.alt}
+                  fill
+                  sizes="(min-width: 1280px) 1160px, (min-width: 512px) 1024px, 200vw"
+                  priority
+                  className="object-cover object-right"
+                />
+              </div>
+            )}
+          </div>
+        </header>
         <div
           className={cn(
-            "mx-auto grid max-w-7xl grid-cols-[minmax(0,44rem)] justify-center gap-x-16",
+            "mx-auto grid max-w-6xl grid-cols-[minmax(0,44rem)] justify-center gap-x-16 px-4 pt-10 md:px-10 lg:pt-14 xl:justify-start",
             hasOutline && "xl:grid-cols-[minmax(0,44rem)_13rem]"
           )}
         >
           <div className="flex min-w-0 flex-col gap-8">
-            <Link
-              href="/resources"
-              className="flex h-11 w-fit items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <ArrowLeftIcon className="size-3.5" />
-              Resources
-            </Link>
-
             <article className="flex flex-col gap-10">
-              <header className="flex flex-col gap-5">
-                <ResourceMeta resource={resource} className="rise" />
-                <h1 className="rise font-display text-[clamp(2.5rem,6vw,4rem)] leading-[1.02] font-semibold tracking-[-0.04em] text-balance [--rise-delay:80ms]">
-                  {resource.title}
-                </h1>
-                <p className="rise text-xl leading-relaxed text-muted-foreground [--rise-delay:160ms]">
-                  {resource.description}
-                </p>
-              </header>
-
               <Tldr items={resource.tldr} />
-
-              {resource.image && (
-                <Image
-                  src={resource.image.src}
-                  alt={resource.image.alt}
-                  width={1600}
-                  height={840}
-                  sizes="(min-width: 768px) 704px, 100vw"
-                  priority
-                  className="w-full rounded-2xl border"
-                />
-              )}
 
               {hasOutline && (
                 <OnThisPageDisclosure
@@ -205,7 +236,7 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
           </div>
 
           {hasOutline && (
-            <aside className="hidden pt-21 xl:block">
+            <aside className="hidden xl:block">
               <OnThisPage sections={outline} />
             </aside>
           )}

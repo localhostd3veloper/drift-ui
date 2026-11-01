@@ -13,6 +13,16 @@ export async function Commands({ code }: { code: string }) {
   )
 }
 
+export async function CodeSample({
+  title,
+  code,
+}: {
+  title: string
+  code: string
+}) {
+  return <CodeFrame title={title} code={code} html={await highlight(code)} />
+}
+
 export function StepList({ children }: { children: React.ReactNode }) {
   return <ol className="mt-2 [counter-reset:step]">{children}</ol>
 }

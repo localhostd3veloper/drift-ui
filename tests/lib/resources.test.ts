@@ -5,10 +5,14 @@ import { describe, expect, it } from "vitest"
 
 import { createPageMetadata } from "@/lib/page-metadata"
 import {
+  findResource,
   headingId,
   nextResource,
+  RESOURCE_TAGS,
   RESOURCES,
   resourceOutline,
+  resourceSearchText,
+  resourceTagPath,
 } from "@/lib/resources"
 import { siteConfig } from "@/lib/site-config"
 
@@ -20,18 +24,55 @@ describe("resources", () => {
   })
 
   it("derives an outline from section headings", () => {
-    const [firstPost] = RESOURCES
+    const post = findResource("building-drift-ui-in-the-open")!
 
-    expect(resourceOutline(firstPost)).toContainEqual({
+    expect(resourceOutline(post)).toContainEqual({
       id: "what-drift-ui-is",
       label: "What drift-ui is",
     })
+  })
+
+  it("lists posts newest first", () => {
+    const dates = RESOURCES.map(({ publishedAt }) => publishedAt)
+
+    expect(dates).toEqual([...dates].sort().reverse())
   })
 
   it("gives every post a TL;DR", () => {
     for (const { slug, tldr } of RESOURCES) {
       expect(tldr.length, slug).toBeGreaterThan(0)
     }
+  })
+
+  it("credits every post to a maintainer", () => {
+    for (const { slug, author } of RESOURCES) {
+      expect(author.login, slug).toBe("localhostd3veloper")
+    }
+  })
+
+  it("tags every post, and every tag has a post", () => {
+    for (const { slug, tags } of RESOURCES) {
+      expect(tags.length, slug).toBeGreaterThan(0)
+    }
+    for (const tag of RESOURCE_TAGS) {
+      expect(
+        RESOURCES.some(({ tags }) => tags.includes(tag)),
+        tag
+      ).toBe(true)
+    }
+  })
+
+  it("links a tag to the filtered list", () => {
+    expect(resourceTagPath("Open source")).toBe("/resources?tag=Open%20source")
+  })
+
+  it("searches the author, tags and TL;DR as well as the title", () => {
+    const text = resourceSearchText(findResource("what-is-open-source")!)
+
+    expect(text).toContain("gautam anand")
+    expect(text).toContain("localhostd3veloper")
+    expect(text).toContain("students")
+    expect(text).toContain("hacktoberfest")
   })
 
   it("keeps search titles and descriptions short enough to show in full", () => {
