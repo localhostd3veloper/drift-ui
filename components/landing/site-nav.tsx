@@ -15,6 +15,7 @@ const NAV_LINKS = [
   { href: "/themes", label: "Themes" },
   { href: "/#install", label: "Install" },
   { href: "/contributors", label: "Contributors" },
+  { href: "/resources", label: "Resources" },
 ]
 
 export function SiteNav({ search }: { search?: React.ReactNode }) {
@@ -29,7 +30,7 @@ export function SiteNav({ search }: { search?: React.ReactNode }) {
           drift-ui
         </Link>
         <div className="flex items-center gap-1 md:gap-6">
-          <ul className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
+          <ul className="hidden items-center gap-6 text-sm text-muted-foreground lg:flex">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
@@ -62,7 +63,7 @@ export function SiteNav({ search }: { search?: React.ReactNode }) {
             </NavIconLink>
             <ThemeToggle />
           </div>
-          <MobileNav links={NAV_LINKS} className="md:hidden" />
+          <MobileNav links={NAV_LINKS} className="lg:hidden" />
         </div>
       </nav>
     </header>

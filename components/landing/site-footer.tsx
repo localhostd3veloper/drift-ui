@@ -27,6 +27,7 @@ const COLUMNS = [
       { href: siteConfig.repo, label: "GitHub" },
       { href: siteConfig.discord, label: "Discord" },
       { href: "/contributors", label: "Contributors" },
+      { href: "/resources", label: "Resources" },
       {
         href: `${siteConfig.repo}/issues/new/choose`,
         label: "Report an issue",

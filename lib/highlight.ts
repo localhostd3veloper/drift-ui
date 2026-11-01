@@ -5,7 +5,7 @@ let highlighter: Promise<Highlighter> | undefined
 function getHighlighter() {
   highlighter ??= createHighlighter({
     themes: ["github-light-default", "github-dark-default"],
-    langs: ["tsx"],
+    langs: ["tsx", "bash"],
   })
   return highlighter
 }
@@ -16,10 +16,10 @@ const THEMES = {
   defaultColor: false,
 } as const
 
-export async function highlight(code: string) {
+export async function highlight(code: string, lang: "tsx" | "bash" = "tsx") {
   const instance = await getHighlighter()
 
-  return instance.codeToHtml(code, THEMES)
+  return instance.codeToHtml(code, { ...THEMES, lang })
 }
 
 export async function highlightInline(code: string) {

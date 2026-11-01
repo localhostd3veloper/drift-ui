@@ -25,7 +25,7 @@ export function OnThisPage({
   sourceUrl,
 }: {
   sections: PageSection[]
-  sourceUrl: string
+  sourceUrl?: string
 }) {
   const [activeId, setActiveId] = useState<string | undefined>()
 
@@ -78,15 +78,17 @@ export function OnThisPage({
           })}
         </ul>
       </nav>
-      <a
-        href={sourceUrl}
-        target="_blank"
-        rel="noreferrer"
-        className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
-      >
-        View on GitHub
-        <ArrowUpRightIcon className="size-3" />
-      </a>
+      {sourceUrl && (
+        <a
+          href={sourceUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+        >
+          View on GitHub
+          <ArrowUpRightIcon className="size-3" />
+        </a>
+      )}
     </div>
   )
 }
