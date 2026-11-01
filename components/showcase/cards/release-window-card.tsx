@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { RocketIcon } from "lucide-react"
+import dynamic from "next/dynamic"
+import { CalendarIcon, RocketIcon } from "lucide-react"
 
 import { Badge } from "@/registry/default/ui/badge"
 import { Button } from "@/registry/default/ui/button"
@@ -14,14 +15,34 @@ import {
   CardHeader,
   CardTitle,
 } from "@/registry/default/ui/card"
-import {
-  DateTimeRangePicker,
-  type DateTimeRange,
-} from "@/registry/default/ui/date-time-range"
+import type { DateTimeRange } from "@/registry/default/ui/date-time-range"
 import { Label } from "@/registry/default/ui/label"
 import { useHasHydrated } from "@/hooks/use-has-hydrated"
 
 const LOCALE = "en-US"
+const PICKER_ID = "release-window"
+const PICKER_PLACEHOLDER = "Pick a start and end"
+
+function PickerPlaceholder() {
+  return (
+    <Button
+      id={PICKER_ID}
+      variant="outline"
+      className="w-full justify-start font-normal text-muted-foreground"
+    >
+      <CalendarIcon />
+      <span className="truncate">{PICKER_PLACEHOLDER}</span>
+    </Button>
+  )
+}
+
+const DateTimeRangePicker = dynamic(
+  () =>
+    import("@/registry/default/ui/date-time-range").then(
+      (module) => module.DateTimeRangePicker
+    ),
+  { ssr: false, loading: PickerPlaceholder }
+)
 
 const DEFAULT_WINDOW: DateTimeRange = {
   from: new Date(2026, 10, 12, 22, 0),
@@ -77,14 +98,14 @@ export function ReleaseWindowCard() {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="grid gap-2">
-          <Label htmlFor="release-window">Deploy window</Label>
+          <Label htmlFor={PICKER_ID}>Deploy window</Label>
           <DateTimeRangePicker
-            id="release-window"
+            id={PICKER_ID}
             value={range}
             onValueChange={setRange}
             locale={LOCALE}
             numberOfMonths={1}
-            placeholder="Pick a start and end"
+            placeholder={PICKER_PLACEHOLDER}
             className="max-w-none min-w-0"
           />
         </div>

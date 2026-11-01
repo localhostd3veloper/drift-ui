@@ -1,9 +1,22 @@
 import type { ComponentType } from "react"
 
+import { AccessibilityTreeFix } from "@/components/resources/accessibility-tree-fix"
 import { CodingAgentGuide } from "@/components/resources/coding-agent-guide"
 import { CollegeGuide } from "@/components/resources/college-guide"
 import { FirstPrReview } from "@/components/resources/first-pr-review"
 import { OpenSourceGuide } from "@/components/resources/open-source-guide"
+import { MAINTAINERS, type Maintainer } from "@/lib/contributors"
+
+export const RESOURCE_TAGS = [
+  "Accessibility",
+  "Coding agents",
+  "Contributing",
+  "drift-ui",
+  "Open source",
+  "Students",
+] as const
+
+export type ResourceTag = (typeof RESOURCE_TAGS)[number]
 
 export type ResourceSection = {
   heading?: string
@@ -21,6 +34,8 @@ export type Resource = {
   description: string
   publishedAt: string
   readMinutes: number
+  author: Maintainer
+  tags: ResourceTag[]
   tldr: string[]
   image?: { src: string; alt: string }
   sections: ResourceSection[]
@@ -28,14 +43,178 @@ export type Resource = {
   outline?: ResourceOutlineItem[]
 }
 
+const [GAUTAM_ANAND] = MAINTAINERS
+
 export const RESOURCES: Resource[] = [
+  {
+    slug: "fixing-our-accessibility-tree",
+    title: "How we fixed the accessibility tree on drift-ui",
+    description:
+      "Lighthouse gave our home page 88 for Accessibility. What failed, how we fixed it across 74 component pages, and which numbers didn’t move.",
+    publishedAt: "2026-11-01",
+    readMinutes: 5,
+    author: GAUTAM_ANAND,
+    tags: ["Accessibility", "drift-ui"],
+    tldr: [
+      "Accessibility went from 88 to 100 and Agentic Browsing from 2 of 3 to 3 of 3 on the live site.",
+      "Most fixes were names: use sr-only instead of hidden, and don’t let aria-label replace visible text.",
+      "Performance stayed at 59 to 76 on cloud machines, and Largest Contentful Paint went up in three regions.",
+      "A score of 100 doesn’t cover everything. One real bug we fixed isn’t counted in the score at all.",
+    ],
+    image: {
+      src: "/images/resources/accessibility-tree-fix.png",
+      alt: "An accessibility tree listing a tab, two buttons and a textbox, with a blue card labelled Well-formed drifting onto it, beside the headline Lighthouse said 88. The tree said why.",
+    },
+    sections: [],
+    Content: AccessibilityTreeFix,
+    outline: [
+      { id: "what-the-tree-is", label: "What the tree is" },
+      { id: "every-page", label: "Audit every page" },
+      { id: "no-name", label: "A step with no name" },
+      { id: "missing-panel", label: "An ID that pointed nowhere" },
+      { id: "visible-text", label: "Hidden visible text" },
+      { id: "wrong-role", label: "The wrong role" },
+      { id: "contrast", label: "Contrast and scrolling" },
+      { id: "results", label: "What the scores did" },
+      { id: "what-didnt-change", label: "What didn’t improve" },
+      { id: "try-it", label: "Try it yourself" },
+    ],
+  },
+  {
+    slug: "college-students-guide",
+    title: "A college student’s guide to open source",
+    description:
+      "A week-by-week plan that fits around classes and exams, plus student benefits, resume wording and the dates worth putting in your calendar.",
+    publishedAt: "2026-10-18",
+    readMinutes: 4,
+    author: GAUTAM_ANAND,
+    tags: ["Open source", "Students"],
+    tldr: [
+      "Two or three hours a week across one semester can get a pull request merged.",
+      "Keep midterm weeks free, and if you can’t finish a claimed issue, say so on the issue.",
+      "Claim your GitHub student benefits in week one.",
+      "On your resume, link the merged pull request and say what changed.",
+    ],
+    image: {
+      src: "/images/resources/college-students-guide.png",
+      alt: "A fourteen-week semester grid with two free weeks and a blue card labelled Merged drifting into the final slot, beside the headline One semester, one merged PR.",
+    },
+    sections: [],
+    Content: CollegeGuide,
+    outline: [
+      { id: "semester-plan", label: "A plan for one semester" },
+      { id: "student-benefits", label: "Student benefits" },
+      { id: "pick-a-project", label: "Pick a project" },
+      { id: "exams", label: "When exams get in the way" },
+      { id: "friends", label: "A friend or a club" },
+      { id: "coursework", label: "Keep coursework out of it" },
+      { id: "resume", label: "Put it on your resume" },
+      { id: "dates", label: "Dates for your calendar" },
+      { id: "start-here", label: "Where to start this week" },
+    ],
+  },
+  {
+    slug: "using-a-coding-agent",
+    title: "How to use a coding agent on an open source issue",
+    description:
+      "What an agent can do on your contribution, what stays with you, and how drift-ui sets agents up with AGENTS.md.",
+    publishedAt: "2026-10-05",
+    readMinutes: 3,
+    author: GAUTAM_ANAND,
+    tags: ["Coding agents", "Contributing"],
+    tldr: [
+      "Check the project’s AI policy first. Zig bans LLM use, and drift-ui allows agents.",
+      "Point the agent at AGENTS.md and keep the decisions, like picking and claiming an issue, for yourself.",
+      "Read the whole diff before you push, and answer review comments yourself.",
+    ],
+    image: {
+      src: "/images/resources/using-a-coding-agent.png",
+      alt: "A terminal running the work-on-issue command and stopping to ask for review, with a blue card labelled Your review, beside the headline The agent writes, you own the PR.",
+    },
+    sections: [],
+    Content: CodingAgentGuide,
+    outline: [
+      { id: "check-the-rules", label: "Check the rules first" },
+      { id: "agents-md", label: "AGENTS.md" },
+      { id: "who-does-what", label: "Who does what" },
+      { id: "review-it", label: "Review it yourself" },
+      { id: "stays-human", label: "What stays with you" },
+      { id: "using-components", label: "Using drift-ui from an agent" },
+    ],
+  },
+  {
+    slug: "what-a-maintainer-checks",
+    title: "What a maintainer checks in your first PR",
+    description:
+      "The checks a pull request goes through on drift-ui, shown on a real one: the issue link, the scope, the tests and the known gaps.",
+    publishedAt: "2026-09-22",
+    readMinutes: 3,
+    author: GAUTAM_ANAND,
+    tags: ["Contributing", "drift-ui"],
+    tldr: [
+      "Link an issue, stay inside its scope, and explain what the diff can’t show.",
+      "Give numbers for any new dependency, test keyboard use, and make sure CI passes.",
+      "List what you didn’t do. You won’t lose points for naming a gap.",
+    ],
+    image: {
+      src: "/images/resources/what-a-maintainer-checks.png",
+      alt: "A pull request checklist with every item ticked and a blue card labelled Ready to merge, beside the headline Answer the review before it starts.",
+    },
+    sections: [],
+    Content: FirstPrReview,
+    outline: [
+      { id: "closes-an-issue", label: "It closes an issue" },
+      { id: "what-and-why", label: "What and why" },
+      { id: "scope", label: "It stays in scope" },
+      { id: "dependencies", label: "New dependencies" },
+      { id: "tests", label: "Keyboard tests" },
+      { id: "ci", label: "CI passes" },
+      { id: "known-gaps", label: "Known gaps" },
+      { id: "screenshots", label: "Screenshots" },
+      { id: "if-you-get-stuck", label: "If you get stuck" },
+    ],
+  },
+  {
+    slug: "what-is-open-source",
+    title: "What open source is and how to contribute",
+    description:
+      "A guide for students: what open source means, how a pull request works from fork to merge, and why Hacktoberfest stopped counting pull requests in 2026.",
+    publishedAt: "2026-09-09",
+    readMinutes: 6,
+    author: GAUTAM_ANAND,
+    tags: ["Contributing", "Open source", "Students"],
+    tldr: [
+      "Open source means the license lets anyone use, study, change and share the code. A public repo with no license doesn’t count.",
+      "A contribution works the same way on most GitHub projects: find an issue, fork, branch, open a pull request and answer the review.",
+      "You don’t have to write code. Docs, translations, bug reports and triage all help.",
+      "Hacktoberfest stopped counting pull requests in 2026, so “four PRs for a T-shirt” advice is out of date.",
+    ],
+    image: {
+      src: "/images/resources/what-is-open-source.png",
+      alt: "A one-line README fix shown as a diff, with a blue card labelled Merged drifting onto it, beside the headline Your first pull request can be one line.",
+    },
+    sections: [],
+    Content: OpenSourceGuide,
+    outline: [
+      { id: "what-open-source-means", label: "What open source means" },
+      { id: "why-contribute", label: "Why contribute" },
+      { id: "non-code-contributions", label: "Non-code contributions" },
+      { id: "how-a-contribution-works", label: "How a contribution works" },
+      { id: "hacktoberfest", label: "Hacktoberfest" },
+      { id: "paid-programs", label: "Paid programs" },
+      { id: "closed-pull-requests", label: "Avoiding a closed PR" },
+      { id: "start-with-drift-ui", label: "Start with drift-ui" },
+    ],
+  },
   {
     slug: "building-drift-ui-in-the-open",
     title: "Building drift-ui in the open",
     description:
       "How an idea between two flatmates became an open source component registry, and why we want first-time contributors working on it.",
-    publishedAt: "2026-11-01",
+    publishedAt: "2026-08-27",
     readMinutes: 1,
+    author: GAUTAM_ANAND,
+    tags: ["drift-ui", "Open source"],
     tldr: [
       "drift-ui started as an idea between two flatmates, and the repo went public on October 31.",
       "It’s an MIT-licensed registry of components shadcn/ui doesn’t have.",
@@ -68,124 +247,6 @@ export const RESOURCES: Resource[] = [
       },
     ],
   },
-  {
-    slug: "what-is-open-source",
-    title: "What open source is and how to contribute",
-    description:
-      "A guide for students: what open source means, how a pull request works from fork to merge, and why Hacktoberfest stopped counting pull requests in 2026.",
-    publishedAt: "2026-11-01",
-    readMinutes: 6,
-    tldr: [
-      "Open source means the license lets anyone use, study, change and share the code. A public repo with no license doesn’t count.",
-      "A contribution works the same way on most GitHub projects: find an issue, fork, branch, open a pull request and answer the review.",
-      "You don’t have to write code. Docs, translations, bug reports and triage all help.",
-      "Hacktoberfest stopped counting pull requests in 2026, so “four PRs for a T-shirt” advice is out of date.",
-    ],
-    image: {
-      src: "/images/resources/what-is-open-source.png",
-      alt: "A one-line README fix shown as a diff, with a blue card labelled Merged drifting onto it, beside the headline Your first pull request can be one line.",
-    },
-    sections: [],
-    Content: OpenSourceGuide,
-    outline: [
-      { id: "what-open-source-means", label: "What open source means" },
-      { id: "why-contribute", label: "Why contribute" },
-      { id: "non-code-contributions", label: "Non-code contributions" },
-      { id: "how-a-contribution-works", label: "How a contribution works" },
-      { id: "hacktoberfest", label: "Hacktoberfest" },
-      { id: "paid-programs", label: "Paid programs" },
-      { id: "closed-pull-requests", label: "Avoiding a closed PR" },
-      { id: "start-with-drift-ui", label: "Start with drift-ui" },
-    ],
-  },
-  {
-    slug: "what-a-maintainer-checks",
-    title: "What a maintainer checks in your first PR",
-    description:
-      "The checks a pull request goes through on drift-ui, shown on a real one: the issue link, the scope, the tests and the known gaps.",
-    publishedAt: "2026-11-01",
-    readMinutes: 3,
-    tldr: [
-      "Link an issue, stay inside its scope, and explain what the diff can’t show.",
-      "Give numbers for any new dependency, test keyboard use, and make sure CI passes.",
-      "List what you didn’t do. You won’t lose points for naming a gap.",
-    ],
-    image: {
-      src: "/images/resources/what-a-maintainer-checks.png",
-      alt: "A pull request checklist with every item ticked and a blue card labelled Ready to merge, beside the headline Answer the review before it starts.",
-    },
-    sections: [],
-    Content: FirstPrReview,
-    outline: [
-      { id: "closes-an-issue", label: "It closes an issue" },
-      { id: "what-and-why", label: "What and why" },
-      { id: "scope", label: "It stays in scope" },
-      { id: "dependencies", label: "New dependencies" },
-      { id: "tests", label: "Keyboard tests" },
-      { id: "ci", label: "CI passes" },
-      { id: "known-gaps", label: "Known gaps" },
-      { id: "screenshots", label: "Screenshots" },
-      { id: "if-you-get-stuck", label: "If you get stuck" },
-    ],
-  },
-  {
-    slug: "using-a-coding-agent",
-    title: "How to use a coding agent on an open source issue",
-    description:
-      "What an agent can do on your contribution, what stays with you, and how drift-ui sets agents up with AGENTS.md.",
-    publishedAt: "2026-11-01",
-    readMinutes: 3,
-    tldr: [
-      "Check the project’s AI policy first. Zig bans LLM use, and drift-ui allows agents.",
-      "Point the agent at AGENTS.md and keep the decisions, like picking and claiming an issue, for yourself.",
-      "Read the whole diff before you push, and answer review comments yourself.",
-    ],
-    image: {
-      src: "/images/resources/using-a-coding-agent.png",
-      alt: "A terminal running the work-on-issue command and stopping to ask for review, with a blue card labelled Your review, beside the headline The agent writes, you own the PR.",
-    },
-    sections: [],
-    Content: CodingAgentGuide,
-    outline: [
-      { id: "check-the-rules", label: "Check the rules first" },
-      { id: "agents-md", label: "AGENTS.md" },
-      { id: "who-does-what", label: "Who does what" },
-      { id: "review-it", label: "Review it yourself" },
-      { id: "stays-human", label: "What stays with you" },
-      { id: "using-components", label: "Using drift-ui from an agent" },
-    ],
-  },
-  {
-    slug: "college-students-guide",
-    title: "A college student’s guide to open source",
-    description:
-      "A week-by-week plan that fits around classes and exams, plus student benefits, resume wording and the dates worth putting in your calendar.",
-    publishedAt: "2026-11-01",
-    readMinutes: 4,
-    tldr: [
-      "Two or three hours a week across one semester can get a pull request merged.",
-      "Keep midterm weeks free, and if you can’t finish a claimed issue, say so on the issue.",
-      "Claim your GitHub student benefits in week one.",
-      "On your resume, link the merged pull request and say what changed.",
-    ],
-    image: {
-      src: "/images/resources/college-students-guide.png",
-      alt: "A fourteen-week semester grid with two free weeks and a blue card labelled Merged drifting into the final slot, beside the headline One semester, one merged PR.",
-    },
-    sections: [],
-    Content: CollegeGuide,
-    outline: [
-      { id: "semester-plan", label: "A plan for one semester" },
-      { id: "student-benefits", label: "Student benefits" },
-      { id: "pick-a-project", label: "Pick a project" },
-      { id: "exams", label: "When exams get in the way" },
-      { id: "friends", label: "A friend or a club" },
-      { id: "coursework", label: "Keep coursework out of it" },
-      { id: "resume", label: "Put it on your resume" },
-      { id: "dates", label: "Dates for your calendar" },
-      { id: "start-here", label: "Where to start this week" },
-    ],
-  },
 ]
 
 const DATE_FORMAT = new Intl.DateTimeFormat("en", {
@@ -195,6 +256,22 @@ const DATE_FORMAT = new Intl.DateTimeFormat("en", {
 
 export function resourcePath(slug: string) {
   return `/resources/${slug}`
+}
+
+export function resourceTagPath(tag: ResourceTag) {
+  return `/resources?tag=${encodeURIComponent(tag)}`
+}
+
+export function resourceSearchText({
+  title,
+  description,
+  author,
+  tags,
+  tldr,
+}: Resource) {
+  return [title, description, author.name, author.login, ...tags, ...tldr]
+    .join(" ")
+    .toLowerCase()
 }
 
 export function findResource(slug: string) {

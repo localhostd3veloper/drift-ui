@@ -19,10 +19,12 @@ function isTypingTarget(target: EventTarget | null) {
 export function SearchField({
   value,
   onValueChange,
+  label = "Search components",
   className,
 }: {
   value: string
   onValueChange: (value: string) => void
+  label?: string
   className?: string
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -56,8 +58,8 @@ export function SearchField({
         value={value}
         onChange={(event) => onValueChange(event.target.value)}
         onKeyDown={handleKeyDown}
-        aria-label="Search components"
-        placeholder="Search components"
+        aria-label={label}
+        placeholder={label}
         className="h-10 w-full rounded-md border bg-card/60 pr-14 pl-9 text-sm shadow-xs transition-[border-color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [&::-webkit-search-cancel-button]:hidden"
       />
       {value ? (

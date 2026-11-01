@@ -1,18 +1,16 @@
 "use client"
 
-import { useEffect, useState, useSyncExternalStore } from "react"
-
 import { CardGroup } from "@/components/docs/card-group"
 import type { CatalogCard } from "@/components/docs/component-card"
 import { EmptyResults } from "@/components/docs/empty-results"
 import { SearchField } from "@/components/docs/search-field"
 import { SegmentedControl } from "@/components/docs/segmented-control"
 import type { CATEGORIES } from "@/lib/catalog"
+import { useUrlFilters } from "@/lib/use-url-filters"
 
 type Category = (typeof CATEGORIES)[number]
 
 const ALL = "all"
-const URL_SYNC_DELAY_MS = 250
 
 function matchesQuery(card: CatalogCard, query: string) {
   if (!query) return true
@@ -35,24 +33,12 @@ function parseFilters(search: string, categories: Category[]): Filters {
   }
 }
 
-function filtersUrl({ query, category }: Filters) {
+function filtersToParams({ query, category }: Filters) {
   const params = new URLSearchParams()
   if (query) params.set("q", query)
   if (category !== ALL) params.set("category", category)
 
-  return `${window.location.pathname}${params.size > 0 ? `?${params}` : ""}`
-}
-
-function subscribeToNothing() {
-  return () => {}
-}
-
-function useLocationSearch() {
-  return useSyncExternalStore(
-    subscribeToNothing,
-    () => window.location.search,
-    () => ""
-  )
+  return params
 }
 
 export function ComponentsBrowser({
@@ -62,20 +48,11 @@ export function ComponentsBrowser({
   categories: Category[]
   cards: CatalogCard[]
 }) {
-  const search = useLocationSearch()
-  const [edited, setEdited] = useState<Filters | null>(null)
-  const filters = edited ?? parseFilters(search, categories)
+  const [filters, setFilters] = useUrlFilters(
+    (search) => parseFilters(search, categories),
+    filtersToParams
+  )
   const { query, category: activeCategory } = filters
-
-  useEffect(() => {
-    if (!edited) return
-
-    const timeout = setTimeout(() => {
-      window.history.replaceState(null, "", filtersUrl(edited))
-    }, URL_SYNC_DELAY_MS)
-
-    return () => clearTimeout(timeout)
-  }, [edited])
 
   const normalizedQuery = query.trim().toLowerCase()
   const searched = cards.filter((card) => matchesQuery(card, normalizedQuery))
@@ -104,7 +81,7 @@ export function ComponentsBrowser({
   )
 
   function resetFilters() {
-    setEdited({ query: "", category: ALL })
+    setFilters({ query: "", category: ALL })
   }
 
   return (
@@ -112,14 +89,14 @@ export function ComponentsBrowser({
       <div className="contents lg:sticky lg:top-16 lg:z-20 lg:flex lg:items-center lg:gap-3 lg:border-b lg:border-border/60 lg:bg-background/80 lg:py-3 lg:backdrop-blur-md">
         <SearchField
           value={query}
-          onValueChange={(next) => setEdited({ ...filters, query: next })}
+          onValueChange={(next) => setFilters({ ...filters, query: next })}
           className="lg:w-72"
         />
         <div className="sticky top-16 z-20 -mx-4 mt-1 border-b border-border/60 bg-background/80 px-4 py-2 backdrop-blur-md md:-mx-10 md:px-10 lg:static lg:mx-0 lg:mt-0 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
           <SegmentedControl
             items={filterItems}
             value={activeCategory}
-            onValueChange={(next) => setEdited({ ...filters, category: next })}
+            onValueChange={(next) => setFilters({ ...filters, category: next })}
             label="Filter by category"
             className="-mx-1 [scrollbar-width:none] overflow-x-auto px-1 max-sm:justify-between max-sm:[&>button]:px-2"
           />

@@ -1,7 +1,8 @@
 "use client"
 
 import { CheckIcon, CopyIcon } from "lucide-react"
-import { AnimatePresence, motion } from "motion/react"
+import { AnimatePresence } from "motion/react"
+import * as m from "motion/react-m"
 
 import { cn } from "@/registry/default/lib/utils"
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard"
@@ -28,7 +29,7 @@ export function CopyButton({
       )}
     >
       <AnimatePresence initial={false} mode="popLayout">
-        <motion.span
+        <m.span
           key={hasCopied ? "copied" : "idle"}
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -41,7 +42,7 @@ export function CopyButton({
           ) : (
             <CopyIcon className="size-3.5" />
           )}
-        </motion.span>
+        </m.span>
       </AnimatePresence>
       <span aria-live="polite" className="sr-only">
         {hasCopied ? "Copied" : ""}

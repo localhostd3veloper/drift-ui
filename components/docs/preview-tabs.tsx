@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { RotateCcwIcon } from "lucide-react"
-import { motion } from "motion/react"
+import * as m from "motion/react-m"
 import { Tabs as TabsPrimitive } from "radix-ui"
 
 import { cn } from "@/registry/default/lib/utils"
@@ -40,13 +40,13 @@ export function PreviewTabs({
               onClick={() => setResetCount((count) => count + 1)}
               className="flex h-8 items-center gap-2 rounded-md px-3 text-sm text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
             >
-              <motion.span
+              <m.span
                 animate={{ rotate: resetCount * -360 }}
                 transition={{ type: "spring", stiffness: 180, damping: 18 }}
                 className="flex"
               >
                 <RotateCcwIcon className="size-3.5" />
-              </motion.span>
+              </m.span>
               Reset
             </button>
           </div>

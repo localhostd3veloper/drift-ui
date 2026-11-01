@@ -3,32 +3,67 @@ import Link from "next/link"
 import { ArrowRightIcon } from "lucide-react"
 
 import { cn } from "@/registry/default/lib/utils"
+import { Badge } from "@/registry/default/ui/badge"
 import {
   formatResourceDate,
   resourcePath,
+  resourceTagPath,
   type Resource,
 } from "@/lib/resources"
 
 export function ResourceMeta({
   resource,
+  author = resource.author.name,
   className,
 }: {
   resource: Resource
+  author?: React.ReactNode
   className?: string
 }) {
   return (
     <p
       className={cn(
-        "flex flex-wrap gap-x-2 font-mono text-xs text-muted-foreground",
+        "flex flex-wrap items-center gap-x-2 font-mono text-xs text-muted-foreground",
         className
       )}
     >
+      {author}
+      <span aria-hidden>·</span>
       <time dateTime={resource.publishedAt}>
         {formatResourceDate(resource.publishedAt)}
       </time>
       <span aria-hidden>·</span>
       <span>{resource.readMinutes} min read</span>
     </p>
+  )
+}
+
+function ResourceTags({ tags }: Pick<Resource, "tags">) {
+  return (
+    <span className="flex flex-wrap gap-1.5">
+      {tags.map((tag) => (
+        <Badge key={tag} variant="outline" className="text-muted-foreground">
+          {tag}
+        </Badge>
+      ))}
+    </span>
+  )
+}
+
+export function ResourceTagLinks({
+  tags,
+  className,
+}: Pick<Resource, "tags"> & { className?: string }) {
+  return (
+    <div className={cn("flex flex-wrap gap-1.5", className)}>
+      {tags.map((tag) => (
+        <Badge key={tag} asChild variant="outline" className="h-7 px-2.5">
+          <Link href={resourceTagPath(tag)} prefetch={false}>
+            {tag}
+          </Link>
+        </Badge>
+      ))}
+    </div>
   )
 }
 
@@ -61,6 +96,7 @@ export function ResourceFeature({ resource }: { resource: Resource }) {
         <span className="text-lg leading-relaxed text-muted-foreground">
           {resource.description}
         </span>
+        <ResourceTags tags={resource.tags} />
         <span className="flex items-center gap-1.5 text-sm font-medium">
           Read the post
           <ArrowRightIcon className="size-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -94,6 +130,7 @@ export function ResourceRow({ resource }: { resource: Resource }) {
         <h2 className="font-display text-xl font-semibold tracking-tight text-balance transition-colors group-hover:text-brand sm:text-2xl">
           {resource.title}
         </h2>
+        <ResourceTags tags={resource.tags} />
       </span>
       <span className="col-span-2 leading-relaxed text-muted-foreground lg:col-span-4 lg:col-start-9">
         {resource.description}
