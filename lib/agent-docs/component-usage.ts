@@ -480,6 +480,20 @@ export function CommandMenuShortcut() {
   )
 }`,
   },
+  "signature-pad": {
+    notes:
+      'SignaturePad captures a signature drawn with mouse, pen or touch, or typed through the "Type instead" fallback that keeps it usable from the keyboard and with a screen reader. onValueChange fires at the end of each stroke with SVG markup, or a PNG data URL when format="png", and with an empty string when nothing is signed. penColor takes any CSS color; currentColor is kept in the SVG so it inherits where it is inlined, and every other color is resolved at export. Set value to an earlier export to show it as a saved signature, which Clear removes before the signer can redraw. Set value to "" to reset the pad. Pass name to submit the value with a form, and aria-label to name the pad. The pure helpers exportSignature and strokeToPath live in @/lib/signature-pad. Installs button and input.',
+    example: `"use client"
+
+import { useState } from "react"
+import { SignaturePad } from "@/components/ui/signature-pad"
+
+export function DeliveryConfirmation() {
+  const [signature, setSignature] = useState("")
+
+  return <SignaturePad aria-label="Delivery signature" value={signature} onValueChange={setSignature} format="svg" penColor="currentColor" />
+}`,
+  },
   "sortable-list": {
     notes:
       "Reorderable list built on Motion's Reorder: the dragged row follows the pointer, neighbours spring out of the way, and the page or a scrollable parent scrolls near its edges. Controlled with value/onValueChange or uncontrolled with defaultValue. onValueChange fires once, on drop, and only if the order changed; the render function gets the live index during a move. Space/Enter picks up or drops an item, ArrowUp/ArrowDown (or ArrowLeft/ArrowRight for horizontal) moves it, Home/End jump to the ends, and Escape cancels a keyboard or pointer move. Moving focus away drops the item. Screen readers receive live status announcements. Add SortableDragHandle to limit dragging to a grip, which also leaves touch scrolling and text selection working on the row. Without a handle, the row drags from anywhere except links, buttons and form controls inside it. If the list sits in an overflow container that can scroll, wrap that container in motion.div with layoutScroll.",

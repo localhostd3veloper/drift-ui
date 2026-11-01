@@ -68,6 +68,7 @@ const ENTRY_LAYOUT: {
   { slug: "rating", category: "inputs" },
   { slug: "recurrence-editor", category: "inputs" },
   { slug: "shortcut-recorder", category: "inputs", stageClassName: "gap-8" },
+  { slug: "signature-pad", category: "inputs" },
   { slug: "tags-input", category: "inputs" },
   { slug: "time-field", category: "inputs", stageClassName: "gap-8" },
   { slug: "avatar-group", category: "structure" },

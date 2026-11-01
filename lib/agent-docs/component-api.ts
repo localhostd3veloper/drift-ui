@@ -1230,6 +1230,51 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
         "Import from @/lib/shortcut. Returns true when a keyboard event matches a stored shortcut.",
     },
   ],
+  "signature-pad": [
+    {
+      name: "SignaturePad",
+      description:
+        "A drawing surface for mouse, pen and touch with undo and clear, plus a typed-name fallback for keyboard and screen reader users. Exports SVG markup or a PNG data URL. Pass aria-label.",
+      props: [
+        STATE_PROPS.value("string", "signature"),
+        STATE_PROPS.defaultValue("string", '""'),
+        STATE_PROPS.onValueChange(
+          "(value: string) => void",
+          "at the end of each stroke, or an empty string once nothing is signed"
+        ),
+        {
+          name: "format",
+          type: '"svg" | "png"',
+          default: '"svg"',
+          description: "SVG markup, or a transparent PNG data URL.",
+        },
+        {
+          name: "penColor",
+          type: "string",
+          default: '"currentColor"',
+          description:
+            "Any CSS color. currentColor stays in exported SVG so it inherits; other colors are resolved at export.",
+        },
+        {
+          name: "name",
+          type: "string",
+          description: "Submits the value through a hidden input.",
+        },
+        {
+          name: "placeholder",
+          type: "string",
+          default: '"Sign here"',
+          description: "Hint shown on the empty pad.",
+        },
+        {
+          name: "disabled",
+          type: "boolean",
+          description: "Dims the pad and ignores pointer input.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
   "sortable-list": [
     {
       name: "SortableList",
