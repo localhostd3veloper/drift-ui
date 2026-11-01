@@ -108,9 +108,8 @@ function MentionTextarea({
         <textarea
           ref={textareaRef}
           data-slot="mention-textarea"
-          role="combobox"
           aria-autocomplete="list"
-          aria-expanded={isOpen}
+          aria-haspopup="listbox"
           aria-controls={isOpen ? listId : undefined}
           aria-activedescendant={
             isOpen ? `${listId}-${highlightedIndex}` : undefined
