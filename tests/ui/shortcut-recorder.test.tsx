@@ -75,6 +75,12 @@ describe("ShortcutRecorder", () => {
     expect(onValueChange).toHaveBeenCalledWith("")
   })
 
+  it("keeps the recorded keys in the labelled button's accessible name", () => {
+    render(<ShortcutRecorder aria-label="Command shortcut" value="Mod+K" />)
+
+    expect(recorder()).toHaveAccessibleName(/^Command shortcut: .*K/)
+  })
+
   it("stops recording when focus leaves", async () => {
     const user = userEvent.setup()
     render(<ShortcutRecorder aria-label="Command shortcut" />)

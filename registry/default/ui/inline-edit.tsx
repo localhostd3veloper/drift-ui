@@ -99,7 +99,6 @@ function InlineEdit({
           }}
           type="button"
           data-slot="inline-edit-trigger"
-          aria-label={ariaLabel ? `Edit ${ariaLabel}` : undefined}
           disabled={disabled}
           onClick={startEditing}
           className={cn(
@@ -107,6 +106,7 @@ function InlineEdit({
             "hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none"
           )}
         >
+          {ariaLabel && <span className="sr-only">Edit {ariaLabel}:</span>}{" "}
           <span className={cn("truncate", !value && "text-muted-foreground")}>
             {value || placeholder}
           </span>

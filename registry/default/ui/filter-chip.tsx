@@ -46,11 +46,8 @@ function SelectValueEditor({
         onDismissEmpty()
       }}
       trigger={
-        <button
-          type="button"
-          aria-label={`${field.label} value`}
-          className={segmentClassName}
-        >
+        <button type="button" className={segmentClassName}>
+          <span className="sr-only">{field.label} value:</span>{" "}
           <ValueLabel text={selected?.label ?? ""} />
         </button>
       }
@@ -90,10 +87,8 @@ function TypedValueEditor({
 
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
-      <PopoverTrigger
-        aria-label={`${field.label} value`}
-        className={segmentClassName}
-      >
+      <PopoverTrigger className={segmentClassName}>
+        <span className="sr-only">{field.label} value:</span>{" "}
         <ValueLabel text={filter.value} />
       </PopoverTrigger>
       <PopoverContent align="start" className="w-56 p-2">
@@ -157,9 +152,9 @@ function FilterChip({
         trigger={
           <button
             type="button"
-            aria-label={`${field.label} operator`}
             className={cn(segmentClassName, "text-muted-foreground")}
           >
+            <span className="sr-only">{field.label} operator:</span>{" "}
             {operatorLabel(filter.operator)}
           </button>
         }

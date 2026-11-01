@@ -9,6 +9,14 @@ async function openPicker(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe("ColorPicker", () => {
+  it("keeps the hex value in the labelled trigger's accessible name", () => {
+    render(<ColorPicker aria-label="Accent color" defaultValue="#6366f1" />)
+
+    expect(
+      screen.getByRole("button", { name: "Accent color: #6366f1" })
+    ).toBeInTheDocument()
+  })
+
   it("shows the current color on the trigger", () => {
     render(<ColorPicker defaultValue="#6366f1" />)
     expect(screen.getByRole("button", { name: /#6366f1/ })).toBeInTheDocument()

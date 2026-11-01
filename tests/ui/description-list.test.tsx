@@ -55,14 +55,14 @@ describe("DescriptionList", () => {
     const onRename = vi.fn()
     render(<UserDetails onRename={onRename} />)
 
-    await user.click(screen.getByRole("button", { name: "Edit Owner" }))
+    await user.click(screen.getByRole("button", { name: /^Edit Owner:/ }))
     const input = screen.getByRole("textbox", { name: "Owner" })
     await user.clear(input)
     await user.type(input, "Kenji{Enter}")
 
     expect(onRename).toHaveBeenCalledWith("Kenji")
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "Edit Owner" })).toHaveFocus()
+      expect(screen.getByRole("button", { name: /^Edit Owner:/ })).toHaveFocus()
     )
     expect(screen.getAllByRole("definition")[1]).toHaveTextContent("Kenji")
   })
