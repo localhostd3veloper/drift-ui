@@ -4,6 +4,7 @@ import {
   Geist_Mono,
   Plus_Jakarta_Sans,
 } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -85,6 +86,7 @@ export default function RootLayout({
           <ThemeScopeStyle />
           {children}
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   )
