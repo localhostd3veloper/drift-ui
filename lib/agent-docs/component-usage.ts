@@ -270,6 +270,27 @@ export function IssueFilters({ issues }: { issues: { status: string; title: stri
   )
 }`,
   },
+  "image-cropper": {
+    notes:
+      "Interactive image crop component for avatars and covers. Supports pointer drag-to-pan, mouse wheel / slider zoom, 90-degree step rotation, rule-of-thirds grid, and fixed or free aspect ratios. cropShape can be 'rect' or 'round'. Emits a cropped Blob and pixel crop coordinates through onCropComplete(blob, pixelCrop) when user finishes adjusting or clicks Apply. Full keyboard support with Arrow keys to pan, +/- to zoom, and Enter to crop.",
+    example: `"use client"
+
+import { useState } from "react"
+import { ImageCropper } from "@/components/ui/image-cropper"
+
+export function AvatarUpload() {
+  const [blob, setBlob] = useState<Blob | null>(null)
+
+  return (
+    <ImageCropper
+      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800"
+      aspect={1}
+      cropShape="round"
+      onCropComplete={setBlob}
+    />
+  )
+}`,
+  },
   "inline-edit": {
     notes:
       "Click to edit, Enter or blur saves, Escape cancels. value is required and onSave(value) may return a promise; while it is pending the field is read only, and a rejected promise marks it invalid and keeps it open. Pass aria-label describing the field.",

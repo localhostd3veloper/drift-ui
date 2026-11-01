@@ -26,6 +26,7 @@ import { DurationInputPreview } from "@/components/preview/duration-input-previe
 import { EmojiPickerPreview } from "@/components/preview/emoji-picker-preview"
 import { FileDropzonePreview } from "@/components/preview/file-dropzone-preview"
 import { FilterBuilderPreview } from "@/components/preview/filter-builder-preview"
+import { ImageCropperPreview } from "@/components/preview/image-cropper-preview"
 import { InlineEditPreview } from "@/components/preview/inline-edit-preview"
 import { InputPreview } from "@/components/preview/input-preview"
 import { JsonViewerPreview } from "@/components/preview/json-viewer-preview"
@@ -66,6 +67,7 @@ export const PREVIEWS: Record<string, ComponentType> = {
   "emoji-picker": EmojiPickerPreview,
   "file-dropzone": FileDropzonePreview,
   "filter-builder": FilterBuilderPreview,
+  "image-cropper": ImageCropperPreview,
   "inline-edit": InlineEditPreview,
   input: InputPreview,
   "json-viewer": JsonViewerPreview,

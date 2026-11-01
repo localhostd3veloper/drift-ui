@@ -636,6 +636,131 @@ export const COMPONENT_API: Record<string, ApiPart[]> = {
         "Import from @/lib/filter to apply a Filter ({ id, fieldId, operator, value }) to your rows. An empty filter value matches everything. Text fields use contains, not-contains, is and is-not, numbers use eq, gt and lt, and selects use is and is-not.",
     },
   ],
+  "image-cropper": [
+    {
+      name: "ImageCropper",
+      description:
+        "An image cropping widget supporting pan, zoom, rotation, fixed or free aspect ratio, and Blob export.",
+      props: [
+        {
+          name: "src",
+          type: "string | File | Blob",
+          required: true,
+          description: "Source image URL, File, or Blob.",
+        },
+        {
+          name: "aspect",
+          type: "number | null",
+          default: "1",
+          description:
+            "Aspect ratio (width / height). Null allows unconstrained cropping.",
+        },
+        {
+          name: "cropShape",
+          type: '"rect" | "round"',
+          default: '"rect"',
+          description:
+            "Visual mask overlay shape. round displays a circular mask for avatars.",
+        },
+        {
+          name: "zoom",
+          type: "number",
+          description: "Controlled zoom scale.",
+        },
+        {
+          name: "defaultZoom",
+          type: "number",
+          default: "1",
+          description: "Initial zoom scale when uncontrolled.",
+        },
+        {
+          name: "onZoomChange",
+          type: "(zoom: number) => void",
+          description: "Called when zoom scale changes.",
+        },
+        {
+          name: "minZoom",
+          type: "number",
+          default: "1",
+          description: "Minimum zoom scale.",
+        },
+        {
+          name: "maxZoom",
+          type: "number",
+          default: "3",
+          description: "Maximum zoom scale.",
+        },
+        {
+          name: "rotation",
+          type: "number",
+          description: "Controlled rotation angle in degrees.",
+        },
+        {
+          name: "defaultRotation",
+          type: "number",
+          default: "0",
+          description: "Initial rotation angle in degrees.",
+        },
+        {
+          name: "onRotationChange",
+          type: "(rotation: number) => void",
+          description: "Called when rotation angle changes.",
+        },
+        {
+          name: "crop",
+          type: "Point",
+          description: "Controlled pan offset { x, y } in pixels.",
+        },
+        {
+          name: "defaultCrop",
+          type: "Point",
+          default: "{ x: 0, y: 0 }",
+          description: "Initial pan offset.",
+        },
+        {
+          name: "onCropChange",
+          type: "(crop: Point) => void",
+          description: "Called when pan offset changes.",
+        },
+        {
+          name: "onCropComplete",
+          type: "(blob: Blob, pixelCrop: PixelCrop) => void",
+          description:
+            "Called with the cropped image Blob and natural pixel crop dimensions.",
+        },
+        {
+          name: "outputType",
+          type: '"image/png" | "image/jpeg" | "image/webp"',
+          default: '"image/png"',
+          description: "MIME type for the generated Blob.",
+        },
+        {
+          name: "outputQuality",
+          type: "number",
+          default: "0.92",
+          description: "Quality setting (0 to 1) for lossy formats.",
+        },
+        {
+          name: "showControls",
+          type: "boolean",
+          default: "true",
+          description: "Show zoom slider and rotate buttons below canvas.",
+        },
+        {
+          name: "showGrid",
+          type: "boolean",
+          default: "true",
+          description: "Show rule-of-thirds grid inside crop area.",
+        },
+        {
+          name: "disabled",
+          type: "boolean",
+          description: "Disables pan, zoom, and rotate interactions.",
+        },
+      ],
+      rest: "<div>",
+    },
+  ],
   "inline-edit": [
     {
       name: "InlineEdit",

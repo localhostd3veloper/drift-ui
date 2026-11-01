@@ -59,6 +59,7 @@ const ENTRY_LAYOUT: {
   { slug: "duration-input", category: "inputs" },
   { slug: "emoji-picker", category: "inputs" },
   { slug: "file-dropzone", category: "inputs" },
+  { slug: "image-cropper", category: "inputs" },
   { slug: "inline-edit", category: "inputs" },
   { slug: "mention-textarea", category: "inputs" },
   { slug: "multi-select", category: "inputs" },
