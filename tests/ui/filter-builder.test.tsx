@@ -20,7 +20,11 @@ const FIELDS: FilterField[] = [
 
 function chipTexts() {
   return Array.from(document.querySelectorAll("[data-slot=filter-chip]")).map(
-    (chip) => chip.textContent
+    (chip) => {
+      const visible = chip.cloneNode(true) as HTMLElement
+      visible.querySelectorAll(".sr-only").forEach((label) => label.remove())
+      return visible.textContent
+    }
   )
 }
 
@@ -46,7 +50,13 @@ describe("FilterBuilder", () => {
     await waitFor(() => expect(screen.getByRole("menu")).toHaveFocus())
     await user.keyboard("{ArrowDown}{Enter}")
 
-    expect(chipTexts()).toEqual(["StatusisOpen"])
+    expect(chipTexts()).toEqual(["Status is Open"])
+    expect(
+      screen.getByRole("button", { name: "Status operator: is" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "Status value: Open" })
+    ).toBeInTheDocument()
     expect(onValueChange.mock.lastCall?.[0]).toMatchObject([
       { fieldId: "status", operator: "is", value: "open" },
     ])
@@ -61,7 +71,7 @@ describe("FilterBuilder", () => {
     expect(screen.getByRole("textbox", { name: "Title value" })).toHaveFocus()
 
     await user.keyboard("billing{Enter}")
-    expect(chipTexts()).toEqual(["Titlecontainsbilling"])
+    expect(chipTexts()).toEqual(["Title contains billing"])
   })
 
   it("drops a new filter that was dismissed without a value", async () => {
@@ -101,7 +111,7 @@ describe("FilterBuilder", () => {
     await user.click(
       screen.getByRole("button", { name: "Remove Status filter" })
     )
-    expect(chipTexts()).toEqual(["Titlecontainsinvoice"])
+    expect(chipTexts()).toEqual(["Title contains invoice"])
 
     await user.click(screen.getByRole("button", { name: "Clear" }))
     expect(chipTexts()).toEqual([])
@@ -119,10 +129,10 @@ describe("FilterBuilder", () => {
       />
     )
 
-    screen.getByRole("button", { name: "Title operator" }).focus()
+    screen.getByRole("button", { name: /^Title operator:/ }).focus()
     await user.keyboard("{Enter}")
     await user.click(screen.getByRole("menuitem", { name: "is not" }))
 
-    expect(chipTexts()).toEqual(["Titleis notinvoice"])
+    expect(chipTexts()).toEqual(["Title is not invoice"])
   })
 })

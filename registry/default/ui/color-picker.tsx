@@ -81,6 +81,7 @@ function ColorPicker({
   variant = "outline",
   size,
   className,
+  "aria-label": ariaLabel,
   ...props
 }: Omit<React.ComponentProps<"button">, "value" | "defaultValue" | "onChange"> &
   Pick<React.ComponentProps<typeof Button>, "variant" | "size"> & {
@@ -139,6 +140,7 @@ function ColorPicker({
         )}
         {...props}
       >
+        {ariaLabel && <span className="sr-only">{ariaLabel}:</span>}{" "}
         <ColorSwatch color={hex} />
         {hex}
       </PopoverTrigger>

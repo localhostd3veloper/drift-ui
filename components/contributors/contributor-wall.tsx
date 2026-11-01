@@ -84,7 +84,6 @@ function OpenSeat({ rank, isLead }: { rank: number; isLead: boolean }) {
   return (
     <a
       href="#join"
-      aria-label={`Seat ${rank} is open. See how to claim it.`}
       className={cn(
         SEAT_BASE,
         "group h-full",
@@ -104,6 +103,7 @@ function OpenSeat({ rank, isLead }: { rank: number; isLead: boolean }) {
         )}
       >
         {isLead ? "The first seat is open" : "Open seat"}
+        <span className="sr-only">, see how to claim it</span>
         <ArrowUpRightIcon
           className={cn(
             "shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5",

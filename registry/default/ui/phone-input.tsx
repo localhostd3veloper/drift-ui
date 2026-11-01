@@ -101,9 +101,9 @@ function CountryPicker({
         type="button"
         disabled={disabled}
         data-slot="phone-input-country"
-        aria-label={`Country: ${current?.name}, ${current?.dialCode}`}
         className="flex shrink-0 items-center gap-1 rounded-l-md border-r border-input px-2 text-muted-foreground tabular-nums transition-colors outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground disabled:cursor-not-allowed"
       >
+        <span className="sr-only">Country: {current?.name},</span>{" "}
         <span aria-hidden="true">{current?.flag}</span>
         <span>{current?.dialCode}</span>
         <ChevronDownIcon className="size-3.5 opacity-60" />

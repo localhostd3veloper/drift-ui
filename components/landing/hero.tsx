@@ -31,7 +31,7 @@ export function Hero() {
           </p>
           <div className="mt-10 flex rise flex-col items-center gap-3 [--rise-delay:200ms] sm:flex-row">
             <Button asChild size="lg" className="h-11 px-5 active:scale-[0.98]">
-              <Link href="/components">
+              <Link href="/components" prefetch={false}>
                 Browse components <ArrowRightIcon />
               </Link>
             </Button>

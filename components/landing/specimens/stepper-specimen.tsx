@@ -24,7 +24,7 @@ export function StepperSpecimen({ className }: { className?: string }) {
                 <StepperTitle
                   className={cn(
                     "text-xs",
-                    index !== ACTIVE_STEP_INDEX && "hidden @sm:inline"
+                    index !== ACTIVE_STEP_INDEX && "sr-only @sm:not-sr-only"
                   )}
                 >
                   {step}

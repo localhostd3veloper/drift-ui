@@ -13,7 +13,7 @@ const TRIGGERS = {
 }
 
 function textarea() {
-  return screen.getByRole("combobox", { name: "Comment" })
+  return screen.getByRole("textbox", { name: "Comment" })
 }
 
 describe("MentionTextarea", () => {
@@ -23,7 +23,7 @@ describe("MentionTextarea", () => {
 
     await user.type(textarea(), "Thanks @wier")
 
-    expect(textarea()).toHaveAttribute("aria-expanded", "true")
+    expect(textarea()).toHaveAttribute("aria-controls")
     expect(
       screen.getAllByRole("option").map((option) => option.textContent)
     ).toEqual(["Tomasz Wierzba"])
@@ -49,7 +49,7 @@ describe("MentionTextarea", () => {
 
     expect(textarea()).toHaveValue("cc @tomasz ")
     expect(onValueChange).toHaveBeenLastCalledWith("cc @tomasz ")
-    expect(textarea()).toHaveAttribute("aria-expanded", "false")
+    expect(textarea()).not.toHaveAttribute("aria-controls")
   })
 
   it("supports several triggers and inserts on click", async () => {
@@ -69,7 +69,7 @@ describe("MentionTextarea", () => {
     await user.type(textarea(), "@no")
     await user.keyboard("{Escape}")
 
-    expect(textarea()).toHaveAttribute("aria-expanded", "false")
+    expect(textarea()).not.toHaveAttribute("aria-controls")
     expect(textarea()).toHaveValue("@no")
   })
 

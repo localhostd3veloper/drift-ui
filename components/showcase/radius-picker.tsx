@@ -21,7 +21,6 @@ export function RadiusPicker({
           key={radius}
           type="button"
           aria-pressed={radius === value}
-          aria-label={`${radius} radius`}
           onClick={() => onValueChange(radius)}
           className="flex flex-col items-center gap-1.5 rounded-lg border px-1 pt-2.5 pb-1.5 text-[11px] text-muted-foreground tabular-nums transition-colors outline-none hover:border-foreground/25 hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-pressed:border-foreground/60 aria-pressed:text-foreground"
         >
@@ -31,6 +30,7 @@ export function RadiusPicker({
             className="size-5 translate-x-1 border-t-2 border-l-2 border-current"
           />
           {radius.replace("rem", "")}
+          <span className="sr-only"> rem radius</span>
         </button>
       ))}
     </div>

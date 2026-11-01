@@ -39,6 +39,7 @@ export function BrandColorCard() {
   const [accent, setAccent] = React.useState(DEFAULT_ACCENT)
   const [saved, setSaved] = React.useState(DEFAULT_ACCENT)
   const tint = `color-mix(in oklab, ${accent} 14%, transparent)`
+  const accentText = `color-mix(in oklab, ${accent} 70%, var(--foreground))`
 
   return (
     <Card>
@@ -87,7 +88,7 @@ export function BrandColorCard() {
               <span className="text-xs font-medium">Deploys</span>
               <span
                 className="rounded-full px-1.5 py-0.5 text-[10px] font-medium"
-                style={{ backgroundColor: tint, color: accent }}
+                style={{ backgroundColor: tint, color: accentText }}
               >
                 Live
               </span>
@@ -106,7 +107,7 @@ export function BrandColorCard() {
             </div>
             <span
               className="text-xs font-medium underline underline-offset-2"
-              style={{ color: accent }}
+              style={{ color: accentText }}
             >
               View all releases
             </span>

@@ -52,7 +52,7 @@ export function Principles() {
               value={principle.id}
               className="group relative -mt-px flex flex-col gap-2 border-t-2 border-transparent py-5 pr-6 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=active]:border-brand-solid md:py-7"
             >
-              <span className="font-display text-xl font-semibold tracking-tight text-foreground/40 transition-colors group-hover:text-foreground/70 group-data-[state=active]:text-foreground md:text-2xl">
+              <span className="font-display text-xl font-semibold tracking-tight text-foreground/60 transition-colors group-hover:text-foreground/70 group-data-[state=active]:text-foreground md:text-2xl">
                 {principle.title}
               </span>
               <span className="max-w-[40ch] text-sm leading-relaxed text-muted-foreground">

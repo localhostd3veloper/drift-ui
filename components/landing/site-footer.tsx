@@ -44,6 +44,7 @@ export function SiteFooter() {
         <div className="flex flex-col gap-3">
           <Link
             href="/"
+            prefetch={false}
             className="flex w-fit items-center gap-2.5 font-display text-lg font-semibold tracking-tight"
           >
             <LogoMark />
@@ -63,6 +64,7 @@ export function SiteFooter() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
+                      prefetch={false}
                       className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
                       {link.label}
@@ -74,12 +76,10 @@ export function SiteFooter() {
           ))}
         </div>
       </div>
-      <p
+      <div
         aria-hidden
-        className="mb-[-0.22em] text-center font-display text-[clamp(5rem,23vw,22rem)] leading-none font-semibold tracking-tighter text-[color-mix(in_oklab,var(--foreground)_7%,var(--background))] select-none"
-      >
-        drift-ui
-      </p>
+        className="mb-[-0.22em] text-center font-display text-[clamp(5rem,23vw,22rem)] leading-none font-semibold tracking-tighter text-[color-mix(in_oklab,var(--foreground)_7%,var(--background))] before:content-['drift-ui']"
+      />
     </footer>
   )
 }

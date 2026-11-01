@@ -91,7 +91,7 @@ export function ClosingCta() {
                 size="lg"
                 className="h-11 px-5 active:scale-[0.98]"
               >
-                <Link href="/components">
+                <Link href="/components" prefetch={false}>
                   Browse components <ArrowRightIcon />
                 </Link>
               </Button>

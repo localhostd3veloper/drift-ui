@@ -25,7 +25,7 @@ function EditableName({
 }
 
 function trigger() {
-  return screen.getByRole("button", { name: "Edit Project name" })
+  return screen.getByRole("button", { name: /^Edit Project name:/ })
 }
 
 describe("InlineEdit", () => {
@@ -43,6 +43,14 @@ describe("InlineEdit", () => {
     expect(onSave).toHaveBeenCalledWith("Ledger rewrite")
     await waitFor(() => expect(trigger()).toHaveTextContent("Ledger rewrite"))
     expect(trigger()).toHaveFocus()
+  })
+
+  it("keeps the visible value in the trigger's accessible name", () => {
+    render(<EditableName onSave={vi.fn()} />)
+
+    expect(trigger()).toHaveAccessibleName(
+      "Edit Project name: Billing migration"
+    )
   })
 
   it("discards the draft on Escape", async () => {
@@ -102,7 +110,7 @@ describe("InlineEdit", () => {
       />
     )
 
-    const ownerTrigger = screen.getByRole("button", { name: "Edit Owner" })
+    const ownerTrigger = screen.getByRole("button", { name: /^Edit Owner:/ })
     expect(ownerTrigger).toHaveTextContent("Unassigned")
     expect(ownerTrigger).toBeDisabled()
   })

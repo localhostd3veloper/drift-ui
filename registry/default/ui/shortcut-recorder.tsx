@@ -59,6 +59,7 @@ function ShortcutRecorder({
   placeholder = "Record shortcut",
   requireModifier = true,
   className,
+  "aria-label": ariaLabel,
   ...props
 }: Omit<
   React.ComponentProps<"button">,
@@ -132,6 +133,7 @@ function ShortcutRecorder({
         className
       )}
     >
+      {ariaLabel && <span className="sr-only">{ariaLabel}:</span>}{" "}
       <ShortcutRecorderDisplay
         isRecording={isRecording}
         heldModifiers={heldModifiers}

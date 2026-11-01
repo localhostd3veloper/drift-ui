@@ -205,7 +205,7 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
           </div>
 
           {hasOutline && (
-            <aside className="hidden pt-[5.25rem] xl:block">
+            <aside className="hidden pt-21 xl:block">
               <OnThisPage sections={outline} />
             </aside>
           )}
