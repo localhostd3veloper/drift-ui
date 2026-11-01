@@ -14,6 +14,8 @@ type StepperContextValue = {
   setActiveStep: (step: number) => void
   isLinear: boolean
   stepCount?: number
+  hasContent: boolean
+  setHasContent: (hasContent: boolean) => void
 }
 
 const StepperContext = React.createContext<StepperContextValue | null>(null)
@@ -57,6 +59,7 @@ function Stepper({
   const [uncontrolledStep, setUncontrolledStep] = React.useState(defaultValue)
   const activeStep = value ?? uncontrolledStep
   const [furthestStep, setFurthestStep] = React.useState(activeStep)
+  const [hasContent, setHasContent] = React.useState(false)
 
   if (activeStep > furthestStep) setFurthestStep(activeStep)
 
@@ -73,6 +76,8 @@ function Stepper({
         setActiveStep,
         isLinear: linear,
         stepCount,
+        hasContent,
+        setHasContent,
       }}
     >
       <TabsPrimitive.Root
@@ -140,7 +145,7 @@ function StepperTrigger({
   disabled,
   ...props
 }: Omit<React.ComponentProps<typeof TabsPrimitive.Trigger>, "value">) {
-  const { furthestStep, isLinear } = useStepper()
+  const { furthestStep, isLinear, hasContent } = useStepper()
   const { step } = useStepperItem()
 
   return (
@@ -148,6 +153,7 @@ function StepperTrigger({
       data-slot="stepper-trigger"
       value={String(step)}
       disabled={disabled || (isLinear && step > furthestStep)}
+      {...(!hasContent && { "aria-controls": undefined })}
       className={cn(
         "flex shrink-0 items-center gap-2.5 rounded-md text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-60",
         className
@@ -234,6 +240,10 @@ function StepperContent({
 }: Omit<React.ComponentProps<typeof TabsPrimitive.Content>, "value"> & {
   step: number
 }) {
+  const { setHasContent } = useStepper()
+
+  React.useEffect(() => setHasContent(true), [setHasContent])
+
   return (
     <TabsPrimitive.Content
       data-slot="stepper-content"

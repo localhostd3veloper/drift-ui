@@ -92,6 +92,31 @@ describe("Stepper", () => {
     expect(screen.getByRole("tabpanel")).toHaveTextContent("Invite panel")
   })
 
+  it("links each tab to its panel", () => {
+    render(<TestStepper />)
+
+    expect(trigger("Account")).toHaveAttribute(
+      "aria-controls",
+      screen.getByRole("tabpanel").id
+    )
+  })
+
+  it("leaves aria-controls off when the stepper has no panels", () => {
+    render(
+      <Stepper>
+        <StepperList aria-label="Onboarding">
+          <StepperItem step={0}>
+            <StepperTrigger>
+              <StepperTitle>Account</StepperTitle>
+            </StepperTrigger>
+          </StepperItem>
+        </StepperList>
+      </Stepper>
+    )
+
+    expect(trigger("Account")).not.toHaveAttribute("aria-controls")
+  })
+
   it("lets free mode jump to any step from the list", async () => {
     const user = userEvent.setup()
     render(<TestStepper />)
