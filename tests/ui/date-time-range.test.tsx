@@ -25,6 +25,7 @@ describe("DateTimeRangePicker", () => {
     const onValueChange = vi.fn()
     render(
       <DateTimeRangePicker
+        locale="en-US"
         numberOfMonths={1}
         defaultValue={{ from: MARCH_10 }}
         onValueChange={onValueChange}
@@ -44,6 +45,7 @@ describe("DateTimeRangePicker", () => {
     const onValueChange = vi.fn()
     render(
       <DateTimeRangePicker
+        locale="en-US"
         numberOfMonths={1}
         defaultValue={{ from: MARCH_10, to: new Date(2026, 2, 12, 17, 0) }}
         onValueChange={onValueChange}
@@ -65,6 +67,7 @@ describe("DateTimeRangePicker", () => {
     const onValueChange = vi.fn()
     render(
       <DateTimeRangePicker
+        locale="en-US"
         numberOfMonths={1}
         defaultValue={{ from: MARCH_10 }}
         onValueChange={onValueChange}
