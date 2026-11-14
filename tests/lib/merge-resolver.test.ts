@@ -157,6 +157,29 @@ describe("getMergedRecord", () => {
       content: "Hello world from client",
     })
   })
+
+  it("ignores stored resolutions when a field is not conflicting", () => {
+    const resolutions: MergeResolutions = {
+      status: { choice: "custom", customValue: "draft" },
+    }
+    const merged = getMergedRecord(SAMPLE_FIELDS, resolutions)
+    expect(merged.status).toBe("published")
+  })
+
+  it("safely handles __proto__ as a field name", () => {
+    const fields: MergeField[] = [
+      {
+        name: "__proto__",
+        ours: "custom-proto-ours",
+        theirs: "custom-proto-theirs",
+      },
+    ]
+    const merged = getMergedRecord(fields, {
+      ["__proto__"]: { choice: "theirs" },
+    })
+    expect(Object.hasOwn(merged, "__proto__")).toBe(true)
+    expect(merged["__proto__"]).toBe("custom-proto-theirs")
+  })
 })
 
 describe("resolveAll", () => {
@@ -170,13 +193,26 @@ describe("resolveAll", () => {
 
   it("resolves all conflicting fields to theirs, preserving existing non-conflicting", () => {
     const resolutions = resolveAll(SAMPLE_FIELDS, "theirs", {
-      other: { choice: "ours" },
+      status: { choice: "ours" },
     })
     expect(resolutions).toEqual({
-      other: { choice: "ours" },
+      status: { choice: "ours" },
       title: { choice: "theirs" },
       content: { choice: "theirs" },
     })
+  })
+
+  it("safely handles __proto__ in resolveAll", () => {
+    const fields: MergeField[] = [
+      {
+        name: "__proto__",
+        ours: "a",
+        theirs: "b",
+      },
+    ]
+    const resolutions = resolveAll(fields, "ours")
+    expect(Object.hasOwn(resolutions, "__proto__")).toBe(true)
+    expect(resolutions["__proto__"]).toEqual({ choice: "ours" })
   })
 })
 

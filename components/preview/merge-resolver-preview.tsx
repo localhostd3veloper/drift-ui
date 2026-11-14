@@ -38,6 +38,7 @@ export function MergeResolverPreview() {
     <div className="flex w-full max-w-2xl flex-col gap-4">
       <MergeResolver
         fields={FIELDS}
+        onValueChange={() => setResult(null)}
         onResolve={(merged) => setResult(merged)}
       />
       {result && (

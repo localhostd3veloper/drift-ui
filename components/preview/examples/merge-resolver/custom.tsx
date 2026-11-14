@@ -41,7 +41,10 @@ export function MergeResolverCustomPreview() {
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => setResolutions({})}
+          onClick={() => {
+            setResolutions({})
+            setResolved(null)
+          }}
         >
           Reset selections
         </Button>

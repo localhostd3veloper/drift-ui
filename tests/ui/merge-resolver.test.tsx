@@ -50,9 +50,10 @@ describe("MergeResolver UI", () => {
     })
     await user.click(titleOursRadio)
 
-    expect(
-      screen.getByText("1 unresolved conflict remaining")
-    ).toBeInTheDocument()
+    const statusElement = screen.getByText("1 unresolved conflict remaining")
+    expect(statusElement).toBeInTheDocument()
+    expect(statusElement).toHaveAttribute("aria-live", "polite")
+    expect(statusElement).toHaveAttribute("aria-atomic", "true")
 
     const summaryTheirsRadio = screen.getByRole("radio", {
       name: "Theirs (Remote) for Summary",
@@ -60,6 +61,40 @@ describe("MergeResolver UI", () => {
     await user.click(summaryTheirsRadio)
 
     expect(screen.getByText("All conflicts resolved")).toBeInTheDocument()
+  })
+
+  it("selects options and saves using keyboard navigation", async () => {
+    const user = userEvent.setup()
+    const onResolve = vi.fn()
+    render(<MergeResolver fields={FIELDS} onResolve={onResolve} />)
+
+    const titleOursRadio = screen.getByRole("radio", {
+      name: "Ours (Local) for Title",
+    })
+    titleOursRadio.focus()
+    expect(titleOursRadio).toHaveFocus()
+    await user.keyboard(" ")
+    expect(titleOursRadio).toBeChecked()
+
+    const summaryTheirsRadio = screen.getByRole("radio", {
+      name: "Theirs (Remote) for Summary",
+    })
+    summaryTheirsRadio.focus()
+    expect(summaryTheirsRadio).toHaveFocus()
+    await user.keyboard(" ")
+    expect(summaryTheirsRadio).toBeChecked()
+
+    const saveButton = screen.getByRole("button", { name: "Save resolutions" })
+    expect(saveButton).not.toBeDisabled()
+    saveButton.focus()
+    expect(saveButton).toHaveFocus()
+    await user.keyboard("{Enter}")
+
+    expect(onResolve).toHaveBeenCalledWith({
+      title: "Draft Document",
+      status: "published",
+      summary: "Updated server version",
+    })
   })
 
   it("disables save button until all conflicting fields are resolved", async () => {

@@ -64,13 +64,33 @@ export function isFieldResolved(resolution?: MergeFieldResolution): boolean {
   return false
 }
 
+function setProperty<T extends object>(target: T, key: string, value: unknown) {
+  Object.defineProperty(target, key, {
+    value,
+    enumerable: true,
+    writable: true,
+    configurable: true,
+  })
+}
+
+function getResolution(
+  resolutions: MergeResolutions,
+  name: string
+): MergeFieldResolution | undefined {
+  if (Object.hasOwn(resolutions, name)) {
+    return Object.getOwnPropertyDescriptor(resolutions, name)?.value
+  }
+  return undefined
+}
+
 export function getUnresolvedCount(
   fields: MergeField[],
   resolutions: MergeResolutions
 ): number {
   return fields.filter(
     (field) =>
-      isFieldConflict(field) && !isFieldResolved(resolutions[field.name])
+      isFieldConflict(field) &&
+      !isFieldResolved(getResolution(resolutions, field.name))
   ).length
 }
 
@@ -87,13 +107,17 @@ export function getMergedRecord(
 ): MergedRecord {
   const record: MergedRecord = {}
   for (const field of fields) {
-    const res = resolutions[field.name]
+    if (!isFieldConflict(field)) {
+      setProperty(record, field.name, field.ours)
+      continue
+    }
+    const res = getResolution(resolutions, field.name)
     if (res?.choice === "theirs") {
-      record[field.name] = field.theirs
+      setProperty(record, field.name, field.theirs)
     } else if (res?.choice === "custom") {
-      record[field.name] = res.customValue ?? ""
+      setProperty(record, field.name, res.customValue ?? "")
     } else {
-      record[field.name] = field.ours
+      setProperty(record, field.name, field.ours)
     }
   }
   return record
@@ -104,10 +128,13 @@ export function resolveAll(
   choice: "ours" | "theirs",
   existing: MergeResolutions = {}
 ): MergeResolutions {
-  const result: MergeResolutions = { ...existing }
+  const result: MergeResolutions = {}
+  for (const [key, value] of Object.entries(existing)) {
+    setProperty(result, key, value)
+  }
   for (const field of fields) {
     if (isFieldConflict(field)) {
-      result[field.name] = { choice }
+      setProperty(result, field.name, { choice })
     }
   }
   return result

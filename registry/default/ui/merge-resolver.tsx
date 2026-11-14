@@ -293,12 +293,13 @@ function MergeResolver({
                 >
                   <input
                     type="radio"
-                    name={`merge-field-${field.name}`}
+                    name={`${fieldId}-choice`}
                     value="ours"
                     checked={fieldRes?.choice === "ours"}
                     disabled={disabled}
                     onChange={() => handleChoiceChange(field.name, "ours")}
                     aria-label={`${oursLabel} for ${fieldLabel}`}
+                    aria-describedby={`${fieldId}-ours-value`}
                     className="mt-0.5 size-4 shrink-0 text-primary accent-primary"
                   />
                   <div className="min-w-0 flex-1">
@@ -308,7 +309,10 @@ function MergeResolver({
                         Local
                       </span>
                     </div>
-                    <div className="rounded bg-muted/40 p-2 font-mono text-xs break-all whitespace-pre-wrap">
+                    <div
+                      id={`${fieldId}-ours-value`}
+                      className="rounded bg-muted/40 p-2 font-mono text-xs break-all whitespace-pre-wrap"
+                    >
                       {renderOursSegments(diff.oursSegments)}
                     </div>
                   </div>
@@ -324,12 +328,13 @@ function MergeResolver({
                 >
                   <input
                     type="radio"
-                    name={`merge-field-${field.name}`}
+                    name={`${fieldId}-choice`}
                     value="theirs"
                     checked={fieldRes?.choice === "theirs"}
                     disabled={disabled}
                     onChange={() => handleChoiceChange(field.name, "theirs")}
                     aria-label={`${theirsLabel} for ${fieldLabel}`}
+                    aria-describedby={`${fieldId}-theirs-value`}
                     className="mt-0.5 size-4 shrink-0 text-primary accent-primary"
                   />
                   <div className="min-w-0 flex-1">
@@ -339,7 +344,10 @@ function MergeResolver({
                         Remote
                       </span>
                     </div>
-                    <div className="rounded bg-muted/40 p-2 font-mono text-xs break-all whitespace-pre-wrap">
+                    <div
+                      id={`${fieldId}-theirs-value`}
+                      className="rounded bg-muted/40 p-2 font-mono text-xs break-all whitespace-pre-wrap"
+                    >
                       {renderTheirsSegments(diff.theirsSegments)}
                     </div>
                   </div>
@@ -356,7 +364,7 @@ function MergeResolver({
                   <label className="flex cursor-pointer items-center gap-3 font-medium">
                     <input
                       type="radio"
-                      name={`merge-field-${field.name}`}
+                      name={`${fieldId}-choice`}
                       value="custom"
                       checked={fieldRes?.choice === "custom"}
                       disabled={disabled}

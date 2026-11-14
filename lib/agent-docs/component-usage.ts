@@ -577,7 +577,9 @@ export function CommentBox() {
   "merge-resolver": {
     notes:
       'Field-by-field merge resolver for structured records encountering simultaneous or offline edits. fields: MergeField[] with name, ours, theirs, and optional label/base. Non-conflicting fields (ours === theirs) are marked as resolved automatically. Conflicting fields display word-level diffs with semantic <ins> and <del> tags. Radiogroup per field supports picking ours, theirs, or custom with an inline text input. Features live polite screen-reader announcements of remaining conflicts, batch "Accept all ours" / "Accept all theirs" actions, and a save button that stays disabled until every conflict is resolved.',
-    example: `import { MergeResolver } from "@/components/ui/merge-resolver"
+    example: `"use client"
+
+import { MergeResolver } from "@/components/ui/merge-resolver"
 
 const fields = [
   { name: "title", label: "Title", ours: "Draft Roadmap", theirs: "Final Roadmap" },
